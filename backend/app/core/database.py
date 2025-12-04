@@ -4,7 +4,7 @@ from sqlalchemy import MetaData
 from sqlalchemy.ext.declarative import declarative_base
 
 # Naming convention for constraints (important for Alembic)
-# Uses PascalCase for table names, snake_case for columns
+# Uses PascalCase for table names AND columns
 convention = {
     "ix": "ix_%(column_0_label)s",
     "uq": "uq_%(table_name)s_%(column_0_name)s",

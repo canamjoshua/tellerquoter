@@ -29,16 +29,16 @@ CREATE TABLE QuoteVersions (...);
 CREATE TABLE SkuDefinitions (...);
 
 -- Columns: snake_case
-pricing_version_id UUID
-created_at TIMESTAMP
-is_active BOOLEAN
+PricingVersionId UUID
+CreatedAt TIMESTAMP
+IsActive BOOLEAN
 
 -- Indexes: idx_{table}_{column}
 CREATE INDEX idx_quotes_client_name ON Quotes(client_name);
 
 -- Foreign Keys: {referenced_table_singular}_id
 quote_id UUID REFERENCES Quotes(id)
-pricing_version_id UUID REFERENCES PricingVersions(id)
+PricingVersionId UUID REFERENCES PricingVersions(id)
 ```
 
 ### Python (Backend)
@@ -318,7 +318,7 @@ frontend/
 def calculate_saas_tier_price(
     product_code: str,
     volume: float,
-    pricing_version_id: UUID
+    PricingVersionId: UUID
 ) -> float:
     """
     Calculate monthly SaaS price based on volume tier.
@@ -329,7 +329,7 @@ def calculate_saas_tier_price(
     Args:
         product_code: Product identifier (e.g., "CHECK_RECOGNITION")
         volume: Volume input for tiered pricing (e.g., annual scans)
-        pricing_version_id: Pricing version to use for tier lookup
+        PricingVersionId: Pricing version to use for tier lookup
 
     Returns:
         Monthly price in USD

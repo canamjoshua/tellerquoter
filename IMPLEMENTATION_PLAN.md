@@ -138,264 +138,264 @@ External:
 
 ```sql
 -- Pricing Versions (immutable once used)
-CREATE TABLE pricing_versions (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    version_number VARCHAR(20) NOT NULL UNIQUE, -- e.g., "2025.1", "2025.2"
-    description TEXT,
-    effective_date DATE NOT NULL,
-    expiration_date DATE,
-    created_by VARCHAR(255) NOT NULL,
-    created_at TIMESTAMP NOT NULL DEFAULT NOW(),
-    is_current BOOLEAN DEFAULT FALSE,
-    is_locked BOOLEAN DEFAULT FALSE -- true once linked to any quote
+CREATE TABLE PricingVersions (
+    Id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    VersionNumber VARCHAR(20) NOT NULL UNIQUE, -- e.g., "2025.1", "2025.2"
+    Description TEXT,
+    EffectiveDate DATE NOT NULL,
+    ExpirationDate DATE,
+    CreatedBy VARCHAR(255) NOT NULL,
+    CreatedAt TIMESTAMP NOT NULL DEFAULT NOW(),
+    IsCurrent BOOLEAN DEFAULT FALSE,
+    IsLocked BOOLEAN DEFAULT FALSE -- true once linked to any quote
 );
 
 -- Setup Package SKUs (versioned)
-CREATE TABLE sku_definitions (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    pricing_version_id UUID NOT NULL REFERENCES pricing_versions(id),
-    sku_code VARCHAR(50) NOT NULL, -- e.g., "ORG-SETUP-ENT-MID"
-    name VARCHAR(255) NOT NULL,
-    category VARCHAR(50) NOT NULL, -- Organization, Integration, Module, Training, PM
-    fixed_price DECIMAL(10, 2) NOT NULL,
-    estimated_hours INTEGER NOT NULL,
-    typical_duration_weeks INTEGER,
-    quickbooks_category VARCHAR(100),
-    sales_description TEXT,
-    scope_text TEXT,
-    deliverables JSONB, -- Array of deliverable objects
-    acceptance_criteria TEXT,
-    dependencies JSONB, -- Array of SKU codes
-    is_repeatable BOOLEAN DEFAULT FALSE,
-    is_active BOOLEAN DEFAULT TRUE,
-    UNIQUE(pricing_version_id, sku_code)
+CREATE TABLE SKUDefinitions (
+    Id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    PricingVersionId UUID NOT NULL REFERENCES PricingVersions(Id),
+    SKUCode VARCHAR(50) NOT NULL, -- e.g., "ORG-SETUP-ENT-MID"
+    Name VARCHAR(255) NOT NULL,
+    Category VARCHAR(50) NOT NULL, -- Organization, Integration, Module, Training, PM
+    FixedPrice DECIMAL(10, 2) NOT NULL,
+    EstimatedHours INTEGER NOT NULL,
+    TypicalDurationWeeks INTEGER,
+    QuickbooksCategory VARCHAR(100),
+    SalesDescription TEXT,
+    ScopeText TEXT,
+    Deliverables JSONB, -- Array of deliverable objects
+    AcceptanceCriteria TEXT,
+    Dependencies JSONB, -- Array of SKU codes
+    IsRepeatable BOOLEAN DEFAULT FALSE,
+    IsActive BOOLEAN DEFAULT TRUE,
+    UNIQUE(PricingVersionId, SKUCode)
 );
 
 -- Delivery milestones for SKUs (for deliverable-based payment schedules)
-CREATE TABLE sku_milestones (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    sku_definition_id UUID NOT NULL REFERENCES sku_definitions(id),
-    milestone_name VARCHAR(255) NOT NULL,
-    typical_month INTEGER NOT NULL,
-    percentage_of_sku DECIMAL(5, 2) NOT NULL, -- e.g., 50.00 for 50%
-    sequence_order INTEGER NOT NULL
+CREATE TABLE SKUMilestones (
+    Id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    SKUDefinitionId UUID NOT NULL REFERENCES SKUDefinitions(Id),
+    MilestoneName VARCHAR(255) NOT NULL,
+    TypicalMonth INTEGER NOT NULL,
+    PercentageOfSKU DECIMAL(5, 2) NOT NULL, -- e.g., 50.00 for 50%
+    SequenceOrder INTEGER NOT NULL
 );
 
 -- SaaS Products (versioned)
-CREATE TABLE saas_products (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    pricing_version_id UUID NOT NULL REFERENCES pricing_versions(id),
-    product_code VARCHAR(50) NOT NULL,
-    product_name VARCHAR(255) NOT NULL,
-    base_monthly_price DECIMAL(10, 2),
-    pricing_type VARCHAR(50) NOT NULL, -- FIXED, VOLUME_TIERED, PERCENTAGE
-    tier_config JSONB, -- For volume-based pricing
-    is_active BOOLEAN DEFAULT TRUE,
-    UNIQUE(pricing_version_id, product_code)
+CREATE TABLE SaaSProducts (
+    Id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    PricingVersionId UUID NOT NULL REFERENCES PricingVersions(Id),
+    ProductCode VARCHAR(50) NOT NULL,
+    ProductName VARCHAR(255) NOT NULL,
+    BaseMonthlyPrice DECIMAL(10, 2),
+    PricingType VARCHAR(50) NOT NULL, -- FIXED, VOLUME_TIERED, PERCENTAGE
+    TierConfig JSONB, -- For volume-based pricing
+    IsActive BOOLEAN DEFAULT TRUE,
+    UNIQUE(PricingVersionId, ProductCode)
 );
 
 -- Travel Zones (versioned)
-CREATE TABLE travel_zones (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    pricing_version_id UUID NOT NULL REFERENCES pricing_versions(id),
-    zone_number INTEGER NOT NULL,
-    zone_name VARCHAR(100) NOT NULL,
-    region_description TEXT,
-    airfare_estimate DECIMAL(10, 2) NOT NULL,
-    hotel_default DECIMAL(10, 2) NOT NULL,
-    per_diem_default DECIMAL(10, 2) NOT NULL,
-    vehicle_per_day DECIMAL(10, 2) NOT NULL,
-    UNIQUE(pricing_version_id, zone_number)
+CREATE TABLE TravelZones (
+    Id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    PricingVersionId UUID NOT NULL REFERENCES PricingVersions(Id),
+    ZoneNumber INTEGER NOT NULL,
+    ZoneName VARCHAR(100) NOT NULL,
+    RegionDescription TEXT,
+    AirfareEstimate DECIMAL(10, 2) NOT NULL,
+    HotelDefault DECIMAL(10, 2) NOT NULL,
+    PerDiemDefault DECIMAL(10, 2) NOT NULL,
+    VehiclePerDay DECIMAL(10, 2) NOT NULL,
+    UNIQUE(PricingVersionId, ZoneNumber)
 );
 
 -- Mature Integrations List
-CREATE TABLE mature_integrations (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    integration_code VARCHAR(50) UNIQUE NOT NULL,
-    system_name VARCHAR(255) NOT NULL,
-    vendor VARCHAR(255),
-    comments TEXT,
-    is_active BOOLEAN DEFAULT TRUE,
-    created_at TIMESTAMP NOT NULL DEFAULT NOW(),
-    updated_at TIMESTAMP NOT NULL DEFAULT NOW()
+CREATE TABLE MatureIntegrations (
+    Id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    IntegrationCode VARCHAR(50) UNIQUE NOT NULL,
+    SystemName VARCHAR(255) NOT NULL,
+    Vendor VARCHAR(255),
+    Comments TEXT,
+    IsActive BOOLEAN DEFAULT TRUE,
+    CreatedAt TIMESTAMP NOT NULL DEFAULT NOW(),
+    UpdatedAt TIMESTAMP NOT NULL DEFAULT NOW()
 );
 
 -- Referrers
-CREATE TABLE referrers (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    referrer_name VARCHAR(255) NOT NULL,
-    standard_rate DECIMAL(5, 2) NOT NULL, -- e.g., 5.00 for 5%
-    is_active BOOLEAN DEFAULT TRUE,
-    created_at TIMESTAMP NOT NULL DEFAULT NOW(),
-    updated_at TIMESTAMP NOT NULL DEFAULT NOW()
+CREATE TABLE Referrers (
+    Id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    ReferrerName VARCHAR(255) NOT NULL,
+    StandardRate DECIMAL(5, 2) NOT NULL, -- e.g., 5.00 for 5%
+    IsActive BOOLEAN DEFAULT TRUE,
+    CreatedAt TIMESTAMP NOT NULL DEFAULT NOW(),
+    UpdatedAt TIMESTAMP NOT NULL DEFAULT NOW()
 );
 
 -- Configuration snippets (warranty, assumptions, etc.) - versioned
-CREATE TABLE text_snippets (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    pricing_version_id UUID NOT NULL REFERENCES pricing_versions(id),
-    snippet_key VARCHAR(100) NOT NULL, -- e.g., "warranty_text", "escalation_4pct"
-    snippet_content TEXT NOT NULL,
-    snippet_category VARCHAR(50), -- IMPLEMENTATION_PLAN, ORDER_FORM, ASSUMPTIONS
-    UNIQUE(pricing_version_id, snippet_key)
+CREATE TABLE TextSnippets (
+    Id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    PricingVersionId UUID NOT NULL REFERENCES PricingVersions(Id),
+    SnippetKey VARCHAR(100) NOT NULL, -- e.g., "warranty_text", "escalation_4pct"
+    SnippetContent TEXT NOT NULL,
+    SnippetCategory VARCHAR(50), -- IMPLEMENTATION_PLAN, ORDER_FORM, ASSUMPTIONS
+    UNIQUE(PricingVersionId, SnippetKey)
 );
 
 -- Calculation Parameters (versioned) - NEW for explicit parameter management
-CREATE TABLE calculation_parameters (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    pricing_version_id UUID NOT NULL REFERENCES pricing_versions(id),
-    parameter_name VARCHAR(100) NOT NULL, -- e.g., "hourly_rate", "default_escalation"
-    parameter_value DECIMAL(10, 4) NOT NULL, -- e.g., 230.0000, 0.0400
-    parameter_description TEXT, -- e.g., "Standard hourly rate for professional services"
-    UNIQUE(pricing_version_id, parameter_name)
+CREATE TABLE CalculationParameters (
+    Id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    PricingVersionId UUID NOT NULL REFERENCES PricingVersions(Id),
+    ParameterName VARCHAR(100) NOT NULL, -- e.g., "hourly_rate", "default_escalation"
+    ParameterValue DECIMAL(10, 4) NOT NULL, -- e.g., 230.0000, 0.0400
+    ParameterDescription TEXT, -- e.g., "Standard hourly rate for professional services"
+    UNIQUE(PricingVersionId, ParameterName)
 );
 -- Examples: hourly_rate=230, default_escalation=0.04, teller_payments_discount=0.10
 
 -- Hardware Catalog (versioned)
-CREATE TABLE hardware_catalog (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    pricing_version_id UUID NOT NULL REFERENCES pricing_versions(id),
-    item_name VARCHAR(255) NOT NULL,
-    model VARCHAR(255),
-    unit_price DECIMAL(10, 2) NOT NULL,
-    description TEXT,
-    is_active BOOLEAN DEFAULT TRUE,
-    UNIQUE(pricing_version_id, item_name, model)
+CREATE TABLE HardwareCatalog (
+    Id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    PricingVersionId UUID NOT NULL REFERENCES PricingVersions(Id),
+    ItemName VARCHAR(255) NOT NULL,
+    Model VARCHAR(255),
+    UnitPrice DECIMAL(10, 2) NOT NULL,
+    Description TEXT,
+    IsActive BOOLEAN DEFAULT TRUE,
+    UNIQUE(PricingVersionId, ItemName, Model)
 );
 
 -- Quotes
-CREATE TABLE quotes (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    quote_number VARCHAR(50) UNIQUE NOT NULL, -- e.g., "Q-2025-0001"
-    client_name VARCHAR(255) NOT NULL,
-    client_organization VARCHAR(255),
-    created_by VARCHAR(255) NOT NULL,
-    created_at TIMESTAMP NOT NULL DEFAULT NOW(),
-    updated_at TIMESTAMP NOT NULL DEFAULT NOW(),
-    status VARCHAR(50) DEFAULT 'DRAFT' -- DRAFT, SENT, ACCEPTED, DECLINED
+CREATE TABLE Quotes (
+    Id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    QuoteNumber VARCHAR(50) UNIQUE NOT NULL, -- e.g., "Q-2025-0001"
+    ClientName VARCHAR(255) NOT NULL,
+    ClientOrganization VARCHAR(255),
+    CreatedBy VARCHAR(255) NOT NULL,
+    CreatedAt TIMESTAMP NOT NULL DEFAULT NOW(),
+    UpdatedAt TIMESTAMP NOT NULL DEFAULT NOW(),
+    Status VARCHAR(50) DEFAULT 'DRAFT' -- DRAFT, SENT, ACCEPTED, DECLINED
 );
 
 -- Quote Versions
-CREATE TABLE quote_versions (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    quote_id UUID NOT NULL REFERENCES quotes(id),
-    version_number INTEGER NOT NULL, -- 1, 2, 3...
-    version_description TEXT,
-    pricing_version_id UUID NOT NULL REFERENCES pricing_versions(id),
+CREATE TABLE QuoteVersions (
+    Id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    QuoteId UUID NOT NULL REFERENCES Quotes(Id),
+    VersionNumber INTEGER NOT NULL, -- 1, 2, 3...
+    VersionDescription TEXT,
+    PricingVersionId UUID NOT NULL REFERENCES PricingVersions(Id),
 
     -- Client Information
-    client_data JSONB NOT NULL, -- Name, address, contacts, population, location
+    ClientData JSONB NOT NULL, -- Name, address, contacts, population, location
 
     -- Quote Configuration
-    projection_years INTEGER DEFAULT 5,
-    escalation_model VARCHAR(50) DEFAULT 'STANDARD_4PCT', -- STANDARD_4PCT, CPI, MULTI_YEAR_FREEZE
-    multi_year_freeze_years INTEGER,
-    level_loading_enabled BOOLEAN DEFAULT FALSE,
-    teller_payments_enabled BOOLEAN DEFAULT FALSE,
+    ProjectionYears INTEGER DEFAULT 5,
+    EscalationModel VARCHAR(50) DEFAULT 'STANDARD_4PCT', -- STANDARD_4PCT, CPI, MULTI_YEAR_FREEZE
+    MultiYearFreezeYears INTEGER,
+    LevelLoadingEnabled BOOLEAN DEFAULT FALSE,
+    TellerPaymentsEnabled BOOLEAN DEFAULT FALSE,
 
     -- Discounts
-    discount_config JSONB, -- {saas_year1_pct, saas_all_years_pct, setup_fixed, setup_pct}
+    DiscountConfig JSONB, -- {saas_year1_pct, saas_all_years_pct, setup_fixed, setup_pct}
 
     -- Referral
-    referrer_id UUID REFERENCES referrers(id),
-    referral_rate_override DECIMAL(5, 2),
+    ReferrerId UUID REFERENCES Referrers(Id),
+    ReferralRateOverride DECIMAL(5, 2),
 
     -- Implementation Plan Config
-    milestone_style VARCHAR(50) DEFAULT 'FIXED_MONTHLY', -- FIXED_MONTHLY, DELIVERABLE_BASED
-    initial_payment_percentage DECIMAL(5, 2) DEFAULT 25.00,
-    project_duration_months INTEGER DEFAULT 10,
+    MilestoneStyle VARCHAR(50) DEFAULT 'FIXED_MONTHLY', -- FIXED_MONTHLY, DELIVERABLE_BASED
+    InitialPaymentPercentage DECIMAL(5, 2) DEFAULT 25.00,
+    ProjectDurationMonths INTEGER DEFAULT 10,
 
     -- Travel
-    travel_zone_id UUID REFERENCES travel_zones(id),
-    travel_config JSONB, -- Array of trips with days, people, overrides
+    TravelZoneId UUID REFERENCES TravelZones(Id),
+    TravelConfig JSONB, -- Array of trips with days, people, overrides
 
     -- Totals (calculated/cached)
-    total_saas_monthly DECIMAL(10, 2),
-    total_saas_annual_year1 DECIMAL(10, 2),
-    total_setup_packages DECIMAL(10, 2),
-    total_travel DECIMAL(10, 2),
-    total_contracted_amount DECIMAL(10, 2),
+    TotalSaaSMonthly DECIMAL(10, 2),
+    TotalSaaSAnnualYear1 DECIMAL(10, 2),
+    TotalSetupPackages DECIMAL(10, 2),
+    TotalTravel DECIMAL(10, 2),
+    TotalContractedAmount DECIMAL(10, 2),
 
-    created_by VARCHAR(255) NOT NULL,
-    created_at TIMESTAMP NOT NULL DEFAULT NOW(),
-    version_status VARCHAR(50) DEFAULT 'DRAFT', -- DRAFT, SENT, ACCEPTED
+    CreatedBy VARCHAR(255) NOT NULL,
+    CreatedAt TIMESTAMP NOT NULL DEFAULT NOW(),
+    VersionStatus VARCHAR(50) DEFAULT 'DRAFT', -- DRAFT, SENT, ACCEPTED
 
-    UNIQUE(quote_id, version_number)
+    UNIQUE(QuoteId, VersionNumber)
 );
 
 -- Quote Version - SaaS Products (many-to-many)
-CREATE TABLE quote_version_saas_products (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    quote_version_id UUID NOT NULL REFERENCES quote_versions(id) ON DELETE CASCADE,
-    saas_product_id UUID NOT NULL REFERENCES saas_products(id),
-    quantity DECIMAL(10, 2) NOT NULL, -- volume input for tiered pricing
-    calculated_monthly_price DECIMAL(10, 2) NOT NULL,
-    notes TEXT
+CREATE TABLE QuoteVersionSaaSProducts (
+    Id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    QuoteVersionId UUID NOT NULL REFERENCES QuoteVersions(Id) ON DELETE CASCADE,
+    SaaSProductId UUID NOT NULL REFERENCES SaaSProducts(Id),
+    Quantity DECIMAL(10, 2) NOT NULL, -- volume input for tiered pricing
+    CalculatedMonthlyPrice DECIMAL(10, 2) NOT NULL,
+    Notes TEXT
 );
 
 -- Quote Version - Setup Packages (many-to-many)
-CREATE TABLE quote_version_setup_packages (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    quote_version_id UUID NOT NULL REFERENCES quote_versions(id) ON DELETE CASCADE,
-    sku_definition_id UUID NOT NULL REFERENCES sku_definitions(id),
-    quantity INTEGER DEFAULT 1,
-    calculated_price DECIMAL(10, 2) NOT NULL,
-    custom_scope_notes TEXT,
-    sequence_order INTEGER
+CREATE TABLE QuoteVersionSetupPackages (
+    Id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    QuoteVersionId UUID NOT NULL REFERENCES QuoteVersions(Id) ON DELETE CASCADE,
+    SKUDefinitionId UUID NOT NULL REFERENCES SKUDefinitions(Id),
+    Quantity INTEGER DEFAULT 1,
+    CalculatedPrice DECIMAL(10, 2) NOT NULL,
+    CustomScopeNotes TEXT,
+    SequenceOrder INTEGER
 );
 
 -- Quote Version - Integrations (for listing on Order Form)
-CREATE TABLE quote_version_integrations (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    quote_version_id UUID NOT NULL REFERENCES quote_versions(id) ON DELETE CASCADE,
-    integration_id UUID REFERENCES mature_integrations(id),
-    custom_system_name VARCHAR(255), -- for "TBD" or unlisted systems
-    sku_definition_id UUID NOT NULL REFERENCES sku_definitions(id)
+CREATE TABLE QuoteVersionIntegrations (
+    Id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    QuoteVersionId UUID NOT NULL REFERENCES QuoteVersions(Id) ON DELETE CASCADE,
+    IntegrationId UUID REFERENCES MatureIntegrations(Id),
+    CustomSystemName VARCHAR(255), -- for "TBD" or unlisted systems
+    SKUDefinitionId UUID NOT NULL REFERENCES SKUDefinitions(Id)
 );
 
 -- Quote Version - Hardware
-CREATE TABLE quote_version_hardware (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    quote_version_id UUID NOT NULL REFERENCES quote_versions(id) ON DELETE CASCADE,
-    hardware_catalog_id UUID REFERENCES hardware_catalog(id), -- Reference to catalog item
-    custom_item_name VARCHAR(255), -- For items not in catalog
-    custom_model VARCHAR(255),
-    unit_price DECIMAL(10, 2) NOT NULL, -- Captured from catalog at quote time
-    quantity INTEGER, -- NULL = TBD
-    notes TEXT
+CREATE TABLE QuoteVersionHardware (
+    Id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    QuoteVersionId UUID NOT NULL REFERENCES QuoteVersions(Id) ON DELETE CASCADE,
+    HardwareCatalogId UUID REFERENCES HardwareCatalog(Id), -- Reference to catalog item
+    CustomItemName VARCHAR(255), -- For items not in catalog
+    CustomModel VARCHAR(255),
+    UnitPrice DECIMAL(10, 2) NOT NULL, -- Captured from catalog at quote time
+    Quantity INTEGER, -- NULL = TBD
+    Notes TEXT
 );
 
 -- Generated Documents
-CREATE TABLE generated_documents (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    quote_version_id UUID NOT NULL REFERENCES quote_versions(id),
-    document_type VARCHAR(50) NOT NULL, -- ORDER_FORM, IMPLEMENTATION_PLAN, INTERNAL_DETAIL
-    file_format VARCHAR(10) NOT NULL, -- DOCX, PDF
-    s3_bucket VARCHAR(255) NOT NULL,
-    s3_key VARCHAR(500) NOT NULL,
-    generated_at TIMESTAMP NOT NULL DEFAULT NOW(),
-    generated_by VARCHAR(255) NOT NULL
+CREATE TABLE GeneratedDocuments (
+    Id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    QuoteVersionId UUID NOT NULL REFERENCES QuoteVersions(Id),
+    DocumentType VARCHAR(50) NOT NULL, -- ORDER_FORM, IMPLEMENTATION_PLAN, INTERNAL_DETAIL
+    FileFormat VARCHAR(10) NOT NULL, -- DOCX, PDF
+    S3Bucket VARCHAR(255) NOT NULL,
+    S3Key VARCHAR(500) NOT NULL,
+    GeneratedAt TIMESTAMP NOT NULL DEFAULT NOW(),
+    GeneratedBy VARCHAR(255) NOT NULL
 );
 
 -- Audit Log
-CREATE TABLE audit_log (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    entity_type VARCHAR(100) NOT NULL, -- PRICING_VERSION, QUOTE, SKU, etc.
-    entity_id UUID NOT NULL,
-    action VARCHAR(50) NOT NULL, -- CREATE, UPDATE, DELETE
-    changed_by VARCHAR(255) NOT NULL,
-    changed_at TIMESTAMP NOT NULL DEFAULT NOW(),
-    changes JSONB, -- before/after values
-    reason TEXT
+CREATE TABLE AuditLog (
+    Id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    EntityType VARCHAR(100) NOT NULL, -- PRICING_VERSION, QUOTE, SKU, etc.
+    EntityId UUID NOT NULL,
+    Action VARCHAR(50) NOT NULL, -- CREATE, UPDATE, DELETE
+    ChangedBy VARCHAR(255) NOT NULL,
+    ChangedAt TIMESTAMP NOT NULL DEFAULT NOW(),
+    Changes JSONB, -- before/after values
+    Reason TEXT
 );
 
 -- Indexes for performance
-CREATE INDEX idx_quotes_client_name ON quotes(client_name);
-CREATE INDEX idx_quotes_created_by ON quotes(created_by);
-CREATE INDEX idx_quote_versions_quote_id ON quote_versions(quote_id);
-CREATE INDEX idx_quote_versions_pricing_version ON quote_versions(pricing_version_id);
-CREATE INDEX idx_sku_definitions_pricing_version ON sku_definitions(pricing_version_id);
-CREATE INDEX idx_saas_products_pricing_version ON saas_products(pricing_version_id);
+CREATE INDEX IdxQuotesClientName ON Quotes(ClientName);
+CREATE INDEX IdxQuotesCreatedBy ON Quotes(CreatedBy);
+CREATE INDEX IdxQuoteVersionsQuoteId ON QuoteVersions(QuoteId);
+CREATE INDEX IdxQuoteVersionsPricingVersion ON QuoteVersions(PricingVersionId);
+CREATE INDEX IdxSKUDefinitionsPricingVersion ON SKUDefinitions(PricingVersionId);
+CREATE INDEX IdxSaaSProductsPricingVersion ON SaaSProducts(PricingVersionId);
 CREATE INDEX idx_audit_log_entity ON audit_log(entity_type, entity_id);
 CREATE INDEX idx_audit_log_changed_at ON audit_log(changed_at DESC);
 ```
@@ -1451,11 +1451,11 @@ test('Create quote end-to-end', async ({ page }) => {
 
 **Database:**
 - **Tables:** PascalCase (e.g., `PricingVersions`, `QuoteVersions`, `SkuDefinitions`)
-- **Columns:** snake_case (e.g., `pricing_version_id`, `created_at`, `is_active`)
-- **Primary Keys:** `id` (UUID, consistently named across all tables)
-- **Foreign Keys:** `{table_name_singular}_id` (e.g., `pricing_version_id`, `quote_id`)
-- **Indexes:** `idx_{table}_{column(s)}` (e.g., `idx_quotes_client_name`)
-- **Constraints:** `{table}_{column}_unique`, `{table}_{column}_check`
+- **Columns:** PascalCase (e.g., `PricingVersionId`, `CreatedAt`, `IsActive`)
+- **Primary Keys:** `Id` (UUID, consistently named across all tables)
+- **Foreign Keys:** `{TableNameSingular}Id` (e.g., `PricingVersionId`, `QuoteId`)
+- **Indexes:** `idx_{Table}_{Column(s)}` (e.g., `idx_Quotes_ClientName`)
+- **Constraints:** `{Table}_{Column}_unique`, `{Table}_{Column}_check`
 
 **Python (Backend):**
 - **Classes:** PascalCase (e.g., `QuoteService`, `PricingVersionRepository`)
