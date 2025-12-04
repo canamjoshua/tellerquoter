@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import type { Quote, NewQuote } from "../types/quote";
-import QuoteBuilder from "./QuoteBuilder";
+import EnhancedQuoteBuilder from "./EnhancedQuoteBuilder";
 
 const API_BASE_URL = "/api";
 
@@ -105,10 +105,10 @@ export default function QuoteManager() {
     }
   };
 
-  // If a quote is selected, show the quote builder
+  // If a quote is selected, show the enhanced quote builder
   if (selectedQuoteId) {
     return (
-      <QuoteBuilder
+      <EnhancedQuoteBuilder
         quoteId={selectedQuoteId}
         onClose={() => {
           setSelectedQuoteId(null);
