@@ -125,7 +125,7 @@ class TestPricingVersionModel:
     def test_create_pricing_version(self, db_session: Session):
         """Test creating a new pricing version."""
         version = PricingVersion(
-            VersionNumber="2025.1",
+            VersionNumber="2025.INTEGRATION",
             Description="Initial 2025 pricing",
             EffectiveDate=date(2025, 1, 1),
             ExpirationDate=None,
@@ -138,7 +138,7 @@ class TestPricingVersionModel:
         db_session.refresh(version)
 
         assert version.Id is not None
-        assert version.VersionNumber == "2025.1"
+        assert version.VersionNumber == "2025.INTEGRATION"
         assert version.IsCurrent is True
         assert version.CreatedAt is not None
 

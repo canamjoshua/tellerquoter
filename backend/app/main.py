@@ -3,12 +3,27 @@
 from datetime import UTC, datetime
 
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
+
+from app.api import pricing
 
 app = FastAPI(
     title="Teller Quoting System",
     description="API for generating professional services quotes",
     version="0.1.0",
 )
+
+# Configure CORS for local development
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:5173"],  # Vite default port
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+# Include routers
+app.include_router(pricing.router, prefix="/api")
 
 
 @app.get("/health")
