@@ -19,6 +19,23 @@ Quick reference for developers working on the Teller Quoting System.
 - Review naming conventions
 - Understand testing requirements
 
+## 🔧 Environment Setup
+
+**IMPORTANT: Always use the virtual environment for backend development!**
+
+```bash
+# Backend: Use venv for ALL Python commands
+cd backend
+source venv/bin/activate
+
+# Then you can use alembic, pytest, etc.
+alembic upgrade head
+pytest tests/
+
+# When done
+deactivate
+```
+
 ## 📝 Naming Conventions Cheat Sheet
 
 ### Database (PostgreSQL)
@@ -26,9 +43,9 @@ Quick reference for developers working on the Teller Quoting System.
 -- Tables: PascalCase
 CREATE TABLE PricingVersions (...);
 CREATE TABLE QuoteVersions (...);
-CREATE TABLE SkuDefinitions (...);
+CREATE TABLE SKUDefinitions (...);
 
--- Columns: snake_case
+-- Columns: PascalCase
 PricingVersionId UUID
 CreatedAt TIMESTAMP
 IsActive BOOLEAN
