@@ -1,7 +1,7 @@
 # Teller Quoting System - Project Status
 
 **Last Updated:** December 3, 2025
-**Current Phase:** Phase 1 - Foundation (Week 1)
+**Current Phase:** Phase 1 - Foundation (Week 2)
 
 ---
 
@@ -9,7 +9,7 @@
 
 | Phase | Status | Duration | Progress | Start Date | End Date |
 |-------|--------|----------|----------|------------|----------|
-| **Phase 1: Foundation** | 🟢 In Progress | 3 weeks | 20% | Dec 3, 2025 | - |
+| **Phase 1: Foundation** | 🟢 In Progress | 3 weeks | 50% | Dec 3, 2025 | - |
 | Phase 2: Pricing Management | ⚪ Not Started | 3 weeks | 0% | - | - |
 | Phase 3: Quote Builder Core | ⚪ Not Started | 4 weeks | 0% | - | - |
 | Phase 4: Implementation Plan & Discounts | ⚪ Not Started | 3 weeks | 0% | - | - |
@@ -18,7 +18,7 @@
 | Phase 7: Testing & Refinement | ⚪ Not Started | 2 weeks | 0% | - | - |
 | Phase 8: Deployment & Training | ⚪ Not Started | 2 weeks | 0% | - | - |
 
-**Overall Project Progress:** 5% (Planning Complete, Dev Environment Ready)
+**Overall Project Progress:** 15% (Planning Complete, Dev Environment Ready, Database Models Complete)
 
 ---
 
@@ -32,7 +32,7 @@
 
 ### Tasks
 
-#### Week 1: Project Setup ✅ 90%
+#### Week 1: Project Setup ✅ 100% COMPLETE
 - [x] Create comprehensive requirements document (161 requirements)
 - [x] Create implementation plan (22 weeks, 8 phases)
 - [x] Create requirements traceability matrix (100% coverage)
@@ -46,18 +46,19 @@
 - [x] Set up frontend skeleton (React + TypeScript + Vite)
 - [x] Frontend tests passing (2/2)
 - [x] Production build verified
-- [ ] Set up pre-commit hooks
+- [x] Set up pre-commit hooks
 
-#### Week 2: Infrastructure & Database
+#### Week 2: Infrastructure & Database 🟢 80%
 - [ ] Create Terraform configuration for local development
-- [ ] Set up PostgreSQL database (local Docker)
-- [ ] Create initial database migrations (Alembic)
-  - [ ] PricingVersions table
-  - [ ] SkuDefinitions table
-  - [ ] SaaSProducts table
-  - [ ] TravelZones table
-- [ ] Set up database connection pooling
-- [ ] Configure environment variables management
+- [x] Set up PostgreSQL database (local Docker)
+- [x] Create initial database migrations (Alembic)
+  - [x] PricingVersions table (PascalCase columns)
+  - [x] SKUDefinitions table (PascalCase columns)
+  - [x] SaaSProducts table (PascalCase columns)
+  - [x] TravelZones table (PascalCase columns)
+- [x] Set up database connection pooling
+- [x] Configure environment variables management
+- [x] Updated naming convention to PascalCase for columns
 
 #### Week 3: Authentication
 - [ ] Implement Microsoft Entra ID OAuth integration
@@ -89,21 +90,22 @@
 | Linting (ruff, ESLint) | 0 errors | 0 | ✅ Passing |
 
 ### Development Standards
-- [x] PascalCase database naming convention defined
+- [x] PascalCase database naming convention defined (tables AND columns)
 - [x] TDD workflow documented
 - [x] Integration test requirements specified
 - [x] Pre-commit hook template created
-- [ ] Pre-commit hooks installed
+- [x] Pre-commit hooks installed and working
 - [ ] CI/CD pipeline configured
 
 ### Documentation
 - [x] Requirements specification (161 requirements)
 - [x] Implementation plan (v1.2)
 - [x] Requirements traceability matrix
-- [x] Development quick start guide
+- [x] Development quick start guide (with venv instructions)
 - [x] README with project overview
+- [x] Database models with inline documentation
 - [ ] API documentation (OpenAPI/Swagger)
-- [ ] Database schema documentation
+- [ ] Database schema documentation (ERD)
 
 ---
 
@@ -145,10 +147,10 @@
 ### Backend
 - [x] Python 3.13 - Installed (upgraded from 3.11)
 - [x] FastAPI 0.115.5 - Installed & Working
-- [x] PostgreSQL 15 - Selected
-- [x] SQLAlchemy - Selected
-- [x] Alembic - Selected
-- [x] python-docx - Selected
+- [x] PostgreSQL 15 - Running in Docker (port 5433)
+- [x] SQLAlchemy 2.0 - Installed & Working
+- [x] Alembic 1.12.1 - Installed & Working (5 migrations applied)
+- [x] python-docx - Installed
 - [x] pytest 8.3.4 + coverage - Installed & Passing
 - [x] mypy 1.14.1 strict - Installed & Passing
 - [x] ruff 0.8.5 + black 25.11.0 - Installed & Passing
@@ -170,7 +172,7 @@
 - [x] AWS (ECS, App Runner, RDS, S3) - Selected
 - [x] Terraform - Selected
 - [x] GitHub Actions - Selected
-- [ ] Local Docker setup - Pending
+- [x] Local Docker setup - ✅ PostgreSQL running
 - [ ] AWS account setup - Pending
 
 ### Authentication
@@ -182,7 +184,20 @@
 
 ## 📝 Recent Changes
 
-### December 3, 2025
+### December 3, 2025 - Session 2 (Database Models)
+- ✅ Updated naming convention to PascalCase for BOTH tables AND columns
+- ✅ Created SKUDefinitions model with 14 PascalCase columns
+- ✅ Created SaaSProducts model with 21 PascalCase columns (tiered pricing)
+- ✅ Created TravelZones model with 13 PascalCase columns
+- ✅ Generated and applied 3 Alembic migrations
+- ✅ Updated DEVELOPMENT_QUICKSTART.md with venv usage instructions
+- ✅ Fixed primary key constraint on PricingVersions table
+- ✅ All database tables verified with PascalCase columns
+- ✅ All foreign key relationships working correctly
+- ✅ Pre-commit hooks passing (black, ruff, mypy)
+- ✅ Committed and pushed to GitHub
+
+### December 3, 2025 - Session 1 (Initial Setup)
 - ✅ Created comprehensive requirements specification (v1.5)
 - ✅ Created production implementation plan (v1.2)
 - ✅ Created requirements traceability matrix (100% coverage)
@@ -201,6 +216,10 @@
 - ✅ Frontend tests passing (2/2) with Vitest
 - ✅ Production build verified and working
 - ✅ Both backend and frontend development servers operational
+- ✅ Set up pre-commit hooks for automated quality checks
+- ✅ Set up PostgreSQL in Docker (port 5433)
+- ✅ Configured Alembic for database migrations
+- ✅ Created PricingVersions model with PascalCase columns
 
 ---
 
@@ -229,10 +248,11 @@ _No known issues yet - project just started!_
 ## 💡 Notes
 
 - All development follows TDD (Test-Driven Development) workflow
-- Database uses PascalCase for tables, snake_case for columns
+- Database uses PascalCase for tables AND columns (matching C# conventions)
 - Minimum 80% test coverage required (95% for business logic)
 - All code must compile and pass tests before commit
 - Integration tests required for all major requirements examples
+- Always use `source venv/bin/activate` before running backend commands
 
 ---
 
