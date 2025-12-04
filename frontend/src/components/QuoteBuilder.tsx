@@ -1,7 +1,6 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import type {
   QuoteWithVersions,
-  QuoteVersion,
   NewQuoteVersion,
   PricingVersion,
   SaaSProduct,
@@ -53,7 +52,7 @@ export default function QuoteBuilder({ quoteId, onClose }: QuoteBuilderProps) {
     setup_pct: undefined,
   });
 
-  const fetchQuote = async () => {
+  const fetchQuote = useCallback(async () => {
     try {
       setLoading(true);
       const response = await fetch(`${API_BASE_URL}/quotes/${quoteId}`);
@@ -66,7 +65,7 @@ export default function QuoteBuilder({ quoteId, onClose }: QuoteBuilderProps) {
     } finally {
       setLoading(false);
     }
-  };
+  }, [quoteId]);
 
   const fetchPricingVersions = async () => {
     try {
@@ -110,7 +109,7 @@ export default function QuoteBuilder({ quoteId, onClose }: QuoteBuilderProps) {
   useEffect(() => {
     fetchQuote();
     fetchPricingVersions();
-  }, [quoteId]);
+  }, [quoteId, fetchQuote]);
 
   useEffect(() => {
     if (newVersion.PricingVersionId) {

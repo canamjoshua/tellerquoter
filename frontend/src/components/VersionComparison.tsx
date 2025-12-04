@@ -14,34 +14,34 @@ interface PricingVersion {
 
 interface ComparisonItem {
   key: string;
-  old: any;
-  new: any;
+  old: Record<string, unknown>;
+  new: Record<string, unknown>;
   changed_fields: string[];
 }
 
 interface VersionComparison {
   version1: PricingVersion;
   version2: PricingVersion;
-  skus_added: any[];
-  skus_removed: any[];
+  skus_added: Record<string, unknown>[];
+  skus_removed: Record<string, unknown>[];
   skus_modified: ComparisonItem[];
-  skus_unchanged: any[];
-  saas_added: any[];
-  saas_removed: any[];
+  skus_unchanged: Record<string, unknown>[];
+  saas_added: Record<string, unknown>[];
+  saas_removed: Record<string, unknown>[];
   saas_modified: ComparisonItem[];
-  saas_unchanged: any[];
-  zones_added: any[];
-  zones_removed: any[];
+  saas_unchanged: Record<string, unknown>[];
+  zones_added: Record<string, unknown>[];
+  zones_removed: Record<string, unknown>[];
   zones_modified: ComparisonItem[];
-  zones_unchanged: any[];
-  referrers_added: any[];
-  referrers_removed: any[];
+  zones_unchanged: Record<string, unknown>[];
+  referrers_added: Record<string, unknown>[];
+  referrers_removed: Record<string, unknown>[];
   referrers_modified: ComparisonItem[];
-  referrers_unchanged: any[];
-  snippets_added: any[];
-  snippets_removed: any[];
+  referrers_unchanged: Record<string, unknown>[];
+  snippets_added: Record<string, unknown>[];
+  snippets_removed: Record<string, unknown>[];
   snippets_modified: ComparisonItem[];
-  snippets_unchanged: any[];
+  snippets_unchanged: Record<string, unknown>[];
   total_changes: number;
   has_differences: boolean;
 }
@@ -105,10 +105,10 @@ export default function VersionComparison({ onClose }: Props) {
   const renderSection = (
     title: string,
     icon: string,
-    added: any[],
-    removed: any[],
+    added: Record<string, unknown>[],
+    removed: Record<string, unknown>[],
     modified: ComparisonItem[],
-    unchanged: any[],
+    unchanged: Record<string, unknown>[],
   ) => {
     const totalChanges = added.length + removed.length + modified.length;
     if (totalChanges === 0 && unchanged.length === 0) return null;

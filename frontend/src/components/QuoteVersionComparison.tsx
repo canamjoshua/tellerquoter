@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import type { QuoteVersion } from "../types/quote";
 
 const API_BASE_URL = "/api";
@@ -17,7 +17,7 @@ export default function QuoteVersionComparison({
   const [error, setError] = useState<string | null>(null);
   const [selectedVersions, setSelectedVersions] = useState<number[]>([]);
 
-  const fetchVersions = async () => {
+  const fetchVersions = useCallback(async () => {
     try {
       setLoading(true);
       const response = await fetch(
@@ -38,11 +38,11 @@ export default function QuoteVersionComparison({
     } finally {
       setLoading(false);
     }
-  };
+  }, [quoteId]);
 
   useEffect(() => {
     fetchVersions();
-  }, [quoteId]);
+  }, [fetchVersions]);
 
   const toggleVersion = (versionNumber: number) => {
     if (selectedVersions.includes(versionNumber)) {

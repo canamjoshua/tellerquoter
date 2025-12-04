@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 
 const API_BASE_URL = "/api";
 
@@ -33,7 +33,7 @@ const TextSnippetManager: React.FC = () => {
     useState<string>("");
   const [viewModal, setViewModal] = useState<TextSnippet | null>(null);
   const [editModal, setEditModal] = useState<TextSnippet | null>(null);
-  const [editForm, setEditForm] = useState<any>(null);
+  const [editForm, setEditForm] = useState<Partial<TextSnippet> | null>(null);
   const [newSnippet, setNewSnippet] = useState({
     PricingVersionId: "",
     SnippetKey: "",
@@ -47,7 +47,7 @@ const TextSnippetManager: React.FC = () => {
   useEffect(() => {
     fetchPricingVersions();
     fetchSnippets();
-  }, [selectedVersionFilter]);
+  }, [selectedVersionFilter, fetchSnippets]);
 
   const fetchPricingVersions = async () => {
     try {
@@ -61,7 +61,7 @@ const TextSnippetManager: React.FC = () => {
     }
   };
 
-  const fetchSnippets = async () => {
+  const fetchSnippets = useCallback(async () => {
     try {
       setLoading(true);
       const url = selectedVersionFilter
@@ -78,7 +78,7 @@ const TextSnippetManager: React.FC = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [selectedVersionFilter]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

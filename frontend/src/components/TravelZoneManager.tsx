@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 
 const API_BASE_URL = "/api";
 
@@ -39,7 +39,7 @@ const TravelZoneManager: React.FC = () => {
     useState<string>("");
   const [viewModal, setViewModal] = useState<TravelZone | null>(null);
   const [editModal, setEditModal] = useState<TravelZone | null>(null);
-  const [editForm, setEditForm] = useState<any>(null);
+  const [editForm, setEditForm] = useState<Partial<TravelZone> | null>(null);
   const [newZone, setNewZone] = useState({
     PricingVersionId: "",
     ZoneCode: "",
@@ -59,7 +59,7 @@ const TravelZoneManager: React.FC = () => {
   useEffect(() => {
     fetchPricingVersions();
     fetchZones();
-  }, [selectedVersionFilter]);
+  }, [selectedVersionFilter, fetchZones]);
 
   const fetchPricingVersions = async () => {
     try {
@@ -73,7 +73,7 @@ const TravelZoneManager: React.FC = () => {
     }
   };
 
-  const fetchZones = async () => {
+  const fetchZones = useCallback(async () => {
     try {
       setLoading(true);
       const url = selectedVersionFilter
@@ -90,7 +90,7 @@ const TravelZoneManager: React.FC = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [selectedVersionFilter]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

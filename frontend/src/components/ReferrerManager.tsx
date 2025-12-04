@@ -18,7 +18,7 @@ const ReferrerManager: React.FC = () => {
   const [showForm, setShowForm] = useState(false);
   const [viewModal, setViewModal] = useState<Referrer | null>(null);
   const [editModal, setEditModal] = useState<Referrer | null>(null);
-  const [editForm, setEditForm] = useState<any>(null);
+  const [editForm, setEditForm] = useState<Partial<Referrer> | null>(null);
   const [newReferrer, setNewReferrer] = useState({
     ReferrerName: "",
     StandardRate: "",

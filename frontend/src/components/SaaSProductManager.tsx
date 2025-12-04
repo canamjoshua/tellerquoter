@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 
 const API_BASE_URL = "/api";
 
@@ -44,7 +44,7 @@ const SaaSProductManager: React.FC = () => {
     useState<string>("");
   const [viewModal, setViewModal] = useState<SaaSProduct | null>(null);
   const [editModal, setEditModal] = useState<SaaSProduct | null>(null);
-  const [editForm, setEditForm] = useState<any>(null);
+  const [editForm, setEditForm] = useState<Partial<SaaSProduct> | null>(null);
   const [newProduct, setNewProduct] = useState({
     PricingVersionId: "",
     ProductCode: "",
@@ -69,7 +69,7 @@ const SaaSProductManager: React.FC = () => {
   useEffect(() => {
     fetchPricingVersions();
     fetchProducts();
-  }, [selectedVersionFilter]);
+  }, [selectedVersionFilter, fetchProducts]);
 
   const fetchPricingVersions = async () => {
     try {
@@ -83,7 +83,7 @@ const SaaSProductManager: React.FC = () => {
     }
   };
 
-  const fetchProducts = async () => {
+  const fetchProducts = useCallback(async () => {
     try {
       setLoading(true);
       const url = selectedVersionFilter
@@ -100,7 +100,7 @@ const SaaSProductManager: React.FC = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [selectedVersionFilter]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

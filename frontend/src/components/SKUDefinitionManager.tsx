@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 
 const API_BASE_URL = "/api";
 
@@ -40,7 +40,7 @@ const SKUDefinitionManager: React.FC = () => {
     useState<string>("");
   const [viewModalSKU, setViewModalSKU] = useState<SKUDefinition | null>(null);
   const [editModalSKU, setEditModalSKU] = useState<SKUDefinition | null>(null);
-  const [editForm, setEditForm] = useState<any>(null);
+  const [editForm, setEditForm] = useState<Partial<SKUDefinition> | null>(null);
   const [newSKU, setNewSKU] = useState({
     PricingVersionId: "",
     SKUCode: "",
@@ -61,7 +61,7 @@ const SKUDefinitionManager: React.FC = () => {
   useEffect(() => {
     fetchPricingVersions();
     fetchSKUs();
-  }, [selectedVersionFilter]);
+  }, [selectedVersionFilter, fetchSKUs]);
 
   const fetchPricingVersions = async () => {
     try {
@@ -75,7 +75,7 @@ const SKUDefinitionManager: React.FC = () => {
     }
   };
 
-  const fetchSKUs = async () => {
+  const fetchSKUs = useCallback(async () => {
     try {
       setLoading(true);
       const url = selectedVersionFilter
@@ -92,7 +92,7 @@ const SKUDefinitionManager: React.FC = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [selectedVersionFilter]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

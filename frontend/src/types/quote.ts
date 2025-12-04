@@ -5,6 +5,14 @@ export interface DiscountConfig {
   setup_pct?: number; // Percentage discount on Setup
 }
 
+export interface ClientData {
+  [key: string]: string | number | boolean | null | undefined;
+}
+
+export interface TravelConfig {
+  [key: string]: string | number | boolean | null | undefined;
+}
+
 export interface Quote {
   Id: string;
   QuoteNumber: string;
@@ -22,20 +30,20 @@ export interface QuoteVersion {
   VersionNumber: number;
   VersionDescription: string | null;
   PricingVersionId: string;
-  ClientData: Record<string, any>;
+  ClientData: ClientData;
   ProjectionYears: number;
   EscalationModel: string;
   MultiYearFreezeYears: number | null;
   LevelLoadingEnabled: boolean;
   TellerPaymentsEnabled: boolean;
-  DiscountConfig: Record<string, any> | null;
+  DiscountConfig: DiscountConfig | null;
   ReferrerId: string | null;
   ReferralRateOverride: number | null;
   MilestoneStyle: string;
   InitialPaymentPercentage: number;
   ProjectDurationMonths: number;
   TravelZoneId: string | null;
-  TravelConfig: Record<string, any> | null;
+  TravelConfig: TravelConfig | null;
   TotalSaaSMonthly: number | null;
   TotalSaaSAnnualYear1: number | null;
   TotalSetupPackages: number | null;
@@ -77,7 +85,7 @@ export interface NewQuote {
 
 export interface NewQuoteVersion {
   PricingVersionId: string;
-  ClientData: Record<string, any>;
+  ClientData: ClientData;
   ProjectionYears: number;
   CreatedBy: string;
   SaaSProducts: {
