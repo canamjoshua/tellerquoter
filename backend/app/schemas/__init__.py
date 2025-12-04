@@ -5,9 +5,17 @@ from app.schemas.pricing import (
     PricingVersionResponse,
     PricingVersionUpdate,
 )
+from app.schemas.sku import (
+    SKUDefinitionCreate,
+    SKUDefinitionResponse,
+    SKUDefinitionUpdate,
+)
 
 __all__ = [
     "PricingVersionCreate",
     "PricingVersionResponse",
     "PricingVersionUpdate",
+    "SKUDefinitionCreate",
+    "SKUDefinitionResponse",
+    "SKUDefinitionUpdate",
 ]
