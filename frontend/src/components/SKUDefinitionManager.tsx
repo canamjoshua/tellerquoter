@@ -23,6 +23,9 @@ interface SKUDefinition {
   RequiresConfiguration: boolean;
   IsActive: boolean;
   SortOrder: number;
+  EarmarkedStatus: boolean;
+  EstimatedHours: number | null;
+  AcceptanceCriteria: string | null;
   CreatedAt: string;
   UpdatedAt: string;
 }
@@ -47,6 +50,9 @@ const SKUDefinitionManager: React.FC = () => {
     RequiresConfiguration: false,
     IsActive: true,
     SortOrder: 0,
+    EarmarkedStatus: false,
+    EstimatedHours: "",
+    AcceptanceCriteria: "",
   });
 
   useEffect(() => {
@@ -91,6 +97,10 @@ const SKUDefinitionManager: React.FC = () => {
       const payload = {
         ...newSKU,
         FixedPrice: newSKU.FixedPrice ? parseFloat(newSKU.FixedPrice) : null,
+        EstimatedHours: newSKU.EstimatedHours
+          ? parseInt(newSKU.EstimatedHours)
+          : null,
+        AcceptanceCriteria: newSKU.AcceptanceCriteria || null,
       };
       const response = await fetch(`${API_BASE_URL}/sku-definitions/`, {
         method: "POST",
@@ -115,6 +125,9 @@ const SKUDefinitionManager: React.FC = () => {
         RequiresConfiguration: false,
         IsActive: true,
         SortOrder: 0,
+        EarmarkedStatus: false,
+        EstimatedHours: "",
+        AcceptanceCriteria: "",
       });
     } catch (err) {
       setError(err instanceof Error ? err.message : "Unknown error");
@@ -302,6 +315,37 @@ const SKUDefinitionManager: React.FC = () => {
               />
             </div>
 
+            <div>
+              <label className="block text-sm font-medium mb-2">
+                Estimated Hours
+              </label>
+              <input
+                type="number"
+                value={newSKU.EstimatedHours}
+                onChange={(e) =>
+                  setNewSKU({ ...newSKU, EstimatedHours: e.target.value })
+                }
+                className="w-full bg-gray-700 border border-gray-600 rounded px-3 py-2 focus:outline-none focus:border-blue-500"
+                placeholder="Optional - TBD if not specified"
+              />
+            </div>
+
+            <div className="col-span-2">
+              <label className="block text-sm font-medium mb-2">
+                Acceptance Criteria (max 500 chars)
+              </label>
+              <textarea
+                value={newSKU.AcceptanceCriteria}
+                onChange={(e) =>
+                  setNewSKU({ ...newSKU, AcceptanceCriteria: e.target.value })
+                }
+                className="w-full bg-gray-700 border border-gray-600 rounded px-3 py-2 focus:outline-none focus:border-blue-500"
+                rows={3}
+                maxLength={500}
+                placeholder="Deliverable completion criteria..."
+              />
+            </div>
+
             <div className="col-span-2 space-y-2">
               <label className="flex items-center">
                 <input
@@ -353,6 +397,17 @@ const SKUDefinitionManager: React.FC = () => {
                 />
                 Active
               </label>
+              <label className="flex items-center">
+                <input
+                  type="checkbox"
+                  checked={newSKU.EarmarkedStatus}
+                  onChange={(e) =>
+                    setNewSKU({ ...newSKU, EarmarkedStatus: e.target.checked })
+                  }
+                  className="mr-2"
+                />
+                Earmarked (pricing subject to change) ⚠️
+              </label>
             </div>
           </div>
 
@@ -385,6 +440,9 @@ const SKUDefinitionManager: React.FC = () => {
                 Price
               </th>
               <th className="px-6 py-3 text-left text-sm font-semibold">
+                Hours
+              </th>
+              <th className="px-6 py-3 text-left text-sm font-semibold">
                 Flags
               </th>
               <th className="px-6 py-3 text-left text-sm font-semibold">
@@ -411,11 +469,25 @@ const SKUDefinitionManager: React.FC = () => {
                   {getVersionNumber(sku.PricingVersionId)}
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm">
-                  {sku.FixedPrice
-                    ? `$${parseFloat(sku.FixedPrice).toFixed(2)}`
-                    : "-"}
+                  {sku.FixedPrice ? (
+                    `$${parseFloat(sku.FixedPrice).toFixed(2)}`
+                  ) : (
+                    <span className="text-yellow-500 font-semibold">TBD</span>
+                  )}
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm">
+                  {sku.EstimatedHours ? (
+                    `${sku.EstimatedHours}h`
+                  ) : (
+                    <span className="text-gray-500">TBD</span>
+                  )}
                 </td>
                 <td className="px-6 py-4 text-xs">
+                  {sku.EarmarkedStatus && (
+                    <span className="mr-1" title="Earmarked">
+                      ⚠️
+                    </span>
+                  )}
                   {sku.RequiresQuantity && <span className="mr-1">📊</span>}
                   {sku.RequiresTravelZone && <span className="mr-1">✈️</span>}
                   {sku.RequiresConfiguration && (

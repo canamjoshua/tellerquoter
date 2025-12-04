@@ -109,6 +109,25 @@ class SKUDefinition(Base):  # type: ignore[misc]
         server_default="0",
         comment="Display order for UI",
     )
+    EarmarkedStatus: Mapped[bool] = mapped_column(
+        "EarmarkedStatus",
+        Boolean,
+        default=False,
+        server_default="false",
+        nullable=False,
+        comment="True if pricing is subject to change during project refinement",
+    )
+    EstimatedHours: Mapped[int | None] = mapped_column(
+        "EstimatedHours",
+        nullable=True,
+        comment="Estimated hours for this SKU (NULL for TBD)",
+    )
+    AcceptanceCriteria: Mapped[str | None] = mapped_column(
+        "AcceptanceCriteria",
+        String(500),
+        nullable=True,
+        comment="Acceptance criteria for deliverable completion",
+    )
     CreatedAt: Mapped[datetime] = mapped_column(
         "CreatedAt",
         server_default=func.now(),

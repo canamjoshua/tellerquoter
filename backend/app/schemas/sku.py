@@ -33,6 +33,15 @@ class SKUDefinitionBase(BaseModel):
     )
     IsActive: bool = Field(default=True, description="False if SKU is discontinued")
     SortOrder: int = Field(default=0, description="Display order for UI")
+    EarmarkedStatus: bool = Field(
+        default=False, description="True if pricing is subject to change during project refinement"
+    )
+    EstimatedHours: int | None = Field(
+        None, description="Estimated hours for this SKU (NULL for TBD)"
+    )
+    AcceptanceCriteria: str | None = Field(
+        None, max_length=500, description="Acceptance criteria for deliverable completion"
+    )
 
 
 class SKUDefinitionCreate(SKUDefinitionBase):
@@ -59,6 +68,13 @@ class SKUDefinitionUpdate(BaseModel):
     )
     IsActive: bool | None = Field(None, description="False if SKU is discontinued")
     SortOrder: int | None = Field(None, description="Display order for UI")
+    EarmarkedStatus: bool | None = Field(
+        None, description="True if pricing is subject to change during project refinement"
+    )
+    EstimatedHours: int | None = Field(None, description="Estimated hours for this SKU")
+    AcceptanceCriteria: str | None = Field(
+        None, max_length=500, description="Acceptance criteria for deliverable completion"
+    )
 
 
 class SKUDefinitionResponse(SKUDefinitionBase):
