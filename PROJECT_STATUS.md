@@ -18,7 +18,7 @@
 | Phase 7: Testing & Refinement | ⚪ Not Started | 2 weeks | 0% | - | - |
 | Phase 8: Deployment & Training | ⚪ Not Started | 2 weeks | 0% | - | - |
 
-**Overall Project Progress:** 15% (Planning Complete, Dev Environment Ready, Database Models Complete)
+**Overall Project Progress:** 18% (Planning Complete, Dev Environment Ready, Database Foundation Complete)
 
 ---
 
@@ -48,7 +48,7 @@
 - [x] Production build verified
 - [x] Set up pre-commit hooks
 
-#### Week 2: Infrastructure & Database 🟢 90%
+#### Week 2: Infrastructure & Database ✅ 100% COMPLETE
 - [ ] Create Terraform configuration for local development
 - [x] Set up PostgreSQL database (local Docker)
 - [x] Create initial database migrations (Alembic)
@@ -59,7 +59,8 @@
 - [x] Set up database connection pooling
 - [x] Configure environment variables management
 - [x] Updated naming convention to PascalCase for columns
-- [x] Write comprehensive integration tests (16 tests, 96.4% coverage)
+- [x] Write comprehensive integration tests (16 tests, 96.0% coverage)
+- [x] Create lookup tables (MatureIntegrations, Referrers, TextSnippets)
 
 #### Week 3: Authentication
 - [ ] Implement Microsoft Entra ID OAuth integration
@@ -185,6 +186,17 @@
 ---
 
 ## 📝 Recent Changes
+
+### December 3, 2025 - Session 4 (Lookup Tables)
+- ✅ Created MatureIntegration model (8 PascalCase columns)
+- ✅ Created Referrer model (6 PascalCase columns)
+- ✅ Created TextSnippet model (10 PascalCase columns)
+- ✅ All lookup tables linked to PricingVersions where appropriate
+- ✅ Generated and applied migration for 3 new tables
+- ✅ All tests passing (18 tests, 96.0% coverage)
+- ✅ 7 database tables now complete (4 pricing + 3 lookup)
+- ✅ All foreign key relationships working
+- ✅ Committed and pushed to GitHub
 
 ### December 3, 2025 - Session 3 (Integration Tests)
 - ✅ Created 16 comprehensive integration tests for database models
