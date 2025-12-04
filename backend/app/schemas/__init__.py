@@ -1,9 +1,22 @@
 """Pydantic schemas for API request/response models."""
 
+from app.schemas.comparison import (
+    ComparisonItem,
+    VersionComparison,
+)
 from app.schemas.pricing import (
     PricingVersionCreate,
     PricingVersionResponse,
     PricingVersionUpdate,
+)
+from app.schemas.quote import (
+    QuoteCreate,
+    QuoteResponse,
+    QuoteUpdate,
+    QuoteVersionCreate,
+    QuoteVersionResponse,
+    QuoteVersionUpdate,
+    QuoteWithVersionsResponse,
 )
 from app.schemas.referrer import (
     ReferrerCreate,
@@ -50,4 +63,13 @@ __all__ = [
     "TextSnippetCreate",
     "TextSnippetResponse",
     "TextSnippetUpdate",
+    "ComparisonItem",
+    "VersionComparison",
+    "QuoteCreate",
+    "QuoteResponse",
+    "QuoteUpdate",
+    "QuoteVersionCreate",
+    "QuoteVersionResponse",
+    "QuoteVersionUpdate",
+    "QuoteWithVersionsResponse",
 ]

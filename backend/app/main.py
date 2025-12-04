@@ -5,7 +5,7 @@ from datetime import UTC, datetime
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from app.api import pricing, referrer, saas, sku, text_snippet, travel
+from app.api import pricing, quote, referrer, saas, sku, text_snippet, travel
 
 app = FastAPI(
     title="Teller Quoting System",
@@ -29,6 +29,7 @@ app.include_router(sku.router, prefix="/api")
 app.include_router(travel.router, prefix="/api")
 app.include_router(referrer.router, prefix="/api")
 app.include_router(text_snippet.router, prefix="/api")
+app.include_router(quote.router, prefix="/api")
 
 
 @app.get("/health")

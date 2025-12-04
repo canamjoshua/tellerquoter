@@ -5,14 +5,24 @@ import SaaSProductManager from "./components/SaaSProductManager";
 import TravelZoneManager from "./components/TravelZoneManager";
 import ReferrerManager from "./components/ReferrerManager";
 import TextSnippetManager from "./components/TextSnippetManager";
+import QuoteManager from "./components/QuoteManager";
 
-type View = "pricing" | "sku" | "saas" | "travel" | "referrer" | "snippet";
+type View =
+  | "quotes"
+  | "pricing"
+  | "sku"
+  | "saas"
+  | "travel"
+  | "referrer"
+  | "snippet";
 
 function App() {
-  const [currentView, setCurrentView] = useState<View>("pricing");
+  const [currentView, setCurrentView] = useState<View>("quotes");
 
   const renderView = () => {
     switch (currentView) {
+      case "quotes":
+        return <QuoteManager />;
       case "pricing":
         return <PricingVersionManager />;
       case "sku":
@@ -26,11 +36,12 @@ function App() {
       case "snippet":
         return <TextSnippetManager />;
       default:
-        return <PricingVersionManager />;
+        return <QuoteManager />;
     }
   };
 
   const navItems = [
+    { id: "quotes" as View, label: "Quotes", icon: "💰" },
     { id: "pricing" as View, label: "Pricing Versions", icon: "📋" },
     { id: "sku" as View, label: "SKU Definitions", icon: "🏷️" },
     { id: "saas" as View, label: "SaaS Products", icon: "☁️" },

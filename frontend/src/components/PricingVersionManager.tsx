@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import VersionComparison from "./VersionComparison";
 
 interface PricingVersion {
   Id: string;
@@ -29,6 +30,7 @@ export default function PricingVersionManager() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [showForm, setShowForm] = useState(false);
+  const [showComparison, setShowComparison] = useState(false);
   const [newVersion, setNewVersion] = useState<NewVersion>({
     VersionNumber: "",
     Description: "",
@@ -129,17 +131,29 @@ export default function PricingVersionManager() {
     }
   };
 
+  if (showComparison) {
+    return <VersionComparison onClose={() => setShowComparison(false)} />;
+  }
+
   return (
     <div className="min-h-screen bg-gray-900 text-white p-8">
       <div className="max-w-6xl mx-auto">
         <div className="flex justify-between items-center mb-8">
           <h1 className="text-4xl font-bold">Pricing Version Management</h1>
-          <button
-            onClick={() => setShowForm(!showForm)}
-            className="bg-blue-600 hover:bg-blue-700 px-6 py-2 rounded-lg font-semibold transition-colors"
-          >
-            {showForm ? "Cancel" : "+ New Version"}
-          </button>
+          <div className="flex space-x-3">
+            <button
+              onClick={() => setShowComparison(true)}
+              className="bg-purple-600 hover:bg-purple-700 px-6 py-2 rounded-lg font-semibold transition-colors"
+            >
+              🔄 Compare Versions
+            </button>
+            <button
+              onClick={() => setShowForm(!showForm)}
+              className="bg-blue-600 hover:bg-blue-700 px-6 py-2 rounded-lg font-semibold transition-colors"
+            >
+              {showForm ? "Cancel" : "+ New Version"}
+            </button>
+          </div>
         </div>
 
         {error && (

@@ -38,6 +38,9 @@ const SKUDefinitionManager: React.FC = () => {
   const [showForm, setShowForm] = useState(false);
   const [selectedVersionFilter, setSelectedVersionFilter] =
     useState<string>("");
+  const [viewModalSKU, setViewModalSKU] = useState<SKUDefinition | null>(null);
+  const [editModalSKU, setEditModalSKU] = useState<SKUDefinition | null>(null);
+  const [editForm, setEditForm] = useState<any>(null);
   const [newSKU, setNewSKU] = useState({
     PricingVersionId: "",
     SKUCode: "",
@@ -134,6 +137,49 @@ const SKUDefinitionManager: React.FC = () => {
     }
   };
 
+  const handleUpdate = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editModalSKU) return;
+
+    try {
+      const payload = {
+        Name: editForm.Name,
+        Description: editForm.Description || null,
+        Category: editForm.Category,
+        FixedPrice: editForm.FixedPrice
+          ? parseFloat(editForm.FixedPrice)
+          : null,
+        RequiresQuantity: editForm.RequiresQuantity,
+        RequiresTravelZone: editForm.RequiresTravelZone,
+        RequiresConfiguration: editForm.RequiresConfiguration,
+        IsActive: editForm.IsActive,
+        SortOrder: editForm.SortOrder,
+        EarmarkedStatus: editForm.EarmarkedStatus,
+        EstimatedHours: editForm.EstimatedHours
+          ? parseInt(editForm.EstimatedHours)
+          : null,
+        AcceptanceCriteria: editForm.AcceptanceCriteria || null,
+      };
+      const response = await fetch(
+        `${API_BASE_URL}/sku-definitions/${editModalSKU.Id}`,
+        {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload),
+        },
+      );
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.detail || "Failed to update SKU");
+      }
+      await fetchSKUs();
+      setEditModalSKU(null);
+      setEditForm(null);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Unknown error");
+    }
+  };
+
   const handleDelete = async (id: string) => {
     if (!confirm("Are you sure you want to delete this SKU?")) return;
     try {
@@ -148,6 +194,24 @@ const SKUDefinitionManager: React.FC = () => {
     } catch (err) {
       setError(err instanceof Error ? err.message : "Unknown error");
     }
+  };
+
+  const openEditModal = (sku: SKUDefinition) => {
+    setEditModalSKU(sku);
+    setEditForm({
+      Name: sku.Name,
+      Description: sku.Description || "",
+      Category: sku.Category,
+      FixedPrice: sku.FixedPrice || "",
+      RequiresQuantity: sku.RequiresQuantity,
+      RequiresTravelZone: sku.RequiresTravelZone,
+      RequiresConfiguration: sku.RequiresConfiguration,
+      IsActive: sku.IsActive,
+      SortOrder: sku.SortOrder,
+      EarmarkedStatus: sku.EarmarkedStatus,
+      EstimatedHours: sku.EstimatedHours?.toString() || "",
+      AcceptanceCriteria: sku.AcceptanceCriteria || "",
+    });
   };
 
   const getVersionNumber = (versionId: string) => {
@@ -455,7 +519,7 @@ const SKUDefinitionManager: React.FC = () => {
           </thead>
           <tbody className="bg-gray-800 divide-y divide-gray-700">
             {skus.map((sku) => (
-              <tr key={sku.Id}>
+              <tr key={sku.Id} className="hover:bg-gray-700/50">
                 <td className="px-6 py-4 whitespace-nowrap font-mono text-sm">
                   {sku.SKUCode}
                 </td>
@@ -505,10 +569,22 @@ const SKUDefinitionManager: React.FC = () => {
                     </span>
                   )}
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm">
+                <td className="px-6 py-4 whitespace-nowrap text-sm space-x-2">
+                  <button
+                    onClick={() => setViewModalSKU(sku)}
+                    className="text-blue-400 hover:text-blue-300"
+                  >
+                    View
+                  </button>
+                  <button
+                    onClick={() => openEditModal(sku)}
+                    className="text-green-400 hover:text-green-300"
+                  >
+                    Edit
+                  </button>
                   <button
                     onClick={() => handleDelete(sku.Id)}
-                    className="text-red-600 hover:text-red-900"
+                    className="text-red-400 hover:text-red-300"
                   >
                     Delete
                   </button>
@@ -523,6 +599,354 @@ const SKUDefinitionManager: React.FC = () => {
           </div>
         )}
       </div>
+
+      {/* View Modal */}
+      {viewModalSKU && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <div className="bg-gray-800 rounded-lg shadow-xl max-w-3xl w-full max-h-[90vh] overflow-y-auto">
+            <div className="p-6">
+              <div className="flex justify-between items-center mb-4">
+                <h2 className="text-2xl font-bold">SKU Details</h2>
+                <button
+                  onClick={() => setViewModalSKU(null)}
+                  className="text-gray-400 hover:text-white text-2xl"
+                >
+                  ×
+                </button>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4 text-sm">
+                <div>
+                  <label className="text-gray-400">SKU Code:</label>
+                  <p className="font-mono font-semibold">
+                    {viewModalSKU.SKUCode}
+                  </p>
+                </div>
+                <div>
+                  <label className="text-gray-400">Category:</label>
+                  <p>{viewModalSKU.Category}</p>
+                </div>
+                <div className="col-span-2">
+                  <label className="text-gray-400">Name:</label>
+                  <p className="font-semibold">{viewModalSKU.Name}</p>
+                </div>
+                <div className="col-span-2">
+                  <label className="text-gray-400">Description:</label>
+                  <p>
+                    {viewModalSKU.Description || (
+                      <span className="text-gray-500 italic">None</span>
+                    )}
+                  </p>
+                </div>
+                <div>
+                  <label className="text-gray-400">Price:</label>
+                  <p>
+                    {viewModalSKU.FixedPrice ? (
+                      `$${parseFloat(viewModalSKU.FixedPrice).toFixed(2)}`
+                    ) : (
+                      <span className="text-yellow-500">TBD</span>
+                    )}
+                  </p>
+                </div>
+                <div>
+                  <label className="text-gray-400">Estimated Hours:</label>
+                  <p>
+                    {viewModalSKU.EstimatedHours ? (
+                      `${viewModalSKU.EstimatedHours}h`
+                    ) : (
+                      <span className="text-gray-500">TBD</span>
+                    )}
+                  </p>
+                </div>
+                <div className="col-span-2">
+                  <label className="text-gray-400">Acceptance Criteria:</label>
+                  <p className="whitespace-pre-wrap">
+                    {viewModalSKU.AcceptanceCriteria || (
+                      <span className="text-gray-500 italic">None</span>
+                    )}
+                  </p>
+                </div>
+                <div>
+                  <label className="text-gray-400">Pricing Version:</label>
+                  <p>{getVersionNumber(viewModalSKU.PricingVersionId)}</p>
+                </div>
+                <div>
+                  <label className="text-gray-400">Sort Order:</label>
+                  <p>{viewModalSKU.SortOrder}</p>
+                </div>
+                <div className="col-span-2">
+                  <label className="text-gray-400 block mb-2">Flags:</label>
+                  <div className="space-y-1">
+                    <div>
+                      {viewModalSKU.EarmarkedStatus ? "✅" : "❌"} Earmarked
+                      (pricing subject to change)
+                    </div>
+                    <div>
+                      {viewModalSKU.RequiresQuantity ? "✅" : "❌"} Requires
+                      Quantity
+                    </div>
+                    <div>
+                      {viewModalSKU.RequiresTravelZone ? "✅" : "❌"} Requires
+                      Travel Zone
+                    </div>
+                    <div>
+                      {viewModalSKU.RequiresConfiguration ? "✅" : "❌"}{" "}
+                      Requires Configuration
+                    </div>
+                    <div>{viewModalSKU.IsActive ? "✅" : "❌"} Active</div>
+                  </div>
+                </div>
+                <div>
+                  <label className="text-gray-400">Created:</label>
+                  <p className="text-xs">
+                    {new Date(viewModalSKU.CreatedAt).toLocaleString()}
+                  </p>
+                </div>
+                <div>
+                  <label className="text-gray-400">Updated:</label>
+                  <p className="text-xs">
+                    {new Date(viewModalSKU.UpdatedAt).toLocaleString()}
+                  </p>
+                </div>
+              </div>
+
+              <button
+                onClick={() => setViewModalSKU(null)}
+                className="mt-6 bg-gray-700 text-white px-6 py-2 rounded hover:bg-gray-600"
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Edit Modal */}
+      {editModalSKU && editForm && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <div className="bg-gray-800 rounded-lg shadow-xl max-w-3xl w-full max-h-[90vh] overflow-y-auto">
+            <form onSubmit={handleUpdate} className="p-6">
+              <div className="flex justify-between items-center mb-4">
+                <h2 className="text-2xl font-bold">
+                  Edit SKU: {editModalSKU.SKUCode}
+                </h2>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setEditModalSKU(null);
+                    setEditForm(null);
+                  }}
+                  className="text-gray-400 hover:text-white text-2xl"
+                >
+                  ×
+                </button>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium mb-2">
+                    Name <span className="text-red-500">*</span>
+                  </label>
+                  <input
+                    type="text"
+                    value={editForm.Name}
+                    onChange={(e) =>
+                      setEditForm({ ...editForm, Name: e.target.value })
+                    }
+                    className="w-full bg-gray-700 border border-gray-600 rounded px-3 py-2 focus:outline-none focus:border-blue-500"
+                    required
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium mb-2">
+                    Category <span className="text-red-500">*</span>
+                  </label>
+                  <input
+                    type="text"
+                    value={editForm.Category}
+                    onChange={(e) =>
+                      setEditForm({ ...editForm, Category: e.target.value })
+                    }
+                    className="w-full bg-gray-700 border border-gray-600 rounded px-3 py-2 focus:outline-none focus:border-blue-500"
+                    required
+                  />
+                </div>
+
+                <div className="col-span-2">
+                  <label className="block text-sm font-medium mb-2">
+                    Description
+                  </label>
+                  <textarea
+                    value={editForm.Description}
+                    onChange={(e) =>
+                      setEditForm({ ...editForm, Description: e.target.value })
+                    }
+                    className="w-full bg-gray-700 border border-gray-600 rounded px-3 py-2 focus:outline-none focus:border-blue-500"
+                    rows={2}
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium mb-2">
+                    Fixed Price
+                  </label>
+                  <input
+                    type="number"
+                    step="0.01"
+                    value={editForm.FixedPrice}
+                    onChange={(e) =>
+                      setEditForm({ ...editForm, FixedPrice: e.target.value })
+                    }
+                    className="w-full bg-gray-700 border border-gray-600 rounded px-3 py-2 focus:outline-none focus:border-blue-500"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium mb-2">
+                    Estimated Hours
+                  </label>
+                  <input
+                    type="number"
+                    value={editForm.EstimatedHours}
+                    onChange={(e) =>
+                      setEditForm({
+                        ...editForm,
+                        EstimatedHours: e.target.value,
+                      })
+                    }
+                    className="w-full bg-gray-700 border border-gray-600 rounded px-3 py-2 focus:outline-none focus:border-blue-500"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium mb-2">
+                    Sort Order
+                  </label>
+                  <input
+                    type="number"
+                    value={editForm.SortOrder}
+                    onChange={(e) =>
+                      setEditForm({
+                        ...editForm,
+                        SortOrder: parseInt(e.target.value),
+                      })
+                    }
+                    className="w-full bg-gray-700 border border-gray-600 rounded px-3 py-2 focus:outline-none focus:border-blue-500"
+                  />
+                </div>
+
+                <div className="col-span-2">
+                  <label className="block text-sm font-medium mb-2">
+                    Acceptance Criteria (max 500 chars)
+                  </label>
+                  <textarea
+                    value={editForm.AcceptanceCriteria}
+                    onChange={(e) =>
+                      setEditForm({
+                        ...editForm,
+                        AcceptanceCriteria: e.target.value,
+                      })
+                    }
+                    className="w-full bg-gray-700 border border-gray-600 rounded px-3 py-2 focus:outline-none focus:border-blue-500"
+                    rows={3}
+                    maxLength={500}
+                  />
+                </div>
+
+                <div className="col-span-2 space-y-2">
+                  <label className="flex items-center">
+                    <input
+                      type="checkbox"
+                      checked={editForm.RequiresQuantity}
+                      onChange={(e) =>
+                        setEditForm({
+                          ...editForm,
+                          RequiresQuantity: e.target.checked,
+                        })
+                      }
+                      className="mr-2"
+                    />
+                    Requires Quantity
+                  </label>
+                  <label className="flex items-center">
+                    <input
+                      type="checkbox"
+                      checked={editForm.RequiresTravelZone}
+                      onChange={(e) =>
+                        setEditForm({
+                          ...editForm,
+                          RequiresTravelZone: e.target.checked,
+                        })
+                      }
+                      className="mr-2"
+                    />
+                    Requires Travel Zone
+                  </label>
+                  <label className="flex items-center">
+                    <input
+                      type="checkbox"
+                      checked={editForm.RequiresConfiguration}
+                      onChange={(e) =>
+                        setEditForm({
+                          ...editForm,
+                          RequiresConfiguration: e.target.checked,
+                        })
+                      }
+                      className="mr-2"
+                    />
+                    Requires Configuration
+                  </label>
+                  <label className="flex items-center">
+                    <input
+                      type="checkbox"
+                      checked={editForm.IsActive}
+                      onChange={(e) =>
+                        setEditForm({ ...editForm, IsActive: e.target.checked })
+                      }
+                      className="mr-2"
+                    />
+                    Active
+                  </label>
+                  <label className="flex items-center">
+                    <input
+                      type="checkbox"
+                      checked={editForm.EarmarkedStatus}
+                      onChange={(e) =>
+                        setEditForm({
+                          ...editForm,
+                          EarmarkedStatus: e.target.checked,
+                        })
+                      }
+                      className="mr-2"
+                    />
+                    Earmarked (pricing subject to change) ⚠️
+                  </label>
+                </div>
+              </div>
+
+              <div className="mt-6 flex space-x-3">
+                <button
+                  type="submit"
+                  className="bg-green-600 text-white px-6 py-2 rounded hover:bg-green-700"
+                >
+                  Save Changes
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setEditModalSKU(null);
+                    setEditForm(null);
+                  }}
+                  className="bg-gray-700 text-white px-6 py-2 rounded hover:bg-gray-600"
+                >
+                  Cancel
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

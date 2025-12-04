@@ -31,6 +31,9 @@ const TextSnippetManager: React.FC = () => {
   const [showForm, setShowForm] = useState(false);
   const [selectedVersionFilter, setSelectedVersionFilter] =
     useState<string>("");
+  const [viewModal, setViewModal] = useState<TextSnippet | null>(null);
+  const [editModal, setEditModal] = useState<TextSnippet | null>(null);
+  const [editForm, setEditForm] = useState<any>(null);
   const [newSnippet, setNewSnippet] = useState({
     PricingVersionId: "",
     SnippetKey: "",
@@ -105,6 +108,38 @@ const TextSnippetManager: React.FC = () => {
     }
   };
 
+  const handleUpdate = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editModal) return;
+
+    try {
+      const payload = {
+        SnippetLabel: editForm.SnippetLabel,
+        Content: editForm.Content,
+        Category: editForm.Category,
+        SortOrder: parseInt(editForm.SortOrder),
+        IsActive: editForm.IsActive,
+      };
+      const response = await fetch(
+        `${API_BASE_URL}/text-snippets/${editModal.Id}`,
+        {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload),
+        },
+      );
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.detail || "Failed to update snippet");
+      }
+      await fetchSnippets();
+      setEditModal(null);
+      setEditForm(null);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Unknown error");
+    }
+  };
+
   const handleDelete = async (id: string) => {
     if (!confirm("Are you sure you want to delete this text snippet?")) return;
     try {
@@ -119,6 +154,17 @@ const TextSnippetManager: React.FC = () => {
     } catch (err) {
       setError(err instanceof Error ? err.message : "Unknown error");
     }
+  };
+
+  const openEditModal = (snippet: TextSnippet) => {
+    setEditModal(snippet);
+    setEditForm({
+      SnippetLabel: snippet.SnippetLabel,
+      Content: snippet.Content,
+      Category: snippet.Category,
+      SortOrder: snippet.SortOrder,
+      IsActive: snippet.IsActive,
+    });
   };
 
   const getVersionNumber = (versionId: string) => {
@@ -332,7 +378,7 @@ const TextSnippetManager: React.FC = () => {
           </thead>
           <tbody className="bg-gray-800 divide-y divide-gray-700">
             {snippets.map((snippet) => (
-              <tr key={snippet.Id}>
+              <tr key={snippet.Id} className="hover:bg-gray-700/50">
                 <td className="px-6 py-4 whitespace-nowrap font-mono text-xs">
                   {snippet.SnippetKey}
                 </td>
@@ -349,7 +395,7 @@ const TextSnippetManager: React.FC = () => {
                 </td>
                 <td className="px-6 py-4 max-w-xs">
                   <div
-                    className="text-sm text-gray-500 truncate"
+                    className="text-sm text-gray-400 truncate"
                     title={snippet.Content}
                   >
                     {snippet.Content.substring(0, 100)}
@@ -367,10 +413,22 @@ const TextSnippetManager: React.FC = () => {
                     </span>
                   )}
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm">
+                <td className="px-6 py-4 whitespace-nowrap text-sm space-x-2">
+                  <button
+                    onClick={() => setViewModal(snippet)}
+                    className="text-blue-400 hover:text-blue-300"
+                  >
+                    View
+                  </button>
+                  <button
+                    onClick={() => openEditModal(snippet)}
+                    className="text-green-400 hover:text-green-300"
+                  >
+                    Edit
+                  </button>
                   <button
                     onClick={() => handleDelete(snippet.Id)}
-                    className="text-red-600 hover:text-red-900"
+                    className="text-red-400 hover:text-red-300"
                   >
                     Delete
                   </button>
@@ -380,11 +438,202 @@ const TextSnippetManager: React.FC = () => {
           </tbody>
         </table>
         {snippets.length === 0 && (
-          <div className="text-center py-8 text-gray-500">
+          <div className="text-center py-8 text-gray-400">
             No text snippets found
           </div>
         )}
       </div>
+
+      {/* View Modal */}
+      {viewModal && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <div className="bg-gray-800 rounded-lg shadow-xl max-w-3xl w-full max-h-[90vh] overflow-y-auto">
+            <div className="p-6">
+              <div className="flex justify-between items-center mb-4">
+                <h2 className="text-2xl font-bold">Text Snippet Details</h2>
+                <button
+                  onClick={() => setViewModal(null)}
+                  className="text-gray-400 hover:text-white text-2xl"
+                >
+                  ×
+                </button>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4 text-sm">
+                <div>
+                  <label className="text-gray-400">Snippet Key:</label>
+                  <p className="font-mono">{viewModal.SnippetKey}</p>
+                </div>
+                <div>
+                  <label className="text-gray-400">Label:</label>
+                  <p className="font-semibold">{viewModal.SnippetLabel}</p>
+                </div>
+                <div>
+                  <label className="text-gray-400">Category:</label>
+                  <p>{viewModal.Category}</p>
+                </div>
+                <div>
+                  <label className="text-gray-400">Sort Order:</label>
+                  <p>{viewModal.SortOrder}</p>
+                </div>
+
+                <div className="col-span-2 border-t border-gray-700 pt-4 mt-4">
+                  <label className="text-gray-400">Content:</label>
+                  <p className="mt-2 whitespace-pre-wrap bg-gray-700 p-3 rounded">
+                    {viewModal.Content}
+                  </p>
+                </div>
+
+                <div className="col-span-2 border-t border-gray-700 pt-4 mt-4"></div>
+                <div>
+                  <label className="text-gray-400">Active:</label>
+                  <p>{viewModal.IsActive ? "✅ Yes" : "❌ No"}</p>
+                </div>
+                <div>
+                  <label className="text-gray-400">Version:</label>
+                  <p>{getVersionNumber(viewModal.PricingVersionId)}</p>
+                </div>
+                <div>
+                  <label className="text-gray-400">Created:</label>
+                  <p className="text-xs">
+                    {new Date(viewModal.CreatedAt).toLocaleString()}
+                  </p>
+                </div>
+                <div>
+                  <label className="text-gray-400">Updated:</label>
+                  <p className="text-xs">
+                    {new Date(viewModal.UpdatedAt).toLocaleString()}
+                  </p>
+                </div>
+              </div>
+
+              <button
+                onClick={() => setViewModal(null)}
+                className="mt-6 bg-gray-700 text-white px-6 py-2 rounded hover:bg-gray-600"
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Edit Modal */}
+      {editModal && editForm && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <div className="bg-gray-800 rounded-lg shadow-xl max-w-3xl w-full max-h-[90vh] overflow-y-auto">
+            <form onSubmit={handleUpdate} className="p-6">
+              <div className="flex justify-between items-center mb-4">
+                <h2 className="text-2xl font-bold">Edit Text Snippet</h2>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setEditModal(null);
+                    setEditForm(null);
+                  }}
+                  className="text-gray-400 hover:text-white text-2xl"
+                >
+                  ×
+                </button>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium mb-2">
+                    Label <span className="text-red-500">*</span>
+                  </label>
+                  <input
+                    type="text"
+                    value={editForm.SnippetLabel}
+                    onChange={(e) =>
+                      setEditForm({ ...editForm, SnippetLabel: e.target.value })
+                    }
+                    className="w-full bg-gray-700 border border-gray-600 rounded px-3 py-2 focus:outline-none focus:border-blue-500"
+                    required
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium mb-2">
+                    Category <span className="text-red-500">*</span>
+                  </label>
+                  <input
+                    type="text"
+                    value={editForm.Category}
+                    onChange={(e) =>
+                      setEditForm({ ...editForm, Category: e.target.value })
+                    }
+                    className="w-full bg-gray-700 border border-gray-600 rounded px-3 py-2 focus:outline-none focus:border-blue-500"
+                    required
+                  />
+                </div>
+
+                <div className="col-span-2">
+                  <label className="block text-sm font-medium mb-2">
+                    Content <span className="text-red-500">*</span>
+                  </label>
+                  <textarea
+                    value={editForm.Content}
+                    onChange={(e) =>
+                      setEditForm({ ...editForm, Content: e.target.value })
+                    }
+                    className="w-full bg-gray-700 border border-gray-600 rounded px-3 py-2 focus:outline-none focus:border-blue-500"
+                    rows={10}
+                    required
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium mb-2">
+                    Sort Order
+                  </label>
+                  <input
+                    type="number"
+                    value={editForm.SortOrder}
+                    onChange={(e) =>
+                      setEditForm({ ...editForm, SortOrder: e.target.value })
+                    }
+                    className="w-full bg-gray-700 border border-gray-600 rounded px-3 py-2 focus:outline-none focus:border-blue-500"
+                  />
+                </div>
+
+                <div className="flex items-center">
+                  <label className="flex items-center">
+                    <input
+                      type="checkbox"
+                      checked={editForm.IsActive}
+                      onChange={(e) =>
+                        setEditForm({ ...editForm, IsActive: e.target.checked })
+                      }
+                      className="mr-2"
+                    />
+                    Active
+                  </label>
+                </div>
+              </div>
+
+              <div className="mt-6 flex space-x-3">
+                <button
+                  type="submit"
+                  className="bg-green-600 text-white px-6 py-2 rounded hover:bg-green-700"
+                >
+                  Save Changes
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setEditModal(null);
+                    setEditForm(null);
+                  }}
+                  className="bg-gray-700 text-white px-6 py-2 rounded hover:bg-gray-600"
+                >
+                  Cancel
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
