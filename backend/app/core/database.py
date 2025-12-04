@@ -1,7 +1,7 @@
 """Database configuration and base models."""
 
 from sqlalchemy import MetaData
-from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import declarative_base
 
 # Naming convention for constraints (important for Alembic)
 # Uses PascalCase for table names AND columns
