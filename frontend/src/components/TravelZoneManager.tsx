@@ -182,7 +182,7 @@ const TravelZoneManager: React.FC = () => {
 
       {/* Filter */}
       <div className="mb-4">
-        <label className="block text-sm font-medium mb-2">
+        <label className="block text-sm font-semibold text-gray-800 mb-2">
           Filter by Pricing Version:
         </label>
         <select
@@ -208,7 +208,7 @@ const TravelZoneManager: React.FC = () => {
         >
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium mb-1">
+              <label className="block text-sm font-semibold text-gray-800 mb-1">
                 Pricing Version <span className="text-red-500">*</span>
               </label>
               <select
@@ -232,7 +232,7 @@ const TravelZoneManager: React.FC = () => {
             </div>
 
             <div>
-              <label className="block text-sm font-medium mb-1">
+              <label className="block text-sm font-semibold text-gray-800 mb-1">
                 Zone Code <span className="text-red-500">*</span>
               </label>
               <input
@@ -248,7 +248,7 @@ const TravelZoneManager: React.FC = () => {
             </div>
 
             <div>
-              <label className="block text-sm font-medium mb-1">
+              <label className="block text-sm font-semibold text-gray-800 mb-1">
                 Name <span className="text-red-500">*</span>
               </label>
               <input
@@ -263,7 +263,7 @@ const TravelZoneManager: React.FC = () => {
             </div>
 
             <div>
-              <label className="block text-sm font-medium mb-1">
+              <label className="block text-sm font-semibold text-gray-800 mb-1">
                 Sort Order
               </label>
               <input
@@ -280,7 +280,7 @@ const TravelZoneManager: React.FC = () => {
             </div>
 
             <div className="col-span-2">
-              <label className="block text-sm font-medium mb-1">
+              <label className="block text-sm font-semibold text-gray-800 mb-1">
                 Description
               </label>
               <textarea
@@ -294,7 +294,7 @@ const TravelZoneManager: React.FC = () => {
             </div>
 
             <div>
-              <label className="block text-sm font-medium mb-1">
+              <label className="block text-sm font-semibold text-gray-800 mb-1">
                 Mileage Rate <span className="text-red-500">*</span>
               </label>
               <input
@@ -311,7 +311,7 @@ const TravelZoneManager: React.FC = () => {
             </div>
 
             <div>
-              <label className="block text-sm font-medium mb-1">
+              <label className="block text-sm font-semibold text-gray-800 mb-1">
                 Daily Rate <span className="text-red-500">*</span>
               </label>
               <input
@@ -328,7 +328,7 @@ const TravelZoneManager: React.FC = () => {
             </div>
 
             <div>
-              <label className="block text-sm font-medium mb-1">
+              <label className="block text-sm font-semibold text-gray-800 mb-1">
                 Airfare Rate
               </label>
               <input
@@ -344,7 +344,7 @@ const TravelZoneManager: React.FC = () => {
             </div>
 
             <div>
-              <label className="block text-sm font-medium mb-1">
+              <label className="block text-sm font-semibold text-gray-800 mb-1">
                 Hotel Rate (per night)
               </label>
               <input
@@ -360,7 +360,7 @@ const TravelZoneManager: React.FC = () => {
             </div>
 
             <div>
-              <label className="block text-sm font-medium mb-1">
+              <label className="block text-sm font-semibold text-gray-800 mb-1">
                 Meals Rate (per day)
               </label>
               <input
@@ -376,7 +376,7 @@ const TravelZoneManager: React.FC = () => {
             </div>
 
             <div>
-              <label className="block text-sm font-medium mb-1">
+              <label className="block text-sm font-semibold text-gray-800 mb-1">
                 Rental Car Rate (per day)
               </label>
               <input
@@ -392,7 +392,7 @@ const TravelZoneManager: React.FC = () => {
             </div>
 
             <div>
-              <label className="block text-sm font-medium mb-1">
+              <label className="block text-sm font-semibold text-gray-800 mb-1">
                 Parking Rate (per day)
               </label>
               <input

@@ -148,7 +148,7 @@ const TextSnippetManager: React.FC = () => {
 
       {/* Filter */}
       <div className="mb-4">
-        <label className="block text-sm font-medium mb-2">
+        <label className="block text-sm font-semibold text-gray-800 mb-2">
           Filter by Pricing Version:
         </label>
         <select
@@ -174,7 +174,7 @@ const TextSnippetManager: React.FC = () => {
         >
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium mb-1">
+              <label className="block text-sm font-semibold text-gray-800 mb-1">
                 Pricing Version <span className="text-red-500">*</span>
               </label>
               <select
@@ -201,7 +201,7 @@ const TextSnippetManager: React.FC = () => {
             </div>
 
             <div>
-              <label className="block text-sm font-medium mb-1">
+              <label className="block text-sm font-semibold text-gray-800 mb-1">
                 Snippet Key <span className="text-red-500">*</span>
               </label>
               <input
@@ -217,7 +217,7 @@ const TextSnippetManager: React.FC = () => {
             </div>
 
             <div>
-              <label className="block text-sm font-medium mb-1">
+              <label className="block text-sm font-semibold text-gray-800 mb-1">
                 Label <span className="text-red-500">*</span>
               </label>
               <input
@@ -233,7 +233,7 @@ const TextSnippetManager: React.FC = () => {
             </div>
 
             <div>
-              <label className="block text-sm font-medium mb-1">
+              <label className="block text-sm font-semibold text-gray-800 mb-1">
                 Category <span className="text-red-500">*</span>
               </label>
               <input
@@ -249,7 +249,7 @@ const TextSnippetManager: React.FC = () => {
             </div>
 
             <div className="col-span-2">
-              <label className="block text-sm font-medium mb-1">
+              <label className="block text-sm font-semibold text-gray-800 mb-1">
                 Content <span className="text-red-500">*</span>
               </label>
               <textarea
@@ -265,7 +265,7 @@ const TextSnippetManager: React.FC = () => {
             </div>
 
             <div>
-              <label className="block text-sm font-medium mb-1">
+              <label className="block text-sm font-semibold text-gray-800 mb-1">
                 Sort Order
               </label>
               <input

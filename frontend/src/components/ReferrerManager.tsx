@@ -113,7 +113,7 @@ const ReferrerManager: React.FC = () => {
         >
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium mb-1">
+              <label className="block text-sm font-semibold text-gray-800 mb-1">
                 Referrer Name <span className="text-red-500">*</span>
               </label>
               <input
@@ -132,7 +132,7 @@ const ReferrerManager: React.FC = () => {
             </div>
 
             <div>
-              <label className="block text-sm font-medium mb-1">
+              <label className="block text-sm font-semibold text-gray-800 mb-1">
                 Standard Rate (%) <span className="text-red-500">*</span>
               </label>
               <input

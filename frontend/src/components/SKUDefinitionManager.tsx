@@ -190,7 +190,7 @@ const SKUDefinitionManager: React.FC = () => {
         >
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium mb-1">
+              <label className="block text-sm font-semibold text-gray-800 mb-2">
                 Pricing Version <span className="text-red-500">*</span>
               </label>
               <select
@@ -214,7 +214,7 @@ const SKUDefinitionManager: React.FC = () => {
             </div>
 
             <div>
-              <label className="block text-sm font-medium mb-1">
+              <label className="block text-sm font-semibold text-gray-800 mb-2">
                 SKU Code <span className="text-red-500">*</span>
               </label>
               <input
@@ -230,7 +230,7 @@ const SKUDefinitionManager: React.FC = () => {
             </div>
 
             <div>
-              <label className="block text-sm font-medium mb-1">
+              <label className="block text-sm font-semibold text-gray-800 mb-2">
                 Name <span className="text-red-500">*</span>
               </label>
               <input
@@ -243,7 +243,7 @@ const SKUDefinitionManager: React.FC = () => {
             </div>
 
             <div>
-              <label className="block text-sm font-medium mb-1">
+              <label className="block text-sm font-semibold text-gray-800 mb-2">
                 Category <span className="text-red-500">*</span>
               </label>
               <input
@@ -259,7 +259,7 @@ const SKUDefinitionManager: React.FC = () => {
             </div>
 
             <div className="col-span-2">
-              <label className="block text-sm font-medium mb-1">
+              <label className="block text-sm font-semibold text-gray-800 mb-2">
                 Description
               </label>
               <textarea
@@ -273,7 +273,7 @@ const SKUDefinitionManager: React.FC = () => {
             </div>
 
             <div>
-              <label className="block text-sm font-medium mb-1">
+              <label className="block text-sm font-semibold text-gray-800 mb-2">
                 Fixed Price
               </label>
               <input
@@ -289,7 +289,7 @@ const SKUDefinitionManager: React.FC = () => {
             </div>
 
             <div>
-              <label className="block text-sm font-medium mb-1">
+              <label className="block text-sm font-semibold text-gray-800 mb-2">
                 Sort Order
               </label>
               <input

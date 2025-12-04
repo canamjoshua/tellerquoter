@@ -195,7 +195,7 @@ const SaaSProductManager: React.FC = () => {
 
       {/* Filter */}
       <div className="mb-4">
-        <label className="block text-sm font-medium mb-2">
+        <label className="block text-sm font-semibold text-gray-800 mb-2">
           Filter by Pricing Version:
         </label>
         <select
@@ -221,7 +221,7 @@ const SaaSProductManager: React.FC = () => {
         >
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium mb-1">
+              <label className="block text-sm font-semibold text-gray-800 mb-1">
                 Pricing Version <span className="text-red-500">*</span>
               </label>
               <select
@@ -248,7 +248,7 @@ const SaaSProductManager: React.FC = () => {
             </div>
 
             <div>
-              <label className="block text-sm font-medium mb-1">
+              <label className="block text-sm font-semibold text-gray-800 mb-1">
                 Product Code <span className="text-red-500">*</span>
               </label>
               <input
@@ -264,7 +264,7 @@ const SaaSProductManager: React.FC = () => {
             </div>
 
             <div>
-              <label className="block text-sm font-medium mb-1">
+              <label className="block text-sm font-semibold text-gray-800 mb-1">
                 Name <span className="text-red-500">*</span>
               </label>
               <input
@@ -279,7 +279,7 @@ const SaaSProductManager: React.FC = () => {
             </div>
 
             <div>
-              <label className="block text-sm font-medium mb-1">
+              <label className="block text-sm font-semibold text-gray-800 mb-1">
                 Category <span className="text-red-500">*</span>
               </label>
               <input
@@ -295,7 +295,7 @@ const SaaSProductManager: React.FC = () => {
             </div>
 
             <div className="col-span-2">
-              <label className="block text-sm font-medium mb-1">
+              <label className="block text-sm font-semibold text-gray-800 mb-1">
                 Description
               </label>
               <textarea
@@ -312,7 +312,7 @@ const SaaSProductManager: React.FC = () => {
               <h3 className="font-semibold mb-2">Tier 1 (Required)</h3>
             </div>
             <div>
-              <label className="block text-sm font-medium mb-1">
+              <label className="block text-sm font-semibold text-gray-800 mb-1">
                 Min Users
               </label>
               <input
@@ -329,7 +329,7 @@ const SaaSProductManager: React.FC = () => {
               />
             </div>
             <div>
-              <label className="block text-sm font-medium mb-1">
+              <label className="block text-sm font-semibold text-gray-800 mb-1">
                 Max Users
               </label>
               <input
@@ -346,7 +346,7 @@ const SaaSProductManager: React.FC = () => {
               />
             </div>
             <div>
-              <label className="block text-sm font-medium mb-1">
+              <label className="block text-sm font-semibold text-gray-800 mb-1">
                 Price per User
               </label>
               <input
@@ -365,7 +365,7 @@ const SaaSProductManager: React.FC = () => {
               <h3 className="font-semibold mb-2">Tier 2 (Optional)</h3>
             </div>
             <div>
-              <label className="block text-sm font-medium mb-1">
+              <label className="block text-sm font-semibold text-gray-800 mb-1">
                 Min Users
               </label>
               <input
@@ -378,7 +378,7 @@ const SaaSProductManager: React.FC = () => {
               />
             </div>
             <div>
-              <label className="block text-sm font-medium mb-1">
+              <label className="block text-sm font-semibold text-gray-800 mb-1">
                 Max Users
               </label>
               <input
@@ -391,7 +391,7 @@ const SaaSProductManager: React.FC = () => {
               />
             </div>
             <div>
-              <label className="block text-sm font-medium mb-1">
+              <label className="block text-sm font-semibold text-gray-800 mb-1">
                 Price per User
               </label>
               <input
@@ -409,7 +409,7 @@ const SaaSProductManager: React.FC = () => {
               <h3 className="font-semibold mb-2">Tier 3 (Optional)</h3>
             </div>
             <div>
-              <label className="block text-sm font-medium mb-1">
+              <label className="block text-sm font-semibold text-gray-800 mb-1">
                 Min Users
               </label>
               <input
@@ -422,7 +422,7 @@ const SaaSProductManager: React.FC = () => {
               />
             </div>
             <div>
-              <label className="block text-sm font-medium mb-1">
+              <label className="block text-sm font-semibold text-gray-800 mb-1">
                 Max Users (blank = unlimited)
               </label>
               <input
@@ -435,7 +435,7 @@ const SaaSProductManager: React.FC = () => {
               />
             </div>
             <div>
-              <label className="block text-sm font-medium mb-1">
+              <label className="block text-sm font-semibold text-gray-800 mb-1">
                 Price per User
               </label>
               <input
