@@ -188,20 +188,20 @@ const SaaSProductManager: React.FC = () => {
       </div>
 
       {error && (
-        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+        <div className="bg-red-900/50 border border-red-500 text-red-200 px-4 py-3 rounded-lg mb-6">
           {error}
         </div>
       )}
 
       {/* Filter */}
       <div className="mb-4">
-        <label className="block text-sm font-semibold text-gray-800 mb-2">
+        <label className="block text-sm font-medium mb-2">
           Filter by Pricing Version:
         </label>
         <select
           value={selectedVersionFilter}
           onChange={(e) => setSelectedVersionFilter(e.target.value)}
-          className="border rounded px-3 py-2 w-64"
+          className="bg-gray-700 border border-gray-600 rounded px-3 py-2 w-64 focus:outline-none focus:border-blue-500"
         >
           <option value="">All Versions</option>
           {pricingVersions.map((version) => (
@@ -217,11 +217,11 @@ const SaaSProductManager: React.FC = () => {
       {showForm && (
         <form
           onSubmit={handleSubmit}
-          className="bg-white p-6 rounded-lg shadow-md mb-6"
+          className="bg-gray-800 p-6 rounded-lg shadow-md mb-6"
         >
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-semibold text-gray-800 mb-1">
+              <label className="block text-sm font-medium mb-2">
                 Pricing Version <span className="text-red-500">*</span>
               </label>
               <select
@@ -232,7 +232,7 @@ const SaaSProductManager: React.FC = () => {
                     PricingVersionId: e.target.value,
                   })
                 }
-                className="w-full border rounded px-3 py-2"
+                className="w-full bg-gray-700 border border-gray-600 rounded px-3 py-2 focus:outline-none focus:border-blue-500"
                 required
               >
                 <option value="">Select Version</option>
@@ -248,7 +248,7 @@ const SaaSProductManager: React.FC = () => {
             </div>
 
             <div>
-              <label className="block text-sm font-semibold text-gray-800 mb-1">
+              <label className="block text-sm font-medium mb-2">
                 Product Code <span className="text-red-500">*</span>
               </label>
               <input
@@ -257,14 +257,14 @@ const SaaSProductManager: React.FC = () => {
                 onChange={(e) =>
                   setNewProduct({ ...newProduct, ProductCode: e.target.value })
                 }
-                className="w-full border rounded px-3 py-2"
+                className="w-full bg-gray-700 border border-gray-600 rounded px-3 py-2 focus:outline-none focus:border-blue-500"
                 placeholder="SAAS-001"
                 required
               />
             </div>
 
             <div>
-              <label className="block text-sm font-semibold text-gray-800 mb-1">
+              <label className="block text-sm font-medium mb-2">
                 Name <span className="text-red-500">*</span>
               </label>
               <input
@@ -273,13 +273,13 @@ const SaaSProductManager: React.FC = () => {
                 onChange={(e) =>
                   setNewProduct({ ...newProduct, Name: e.target.value })
                 }
-                className="w-full border rounded px-3 py-2"
+                className="w-full bg-gray-700 border border-gray-600 rounded px-3 py-2 focus:outline-none focus:border-blue-500"
                 required
               />
             </div>
 
             <div>
-              <label className="block text-sm font-semibold text-gray-800 mb-1">
+              <label className="block text-sm font-medium mb-2">
                 Category <span className="text-red-500">*</span>
               </label>
               <input
@@ -288,14 +288,14 @@ const SaaSProductManager: React.FC = () => {
                 onChange={(e) =>
                   setNewProduct({ ...newProduct, Category: e.target.value })
                 }
-                className="w-full border rounded px-3 py-2"
+                className="w-full bg-gray-700 border border-gray-600 rounded px-3 py-2 focus:outline-none focus:border-blue-500"
                 placeholder="Core, Optional"
                 required
               />
             </div>
 
             <div className="col-span-2">
-              <label className="block text-sm font-semibold text-gray-800 mb-1">
+              <label className="block text-sm font-medium mb-2">
                 Description
               </label>
               <textarea
@@ -303,7 +303,7 @@ const SaaSProductManager: React.FC = () => {
                 onChange={(e) =>
                   setNewProduct({ ...newProduct, Description: e.target.value })
                 }
-                className="w-full border rounded px-3 py-2"
+                className="w-full bg-gray-700 border border-gray-600 rounded px-3 py-2 focus:outline-none focus:border-blue-500"
                 rows={2}
               />
             </div>
@@ -312,7 +312,7 @@ const SaaSProductManager: React.FC = () => {
               <h3 className="font-semibold mb-2">Tier 1 (Required)</h3>
             </div>
             <div>
-              <label className="block text-sm font-semibold text-gray-800 mb-1">
+              <label className="block text-sm font-medium mb-2">
                 Min Users
               </label>
               <input
@@ -324,12 +324,12 @@ const SaaSProductManager: React.FC = () => {
                     Tier1Min: parseInt(e.target.value),
                   })
                 }
-                className="w-full border rounded px-3 py-2"
+                className="w-full bg-gray-700 border border-gray-600 rounded px-3 py-2 focus:outline-none focus:border-blue-500"
                 required
               />
             </div>
             <div>
-              <label className="block text-sm font-semibold text-gray-800 mb-1">
+              <label className="block text-sm font-medium mb-2">
                 Max Users
               </label>
               <input
@@ -341,12 +341,12 @@ const SaaSProductManager: React.FC = () => {
                     Tier1Max: parseInt(e.target.value),
                   })
                 }
-                className="w-full border rounded px-3 py-2"
+                className="w-full bg-gray-700 border border-gray-600 rounded px-3 py-2 focus:outline-none focus:border-blue-500"
                 required
               />
             </div>
             <div>
-              <label className="block text-sm font-semibold text-gray-800 mb-1">
+              <label className="block text-sm font-medium mb-2">
                 Price per User
               </label>
               <input
@@ -356,7 +356,7 @@ const SaaSProductManager: React.FC = () => {
                 onChange={(e) =>
                   setNewProduct({ ...newProduct, Tier1Price: e.target.value })
                 }
-                className="w-full border rounded px-3 py-2"
+                className="w-full bg-gray-700 border border-gray-600 rounded px-3 py-2 focus:outline-none focus:border-blue-500"
                 required
               />
             </div>
@@ -365,7 +365,7 @@ const SaaSProductManager: React.FC = () => {
               <h3 className="font-semibold mb-2">Tier 2 (Optional)</h3>
             </div>
             <div>
-              <label className="block text-sm font-semibold text-gray-800 mb-1">
+              <label className="block text-sm font-medium mb-2">
                 Min Users
               </label>
               <input
@@ -374,11 +374,11 @@ const SaaSProductManager: React.FC = () => {
                 onChange={(e) =>
                   setNewProduct({ ...newProduct, Tier2Min: e.target.value })
                 }
-                className="w-full border rounded px-3 py-2"
+                className="w-full bg-gray-700 border border-gray-600 rounded px-3 py-2 focus:outline-none focus:border-blue-500"
               />
             </div>
             <div>
-              <label className="block text-sm font-semibold text-gray-800 mb-1">
+              <label className="block text-sm font-medium mb-2">
                 Max Users
               </label>
               <input
@@ -387,11 +387,11 @@ const SaaSProductManager: React.FC = () => {
                 onChange={(e) =>
                   setNewProduct({ ...newProduct, Tier2Max: e.target.value })
                 }
-                className="w-full border rounded px-3 py-2"
+                className="w-full bg-gray-700 border border-gray-600 rounded px-3 py-2 focus:outline-none focus:border-blue-500"
               />
             </div>
             <div>
-              <label className="block text-sm font-semibold text-gray-800 mb-1">
+              <label className="block text-sm font-medium mb-2">
                 Price per User
               </label>
               <input
@@ -401,7 +401,7 @@ const SaaSProductManager: React.FC = () => {
                 onChange={(e) =>
                   setNewProduct({ ...newProduct, Tier2Price: e.target.value })
                 }
-                className="w-full border rounded px-3 py-2"
+                className="w-full bg-gray-700 border border-gray-600 rounded px-3 py-2 focus:outline-none focus:border-blue-500"
               />
             </div>
 
@@ -409,7 +409,7 @@ const SaaSProductManager: React.FC = () => {
               <h3 className="font-semibold mb-2">Tier 3 (Optional)</h3>
             </div>
             <div>
-              <label className="block text-sm font-semibold text-gray-800 mb-1">
+              <label className="block text-sm font-medium mb-2">
                 Min Users
               </label>
               <input
@@ -418,11 +418,11 @@ const SaaSProductManager: React.FC = () => {
                 onChange={(e) =>
                   setNewProduct({ ...newProduct, Tier3Min: e.target.value })
                 }
-                className="w-full border rounded px-3 py-2"
+                className="w-full bg-gray-700 border border-gray-600 rounded px-3 py-2 focus:outline-none focus:border-blue-500"
               />
             </div>
             <div>
-              <label className="block text-sm font-semibold text-gray-800 mb-1">
+              <label className="block text-sm font-medium mb-2">
                 Max Users (blank = unlimited)
               </label>
               <input
@@ -431,11 +431,11 @@ const SaaSProductManager: React.FC = () => {
                 onChange={(e) =>
                   setNewProduct({ ...newProduct, Tier3Max: e.target.value })
                 }
-                className="w-full border rounded px-3 py-2"
+                className="w-full bg-gray-700 border border-gray-600 rounded px-3 py-2 focus:outline-none focus:border-blue-500"
               />
             </div>
             <div>
-              <label className="block text-sm font-semibold text-gray-800 mb-1">
+              <label className="block text-sm font-medium mb-2">
                 Price per User
               </label>
               <input
@@ -445,7 +445,7 @@ const SaaSProductManager: React.FC = () => {
                 onChange={(e) =>
                   setNewProduct({ ...newProduct, Tier3Price: e.target.value })
                 }
-                className="w-full border rounded px-3 py-2"
+                className="w-full bg-gray-700 border border-gray-600 rounded px-3 py-2 focus:outline-none focus:border-blue-500"
               />
             </div>
 

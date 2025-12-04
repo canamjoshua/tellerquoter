@@ -157,7 +157,7 @@ const SKUDefinitionManager: React.FC = () => {
       </div>
 
       {error && (
-        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+        <div className="bg-red-900/50 border border-red-500 text-red-200 px-4 py-3 rounded-lg mb-6">
           {error}
         </div>
       )}
@@ -170,7 +170,7 @@ const SKUDefinitionManager: React.FC = () => {
         <select
           value={selectedVersionFilter}
           onChange={(e) => setSelectedVersionFilter(e.target.value)}
-          className="border rounded px-3 py-2 w-64"
+          className="bg-gray-700 border border-gray-600 rounded px-3 py-2 w-64 focus:outline-none focus:border-blue-500"
         >
           <option value="">All Versions</option>
           {pricingVersions.map((version) => (
@@ -186,11 +186,11 @@ const SKUDefinitionManager: React.FC = () => {
       {showForm && (
         <form
           onSubmit={handleSubmit}
-          className="bg-white p-6 rounded-lg shadow-md mb-6"
+          className="bg-gray-800 p-6 rounded-lg shadow-md mb-6"
         >
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-semibold text-gray-800 mb-2">
+              <label className="block text-sm font-medium mb-2">
                 Pricing Version <span className="text-red-500">*</span>
               </label>
               <select
@@ -198,7 +198,7 @@ const SKUDefinitionManager: React.FC = () => {
                 onChange={(e) =>
                   setNewSKU({ ...newSKU, PricingVersionId: e.target.value })
                 }
-                className="w-full border rounded px-3 py-2"
+                className="w-full bg-gray-700 border border-gray-600 rounded px-3 py-2 focus:outline-none focus:border-blue-500"
                 required
               >
                 <option value="">Select Version</option>
@@ -214,7 +214,7 @@ const SKUDefinitionManager: React.FC = () => {
             </div>
 
             <div>
-              <label className="block text-sm font-semibold text-gray-800 mb-2">
+              <label className="block text-sm font-medium mb-2">
                 SKU Code <span className="text-red-500">*</span>
               </label>
               <input
@@ -223,27 +223,27 @@ const SKUDefinitionManager: React.FC = () => {
                 onChange={(e) =>
                   setNewSKU({ ...newSKU, SKUCode: e.target.value })
                 }
-                className="w-full border rounded px-3 py-2"
+                className="w-full bg-gray-700 border border-gray-600 rounded px-3 py-2 focus:outline-none focus:border-blue-500"
                 placeholder="TT-100"
                 required
               />
             </div>
 
             <div>
-              <label className="block text-sm font-semibold text-gray-800 mb-2">
+              <label className="block text-sm font-medium mb-2">
                 Name <span className="text-red-500">*</span>
               </label>
               <input
                 type="text"
                 value={newSKU.Name}
                 onChange={(e) => setNewSKU({ ...newSKU, Name: e.target.value })}
-                className="w-full border rounded px-3 py-2"
+                className="w-full bg-gray-700 border border-gray-600 rounded px-3 py-2 focus:outline-none focus:border-blue-500"
                 required
               />
             </div>
 
             <div>
-              <label className="block text-sm font-semibold text-gray-800 mb-2">
+              <label className="block text-sm font-medium mb-2">
                 Category <span className="text-red-500">*</span>
               </label>
               <input
@@ -252,14 +252,14 @@ const SKUDefinitionManager: React.FC = () => {
                 onChange={(e) =>
                   setNewSKU({ ...newSKU, Category: e.target.value })
                 }
-                className="w-full border rounded px-3 py-2"
+                className="w-full bg-gray-700 border border-gray-600 rounded px-3 py-2 focus:outline-none focus:border-blue-500"
                 placeholder="Hardware, Service, Travel"
                 required
               />
             </div>
 
             <div className="col-span-2">
-              <label className="block text-sm font-semibold text-gray-800 mb-2">
+              <label className="block text-sm font-medium mb-2">
                 Description
               </label>
               <textarea
@@ -267,13 +267,13 @@ const SKUDefinitionManager: React.FC = () => {
                 onChange={(e) =>
                   setNewSKU({ ...newSKU, Description: e.target.value })
                 }
-                className="w-full border rounded px-3 py-2"
+                className="w-full bg-gray-700 border border-gray-600 rounded px-3 py-2 focus:outline-none focus:border-blue-500"
                 rows={2}
               />
             </div>
 
             <div>
-              <label className="block text-sm font-semibold text-gray-800 mb-2">
+              <label className="block text-sm font-medium mb-2">
                 Fixed Price
               </label>
               <input
@@ -283,13 +283,13 @@ const SKUDefinitionManager: React.FC = () => {
                 onChange={(e) =>
                   setNewSKU({ ...newSKU, FixedPrice: e.target.value })
                 }
-                className="w-full border rounded px-3 py-2"
+                className="w-full bg-gray-700 border border-gray-600 rounded px-3 py-2 focus:outline-none focus:border-blue-500"
                 placeholder="Optional"
               />
             </div>
 
             <div>
-              <label className="block text-sm font-semibold text-gray-800 mb-2">
+              <label className="block text-sm font-medium mb-2">
                 Sort Order
               </label>
               <input
@@ -298,7 +298,7 @@ const SKUDefinitionManager: React.FC = () => {
                 onChange={(e) =>
                   setNewSKU({ ...newSKU, SortOrder: parseInt(e.target.value) })
                 }
-                className="w-full border rounded px-3 py-2"
+                className="w-full bg-gray-700 border border-gray-600 rounded px-3 py-2 focus:outline-none focus:border-blue-500"
               />
             </div>
 

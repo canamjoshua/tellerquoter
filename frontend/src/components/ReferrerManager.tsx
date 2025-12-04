@@ -101,7 +101,7 @@ const ReferrerManager: React.FC = () => {
       </div>
 
       {error && (
-        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+        <div className="bg-red-900/50 border border-red-500 text-red-200 px-4 py-3 rounded-lg mb-6">
           {error}
         </div>
       )}
@@ -109,11 +109,11 @@ const ReferrerManager: React.FC = () => {
       {showForm && (
         <form
           onSubmit={handleSubmit}
-          className="bg-white p-6 rounded-lg shadow-md mb-6"
+          className="bg-gray-800 p-6 rounded-lg shadow-md mb-6"
         >
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-semibold text-gray-800 mb-1">
+              <label className="block text-sm font-medium mb-2">
                 Referrer Name <span className="text-red-500">*</span>
               </label>
               <input
@@ -125,14 +125,14 @@ const ReferrerManager: React.FC = () => {
                     ReferrerName: e.target.value,
                   })
                 }
-                className="w-full border rounded px-3 py-2"
+                className="w-full bg-gray-700 border border-gray-600 rounded px-3 py-2 focus:outline-none focus:border-blue-500"
                 placeholder="ABC Partner Company"
                 required
               />
             </div>
 
             <div>
-              <label className="block text-sm font-semibold text-gray-800 mb-1">
+              <label className="block text-sm font-medium mb-2">
                 Standard Rate (%) <span className="text-red-500">*</span>
               </label>
               <input
@@ -145,7 +145,7 @@ const ReferrerManager: React.FC = () => {
                     StandardRate: e.target.value,
                   })
                 }
-                className="w-full border rounded px-3 py-2"
+                className="w-full bg-gray-700 border border-gray-600 rounded px-3 py-2 focus:outline-none focus:border-blue-500"
                 placeholder="5.00"
                 required
               />
