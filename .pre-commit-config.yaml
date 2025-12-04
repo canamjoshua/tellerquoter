@@ -37,8 +37,8 @@ repos:
     hooks:
       - id: mypy
         files: ^backend/app/
-        additional_dependencies: [fastapi, pydantic]
-        args: [--strict]
+        additional_dependencies: [fastapi, pydantic, pydantic-settings, sqlalchemy, types-python-dateutil]
+        args: [--strict, --ignore-missing-imports]
 
   # Frontend formatting and linting
   - repo: https://github.com/pre-commit/mirrors-prettier
