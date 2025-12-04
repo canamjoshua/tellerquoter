@@ -13,7 +13,15 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 from app.core.config import settings  # noqa: E402
 from app.core.database import Base  # noqa: E402
-from app.models import PricingVersion, SaaSProduct, SKUDefinition, TravelZone  # noqa: E402, F401
+from app.models import (  # noqa: E402, F401
+    MatureIntegration,
+    PricingVersion,
+    Referrer,
+    SaaSProduct,
+    SKUDefinition,
+    TextSnippet,
+    TravelZone,
+)
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
