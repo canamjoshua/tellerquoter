@@ -1,7 +1,7 @@
 # Teller Quoting System - Requirements Specification
 
-**Version:** 1.5  
-**Date:** December 2025  
+**Version:** 1.5
+**Date:** December 2025
 **Status:** Draft
 
 ---
@@ -219,7 +219,7 @@ For the "Integration - Configuration" SKU, sales must select from a list of matu
 
 ### 2.3 Complete SKU List with Pricing
 
-**Pricing Basis:** $230/hour  
+**Pricing Basis:** $230/hour
 **Source:** Teller SKU List with Pricing V2 (Noah Ardron)
 
 #### Organization & Department Setup (4 SKUs)
