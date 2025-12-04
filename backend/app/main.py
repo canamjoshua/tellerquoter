@@ -5,7 +5,7 @@ from datetime import UTC, datetime
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from app.api import pricing, sku
+from app.api import pricing, saas, sku
 
 app = FastAPI(
     title="Teller Quoting System",
@@ -24,6 +24,7 @@ app.add_middleware(
 
 # Include routers
 app.include_router(pricing.router, prefix="/api")
+app.include_router(saas.router, prefix="/api")
 app.include_router(sku.router, prefix="/api")
 
 
