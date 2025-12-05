@@ -2,13 +2,16 @@
 
 **Created:** December 4, 2025
 **Status:** ✅ Complete and Deployed
-**Commit:** 878b79f
+**Latest Commit:** 9fa60b4 (Single-page with live preview)
+**Previous Commit:** 878b79f (Multi-step wizard)
 
 ---
 
 ## 🎨 Overview
 
 The quote builder has been completely redesigned with modern UI/UX patterns, transforming it from a basic form-based interface into a genuinely delightful, visually stunning experience with intelligent interactions and smooth animations.
+
+**Latest Update (Commit 9fa60b4):** Redesigned from multi-step wizard to single-page split-view with live document preview. User feedback: "too many pages" and "quote dynamically build on the right side, like a paper".
 
 ---
 
@@ -58,26 +61,26 @@ The system guides users to select compatible packages, reducing confusion and en
 
 ---
 
-### 3. Multi-Step Wizard with Progress Tracking
+### 3. Single-Page Split-View with Live Preview
 
 **What It Is:**
-A 4-step guided flow that breaks down quote creation into logical stages.
+A streamlined single-page layout with collapsible sections on the left and live document preview on the right.
 
-**Steps:**
-1. **Products** - Select SaaS products
-2. **Packages** - Select setup packages (with smart suggestions)
-3. **Discounts** - Configure optional discounts
-4. **Review** - Summary before submission
+**Layout:**
+- **Left Panel (2/3 width):** Collapsible sections for Products, Packages, Discounts
+- **Right Panel (1/3 width):** Live "paper document" preview
 
 **Features:**
-- 📊 Animated progress bar with gradient (green → blue → purple)
-- 🔄 Click any step to jump directly
-- ➡️ "Next" and "← Back" buttons with smooth transitions
-- ⚠️ Disabled state for incomplete steps
-- 📱 Mobile-responsive step indicators
+- 📄 **Live Document Preview** - White background styled like actual paper
+- 🎨 **Blue/purple gradient header** with quote info
+- 📊 **Real-time updates** - Product/package lists update instantly
+- 🔢 **Animated totals** - Scale transform when values change
+- 📍 **Sticky positioning** - Preview stays visible while scrolling
+- ➕ **Collapsible sections** - +/- toggle buttons
+- 📱 **Mobile responsive** - Stacks vertically on smaller screens
 
 **User Experience:**
-Progressive disclosure reduces cognitive load. Users focus on one decision at a time rather than being overwhelmed by a massive form.
+See the quote building in real-time as you work. No pagination, no wizard steps - just a smooth, single-page experience with progressive disclosure through collapsible sections.
 
 ---
 
@@ -140,17 +143,20 @@ Beautiful, intuitive discount input with visual feedback.
 
 ---
 
-### 7. Interactive Review Step
+### 7. Live Paper Document Preview
 
 **What It Is:**
-Final confirmation screen showing complete quote summary.
+Real-time document preview showing the quote as it's being built, styled like an actual client-facing document.
 
 **Features:**
-- 📊 Three animated total boxes (SaaS Monthly/Annual, Setup)
-- 📋 Summary cards for selected products and packages
-- ✅ Checkmarks for each selected item
-- 🔍 Quick visual scan before submission
-- 🎨 Color-coded sections matching previous steps
+- 📄 **White background** - Stands out from dark UI, looks like real paper
+- 🎨 **Gradient header** - Blue to purple with quote details
+- 📋 **Product/Package Lists** - Real-time updates with color coding
+- 💰 **Discount Display** - Shows when discounts are applied
+- 🔢 **Animated Totals** - Scale animation on value changes
+- 💵 **Grand Total** - Large, prominent total contract value
+- ✨ **Empty State** - Friendly icon when nothing selected
+- 📍 **Sticky Position** - Always visible while scrolling
 
 ---
 
@@ -172,7 +178,7 @@ Card-based version list with hover effects and clear status indicators.
 ## 🎯 UX Improvements
 
 ### Progressive Disclosure
-Only show what's relevant at each step. No overwhelming 50-field forms.
+Collapsible sections reduce cognitive load without forcing pagination. Users can expand/collapse sections as needed and see everything on one page.
 
 ### Visual Hierarchy
 Typography, color, and sizing guide the eye to important information.
@@ -198,25 +204,30 @@ Grid layouts adapt from 3 columns → 2 columns → 1 column based on screen siz
 
 ### Component Structure
 ```
-EnhancedQuoteBuilder.tsx (1,185 lines)
+EnhancedQuoteBuilder.tsx (922 lines)
 ├── State Management
 │   ├── Quote data
 │   ├── Form state
-│   ├── Wizard step tracking
+│   ├── Collapsible section tracking
 │   └── Animation triggers
 ├── Smart Suggestions
 │   └── PRODUCT_SKU_SUGGESTIONS mapping
-├── Four Step Views
-│   ├── Products (card grid)
-│   ├── Packages (card grid + suggestions)
-│   ├── Discounts (gradient inputs)
-│   └── Review (summary cards)
+├── Split-View Layout
+│   ├── Left Panel (Builder)
+│   │   ├── Products section (collapsible)
+│   │   ├── Packages section (collapsible)
+│   │   └── Discounts section (collapsible)
+│   └── Right Panel (Live Preview)
+│       ├── Paper document header
+│       ├── Product/package lists
+│       ├── Discount display
+│       └── Animated totals
 └── Version History
 ```
 
 ### Key State Variables
 ```typescript
-- currentStep: WizardStep // tracks wizard position
+- expandedSections: object // tracks which sections are expanded
 - animatingTotal: boolean // triggers scale animation
 - selectedSaaSProducts: array // products user selected
 - selectedSetupPackages: array // packages user selected
@@ -226,8 +237,9 @@ EnhancedQuoteBuilder.tsx (1,185 lines)
 ### Animations
 - CSS transitions: `transition-all duration-600`
 - Scale transforms: `hover:scale-105`, `animate-bounce`
-- Progress bar: width transition with easing
-- Number changes: temporary scale-110
+- Section collapse/expand: height/opacity transitions
+- Number changes: temporary scale-110 on totals
+- Empty state: fade-in animation
 
 ---
 
@@ -235,9 +247,10 @@ EnhancedQuoteBuilder.tsx (1,185 lines)
 
 ### Optimizations
 - `useCallback` for fetch functions
-- Conditional rendering (only show current step)
+- Conditional rendering (only show expanded sections)
 - Efficient state updates
 - No unnecessary re-renders
+- Sticky positioning uses CSS (no JS scroll listeners)
 
 ### Loading States
 - Beautiful spinner with double-ring animation
@@ -272,29 +285,35 @@ EnhancedQuoteBuilder.tsx (1,185 lines)
    - Dropdown with current versions
    - Required field validation
 
-3. **Step 1: Select Products**
+3. **Build Your Quote (Single Page)**
+
+   **SaaS Products Section:**
+   - Expand section (opens by default)
    - Click product cards to toggle selection
    - See checkmark animation
-   - Real-time totals update
-   - Click "Next" when done
+   - Watch live preview update on right
 
-4. **Step 2: Select Packages**
-   - See smart suggestions highlighted in yellow
+   **Setup Packages Section:**
+   - Expand section (opens by default)
+   - See yellow-highlighted smart suggestions
    - Click recommended packages or browse all
-   - Totals update automatically
-   - Click "Next" to continue
+   - Live preview updates instantly
 
-5. **Step 3: Configure Discounts (Optional)**
-   - Enter any desired discounts
-   - Large, clear input fields
-   - Skip if not needed
-   - Click "Next" to review
+   **Discounts Section (Optional):**
+   - Expand if needed (collapsed by default)
+   - Enter percentage or fixed dollar discounts
+   - See preview update with discounted totals
 
-6. **Step 4: Review & Submit**
-   - See complete summary
-   - Verify animated totals
-   - Check product/package lists
-   - Click "Create Version" to submit
+   **Live Preview Panel:**
+   - Always visible on right side (sticky)
+   - Shows quote building in real-time
+   - Color-coded products/packages
+   - Animated totals on changes
+   - Grand total at bottom
+
+4. **Submit**
+   - Click "Create Version" when ready
+   - No review step needed (preview shows everything)
 
 ---
 
@@ -372,19 +391,22 @@ Small: text-sm, text-xs
 ## 📈 Metrics & Success
 
 ### User Experience Improvements
-- ✅ Reduced quote creation time (estimated 40% faster)
+- ✅ Reduced quote creation time (single page = no wizard navigation)
 - ✅ Fewer errors due to smart suggestions
-- ✅ Higher completion rate (step-by-step is less intimidating)
-- ✅ Better understanding of quote structure
+- ✅ Higher completion rate (see quote building in real-time)
+- ✅ Better understanding of quote structure (live preview)
 - ✅ More professional appearance
+- ✅ Instant feedback (no waiting for review step)
+- ✅ Non-linear workflow (jump between sections freely)
 
 ### Technical Achievements
-- ✅ 1,185 lines of well-structured code
+- ✅ 922 lines of well-structured code (simplified from 1,185)
 - ✅ Zero ESLint warnings
 - ✅ All pre-commit hooks passing
-- ✅ Mobile responsive
+- ✅ Mobile responsive (split-view stacks vertically)
 - ✅ Type-safe with TypeScript
 - ✅ Consistent with design system
+- ✅ Removed 263 lines by eliminating wizard complexity
 
 ---
 
@@ -392,8 +414,32 @@ Small: text-sm, text-xs
 
 The Enhanced Quote Builder represents a complete transformation from functional to fabulous. Every interaction is smooth, every decision is guided, and every visual element contributes to a professional, modern experience.
 
-Users no longer "fill out a form" — they **build a quote** in an intuitive, visually engaging way that makes the process enjoyable rather than tedious.
+Users no longer "fill out a form" — they **build a quote** in an intuitive, visually engaging way that makes the process enjoyable rather than tedious. The live preview panel provides instant visual feedback, showing exactly what the client will see as the quote is constructed.
 
 **Status:** Ready for production use ✅
-**Commit:** 878b79f
+**Latest Version:** Single-page with live preview (Commit 9fa60b4)
+**Previous Version:** Multi-step wizard (Commit 878b79f)
 **Files:** EnhancedQuoteBuilder.tsx, QuoteManager.tsx (updated)
+
+---
+
+## 📝 Changelog
+
+### Version 2 - Single-Page with Live Preview (9fa60b4)
+**User Feedback:** "too many pages" and "quote dynamically build on the right side, like a paper"
+
+**Changes:**
+- ❌ Removed 4-step wizard (Products → Packages → Discounts → Review)
+- ✅ Added single-page split-view layout
+- ✅ Added live paper document preview on right side
+- ✅ Added collapsible sections for progressive disclosure
+- ✅ Added sticky positioning for preview panel
+- ✅ Added real-time discount application in preview
+- 📉 Reduced from 1,185 lines to 922 lines
+
+### Version 1 - Multi-Step Wizard (878b79f)
+- ✅ Initial redesign with card-based selection
+- ✅ 4-step wizard with progress bar
+- ✅ Smart SKU suggestions
+- ✅ Animated totals
+- ✅ Modern visual design system
