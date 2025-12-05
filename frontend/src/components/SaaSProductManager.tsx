@@ -66,23 +66,6 @@ const SaaSProductManager: React.FC = () => {
     SortOrder: 0,
   });
 
-  useEffect(() => {
-    fetchPricingVersions();
-    fetchProducts();
-  }, [selectedVersionFilter, fetchProducts]);
-
-  const fetchPricingVersions = async () => {
-    try {
-      const response = await fetch(`${API_BASE_URL}/pricing-versions/`);
-      if (!response.ok) throw new Error("Failed to fetch pricing versions");
-      const data = await response.json();
-      setPricingVersions(data);
-    } catch (err) {
-      console.error("Error fetching pricing versions:", err);
-      setError(err instanceof Error ? err.message : "Unknown error");
-    }
-  };
-
   const fetchProducts = useCallback(async () => {
     try {
       setLoading(true);
@@ -101,6 +84,23 @@ const SaaSProductManager: React.FC = () => {
       setLoading(false);
     }
   }, [selectedVersionFilter]);
+
+  useEffect(() => {
+    fetchPricingVersions();
+    fetchProducts();
+  }, [fetchProducts]);
+
+  const fetchPricingVersions = async () => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/pricing-versions/`);
+      if (!response.ok) throw new Error("Failed to fetch pricing versions");
+      const data = await response.json();
+      setPricingVersions(data);
+    } catch (err) {
+      console.error("Error fetching pricing versions:", err);
+      setError(err instanceof Error ? err.message : "Unknown error");
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -157,7 +157,7 @@ const SaaSProductManager: React.FC = () => {
 
   const handleUpdate = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!editModal) return;
+    if (!editModal || !editForm) return;
 
     try {
       const payload = {
@@ -165,22 +165,30 @@ const SaaSProductManager: React.FC = () => {
         Description: editForm.Description || null,
         Category: editForm.Category,
         PricingModel: editForm.PricingModel,
-        Tier1Min: parseInt(editForm.Tier1Min),
-        Tier1Max: parseInt(editForm.Tier1Max),
-        Tier1Price: parseFloat(editForm.Tier1Price),
-        Tier2Min: editForm.Tier2Min ? parseInt(editForm.Tier2Min) : null,
-        Tier2Max: editForm.Tier2Max ? parseInt(editForm.Tier2Max) : null,
-        Tier2Price: editForm.Tier2Price
-          ? parseFloat(editForm.Tier2Price)
+        Tier1Min: parseInt(editForm.Tier1Min?.toString() || "0"),
+        Tier1Max: parseInt(editForm.Tier1Max?.toString() || "0"),
+        Tier1Price: parseFloat(editForm.Tier1Price?.toString() || "0"),
+        Tier2Min: editForm.Tier2Min
+          ? parseInt(editForm.Tier2Min.toString())
           : null,
-        Tier3Min: editForm.Tier3Min ? parseInt(editForm.Tier3Min) : null,
-        Tier3Max: editForm.Tier3Max ? parseInt(editForm.Tier3Max) : null,
+        Tier2Max: editForm.Tier2Max
+          ? parseInt(editForm.Tier2Max.toString())
+          : null,
+        Tier2Price: editForm.Tier2Price
+          ? parseFloat(editForm.Tier2Price.toString())
+          : null,
+        Tier3Min: editForm.Tier3Min
+          ? parseInt(editForm.Tier3Min.toString())
+          : null,
+        Tier3Max: editForm.Tier3Max
+          ? parseInt(editForm.Tier3Max.toString())
+          : null,
         Tier3Price: editForm.Tier3Price
-          ? parseFloat(editForm.Tier3Price)
+          ? parseFloat(editForm.Tier3Price.toString())
           : null,
         IsActive: editForm.IsActive,
         IsRequired: editForm.IsRequired,
-        SortOrder: parseInt(editForm.SortOrder),
+        SortOrder: parseInt(editForm.SortOrder?.toString() || "0"),
       };
       const response = await fetch(
         `${API_BASE_URL}/saas-products/${editModal.Id}`,
@@ -222,18 +230,18 @@ const SaaSProductManager: React.FC = () => {
     setEditModal(product);
     setEditForm({
       Name: product.Name,
-      Description: product.Description || "",
+      Description: product.Description ?? "",
       Category: product.Category,
       PricingModel: product.PricingModel,
       Tier1Min: product.Tier1Min,
       Tier1Max: product.Tier1Max,
       Tier1Price: product.Tier1Price,
-      Tier2Min: product.Tier2Min || "",
-      Tier2Max: product.Tier2Max || "",
-      Tier2Price: product.Tier2Price || "",
-      Tier3Min: product.Tier3Min || "",
-      Tier3Max: product.Tier3Max || "",
-      Tier3Price: product.Tier3Price || "",
+      Tier2Min: product.Tier2Min ?? undefined,
+      Tier2Max: product.Tier2Max ?? undefined,
+      Tier2Price: product.Tier2Price ?? undefined,
+      Tier3Min: product.Tier3Min ?? undefined,
+      Tier3Max: product.Tier3Max ?? undefined,
+      Tier3Price: product.Tier3Price ?? undefined,
       IsActive: product.IsActive,
       IsRequired: product.IsRequired,
       SortOrder: product.SortOrder,
@@ -852,7 +860,7 @@ const SaaSProductManager: React.FC = () => {
                     Description
                   </label>
                   <textarea
-                    value={editForm.Description}
+                    value={editForm.Description ?? ""}
                     onChange={(e) =>
                       setEditForm({ ...editForm, Description: e.target.value })
                     }
@@ -870,9 +878,12 @@ const SaaSProductManager: React.FC = () => {
                   </label>
                   <input
                     type="number"
-                    value={editForm.Tier1Min}
+                    value={editForm.Tier1Min ?? ""}
                     onChange={(e) =>
-                      setEditForm({ ...editForm, Tier1Min: e.target.value })
+                      setEditForm({
+                        ...editForm,
+                        Tier1Min: parseInt(e.target.value) || 0,
+                      })
                     }
                     className="w-full bg-gray-700 border border-gray-600 rounded px-3 py-2 focus:outline-none focus:border-blue-500"
                     required
@@ -884,9 +895,12 @@ const SaaSProductManager: React.FC = () => {
                   </label>
                   <input
                     type="number"
-                    value={editForm.Tier1Max}
+                    value={editForm.Tier1Max ?? ""}
                     onChange={(e) =>
-                      setEditForm({ ...editForm, Tier1Max: e.target.value })
+                      setEditForm({
+                        ...editForm,
+                        Tier1Max: parseInt(e.target.value) || 0,
+                      })
                     }
                     className="w-full bg-gray-700 border border-gray-600 rounded px-3 py-2 focus:outline-none focus:border-blue-500"
                     required
@@ -899,7 +913,7 @@ const SaaSProductManager: React.FC = () => {
                   <input
                     type="number"
                     step="0.01"
-                    value={editForm.Tier1Price}
+                    value={editForm.Tier1Price ?? ""}
                     onChange={(e) =>
                       setEditForm({ ...editForm, Tier1Price: e.target.value })
                     }
@@ -917,9 +931,14 @@ const SaaSProductManager: React.FC = () => {
                   </label>
                   <input
                     type="number"
-                    value={editForm.Tier2Min}
+                    value={editForm.Tier2Min ?? ""}
                     onChange={(e) =>
-                      setEditForm({ ...editForm, Tier2Min: e.target.value })
+                      setEditForm({
+                        ...editForm,
+                        Tier2Min: e.target.value
+                          ? parseInt(e.target.value)
+                          : undefined,
+                      })
                     }
                     className="w-full bg-gray-700 border border-gray-600 rounded px-3 py-2 focus:outline-none focus:border-blue-500"
                   />
@@ -930,9 +949,14 @@ const SaaSProductManager: React.FC = () => {
                   </label>
                   <input
                     type="number"
-                    value={editForm.Tier2Max}
+                    value={editForm.Tier2Max ?? ""}
                     onChange={(e) =>
-                      setEditForm({ ...editForm, Tier2Max: e.target.value })
+                      setEditForm({
+                        ...editForm,
+                        Tier2Max: e.target.value
+                          ? parseInt(e.target.value)
+                          : undefined,
+                      })
                     }
                     className="w-full bg-gray-700 border border-gray-600 rounded px-3 py-2 focus:outline-none focus:border-blue-500"
                   />
@@ -944,9 +968,12 @@ const SaaSProductManager: React.FC = () => {
                   <input
                     type="number"
                     step="0.01"
-                    value={editForm.Tier2Price}
+                    value={editForm.Tier2Price ?? ""}
                     onChange={(e) =>
-                      setEditForm({ ...editForm, Tier2Price: e.target.value })
+                      setEditForm({
+                        ...editForm,
+                        Tier2Price: e.target.value || undefined,
+                      })
                     }
                     className="w-full bg-gray-700 border border-gray-600 rounded px-3 py-2 focus:outline-none focus:border-blue-500"
                   />
@@ -961,9 +988,14 @@ const SaaSProductManager: React.FC = () => {
                   </label>
                   <input
                     type="number"
-                    value={editForm.Tier3Min}
+                    value={editForm.Tier3Min ?? ""}
                     onChange={(e) =>
-                      setEditForm({ ...editForm, Tier3Min: e.target.value })
+                      setEditForm({
+                        ...editForm,
+                        Tier3Min: e.target.value
+                          ? parseInt(e.target.value)
+                          : undefined,
+                      })
                     }
                     className="w-full bg-gray-700 border border-gray-600 rounded px-3 py-2 focus:outline-none focus:border-blue-500"
                   />
@@ -974,9 +1006,14 @@ const SaaSProductManager: React.FC = () => {
                   </label>
                   <input
                     type="number"
-                    value={editForm.Tier3Max}
+                    value={editForm.Tier3Max ?? ""}
                     onChange={(e) =>
-                      setEditForm({ ...editForm, Tier3Max: e.target.value })
+                      setEditForm({
+                        ...editForm,
+                        Tier3Max: e.target.value
+                          ? parseInt(e.target.value)
+                          : undefined,
+                      })
                     }
                     className="w-full bg-gray-700 border border-gray-600 rounded px-3 py-2 focus:outline-none focus:border-blue-500"
                   />
@@ -988,9 +1025,12 @@ const SaaSProductManager: React.FC = () => {
                   <input
                     type="number"
                     step="0.01"
-                    value={editForm.Tier3Price}
+                    value={editForm.Tier3Price ?? ""}
                     onChange={(e) =>
-                      setEditForm({ ...editForm, Tier3Price: e.target.value })
+                      setEditForm({
+                        ...editForm,
+                        Tier3Price: e.target.value || undefined,
+                      })
                     }
                     className="w-full bg-gray-700 border border-gray-600 rounded px-3 py-2 focus:outline-none focus:border-blue-500"
                   />
@@ -1002,9 +1042,12 @@ const SaaSProductManager: React.FC = () => {
                   </label>
                   <input
                     type="number"
-                    value={editForm.SortOrder}
+                    value={editForm.SortOrder ?? ""}
                     onChange={(e) =>
-                      setEditForm({ ...editForm, SortOrder: e.target.value })
+                      setEditForm({
+                        ...editForm,
+                        SortOrder: parseInt(e.target.value) || 0,
+                      })
                     }
                     className="w-full bg-gray-700 border border-gray-600 rounded px-3 py-2 focus:outline-none focus:border-blue-500"
                   />

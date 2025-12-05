@@ -410,7 +410,7 @@ export default function QuoteBuilder({ quoteId, onClose }: QuoteBuilderProps) {
                       </label>
                       <input
                         type="text"
-                        value={newVersion.ClientData.name || ""}
+                        value={(newVersion.ClientData.name as string) || ""}
                         onChange={(e) =>
                           setNewVersion({
                             ...newVersion,
@@ -429,7 +429,7 @@ export default function QuoteBuilder({ quoteId, onClose }: QuoteBuilderProps) {
                       </label>
                       <input
                         type="email"
-                        value={newVersion.ClientData.email || ""}
+                        value={(newVersion.ClientData.email as string) || ""}
                         onChange={(e) =>
                           setNewVersion({
                             ...newVersion,
@@ -448,7 +448,7 @@ export default function QuoteBuilder({ quoteId, onClose }: QuoteBuilderProps) {
                       </label>
                       <input
                         type="tel"
-                        value={newVersion.ClientData.phone || ""}
+                        value={(newVersion.ClientData.phone as string) || ""}
                         onChange={(e) =>
                           setNewVersion({
                             ...newVersion,

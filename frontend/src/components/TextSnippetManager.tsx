@@ -44,23 +44,6 @@ const TextSnippetManager: React.FC = () => {
     IsActive: true,
   });
 
-  useEffect(() => {
-    fetchPricingVersions();
-    fetchSnippets();
-  }, [selectedVersionFilter, fetchSnippets]);
-
-  const fetchPricingVersions = async () => {
-    try {
-      const response = await fetch(`${API_BASE_URL}/pricing-versions/`);
-      if (!response.ok) throw new Error("Failed to fetch pricing versions");
-      const data = await response.json();
-      setPricingVersions(data);
-    } catch (err) {
-      console.error("Error fetching pricing versions:", err);
-      setError(err instanceof Error ? err.message : "Unknown error");
-    }
-  };
-
   const fetchSnippets = useCallback(async () => {
     try {
       setLoading(true);
@@ -79,6 +62,23 @@ const TextSnippetManager: React.FC = () => {
       setLoading(false);
     }
   }, [selectedVersionFilter]);
+
+  useEffect(() => {
+    fetchPricingVersions();
+    fetchSnippets();
+  }, [fetchSnippets]);
+
+  const fetchPricingVersions = async () => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/pricing-versions/`);
+      if (!response.ok) throw new Error("Failed to fetch pricing versions");
+      const data = await response.json();
+      setPricingVersions(data);
+    } catch (err) {
+      console.error("Error fetching pricing versions:", err);
+      setError(err instanceof Error ? err.message : "Unknown error");
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -110,14 +110,14 @@ const TextSnippetManager: React.FC = () => {
 
   const handleUpdate = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!editModal) return;
+    if (!editModal || !editForm) return;
 
     try {
       const payload = {
         SnippetLabel: editForm.SnippetLabel,
         Content: editForm.Content,
         Category: editForm.Category,
-        SortOrder: parseInt(editForm.SortOrder),
+        SortOrder: parseInt(editForm.SortOrder?.toString() || "0"),
         IsActive: editForm.IsActive,
       };
       const response = await fetch(
@@ -591,7 +591,10 @@ const TextSnippetManager: React.FC = () => {
                     type="number"
                     value={editForm.SortOrder}
                     onChange={(e) =>
-                      setEditForm({ ...editForm, SortOrder: e.target.value })
+                      setEditForm({
+                        ...editForm,
+                        SortOrder: parseInt(e.target.value) || 0,
+                      })
                     }
                     className="w-full bg-gray-700 border border-gray-600 rounded px-3 py-2 focus:outline-none focus:border-blue-500"
                   />

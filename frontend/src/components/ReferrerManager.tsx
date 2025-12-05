@@ -75,12 +75,12 @@ const ReferrerManager: React.FC = () => {
 
   const handleUpdate = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!editModal) return;
+    if (!editModal || !editForm) return;
 
     try {
       const payload = {
         ReferrerName: editForm.ReferrerName,
-        StandardRate: parseFloat(editForm.StandardRate),
+        StandardRate: parseFloat(editForm.StandardRate?.toString() || "0"),
         IsActive: editForm.IsActive,
       };
       const response = await fetch(

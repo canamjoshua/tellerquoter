@@ -56,23 +56,6 @@ const TravelZoneManager: React.FC = () => {
     SortOrder: 0,
   });
 
-  useEffect(() => {
-    fetchPricingVersions();
-    fetchZones();
-  }, [selectedVersionFilter, fetchZones]);
-
-  const fetchPricingVersions = async () => {
-    try {
-      const response = await fetch(`${API_BASE_URL}/pricing-versions/`);
-      if (!response.ok) throw new Error("Failed to fetch pricing versions");
-      const data = await response.json();
-      setPricingVersions(data);
-    } catch (err) {
-      console.error("Error fetching pricing versions:", err);
-      setError(err instanceof Error ? err.message : "Unknown error");
-    }
-  };
-
   const fetchZones = useCallback(async () => {
     try {
       setLoading(true);
@@ -91,6 +74,23 @@ const TravelZoneManager: React.FC = () => {
       setLoading(false);
     }
   }, [selectedVersionFilter]);
+
+  useEffect(() => {
+    fetchPricingVersions();
+    fetchZones();
+  }, [fetchZones]);
+
+  const fetchPricingVersions = async () => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/pricing-versions/`);
+      if (!response.ok) throw new Error("Failed to fetch pricing versions");
+      const data = await response.json();
+      setPricingVersions(data);
+    } catch (err) {
+      console.error("Error fetching pricing versions:", err);
+      setError(err instanceof Error ? err.message : "Unknown error");
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -144,27 +144,31 @@ const TravelZoneManager: React.FC = () => {
 
   const handleUpdate = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!editModal) return;
+    if (!editModal || !editForm) return;
 
     try {
       const payload = {
         Name: editForm.Name,
         Description: editForm.Description || null,
-        MileageRate: parseFloat(editForm.MileageRate),
-        DailyRate: parseFloat(editForm.DailyRate),
+        MileageRate: parseFloat(editForm.MileageRate?.toString() || "0"),
+        DailyRate: parseFloat(editForm.DailyRate?.toString() || "0"),
         AirfareRate: editForm.AirfareRate
-          ? parseFloat(editForm.AirfareRate)
+          ? parseFloat(editForm.AirfareRate.toString())
           : null,
-        HotelRate: editForm.HotelRate ? parseFloat(editForm.HotelRate) : null,
-        MealsRate: editForm.MealsRate ? parseFloat(editForm.MealsRate) : null,
+        HotelRate: editForm.HotelRate
+          ? parseFloat(editForm.HotelRate.toString())
+          : null,
+        MealsRate: editForm.MealsRate
+          ? parseFloat(editForm.MealsRate.toString())
+          : null,
         RentalCarRate: editForm.RentalCarRate
-          ? parseFloat(editForm.RentalCarRate)
+          ? parseFloat(editForm.RentalCarRate.toString())
           : null,
         ParkingRate: editForm.ParkingRate
-          ? parseFloat(editForm.ParkingRate)
+          ? parseFloat(editForm.ParkingRate.toString())
           : null,
         IsActive: editForm.IsActive,
-        SortOrder: parseInt(editForm.SortOrder),
+        SortOrder: parseInt(editForm.SortOrder?.toString() || "0"),
       };
       const response = await fetch(
         `${API_BASE_URL}/travel-zones/${editModal.Id}`,
@@ -770,7 +774,10 @@ const TravelZoneManager: React.FC = () => {
                     type="number"
                     value={editForm.SortOrder}
                     onChange={(e) =>
-                      setEditForm({ ...editForm, SortOrder: e.target.value })
+                      setEditForm({
+                        ...editForm,
+                        SortOrder: parseInt(e.target.value) || 0,
+                      })
                     }
                     className="w-full bg-gray-700 border border-gray-600 rounded px-3 py-2 focus:outline-none focus:border-blue-500"
                   />
@@ -781,7 +788,7 @@ const TravelZoneManager: React.FC = () => {
                     Description
                   </label>
                   <textarea
-                    value={editForm.Description}
+                    value={editForm.Description || ""}
                     onChange={(e) =>
                       setEditForm({ ...editForm, Description: e.target.value })
                     }
@@ -797,9 +804,12 @@ const TravelZoneManager: React.FC = () => {
                   <input
                     type="number"
                     step="0.01"
-                    value={editForm.MileageRate}
+                    value={editForm.MileageRate ?? ""}
                     onChange={(e) =>
-                      setEditForm({ ...editForm, MileageRate: e.target.value })
+                      setEditForm({
+                        ...editForm,
+                        MileageRate: e.target.value,
+                      })
                     }
                     className="w-full bg-gray-700 border border-gray-600 rounded px-3 py-2 focus:outline-none focus:border-blue-500"
                     required
@@ -813,9 +823,12 @@ const TravelZoneManager: React.FC = () => {
                   <input
                     type="number"
                     step="0.01"
-                    value={editForm.DailyRate}
+                    value={editForm.DailyRate ?? ""}
                     onChange={(e) =>
-                      setEditForm({ ...editForm, DailyRate: e.target.value })
+                      setEditForm({
+                        ...editForm,
+                        DailyRate: e.target.value,
+                      })
                     }
                     className="w-full bg-gray-700 border border-gray-600 rounded px-3 py-2 focus:outline-none focus:border-blue-500"
                     required
@@ -829,9 +842,12 @@ const TravelZoneManager: React.FC = () => {
                   <input
                     type="number"
                     step="0.01"
-                    value={editForm.AirfareRate}
+                    value={editForm.AirfareRate ?? ""}
                     onChange={(e) =>
-                      setEditForm({ ...editForm, AirfareRate: e.target.value })
+                      setEditForm({
+                        ...editForm,
+                        AirfareRate: e.target.value,
+                      })
                     }
                     className="w-full bg-gray-700 border border-gray-600 rounded px-3 py-2 focus:outline-none focus:border-blue-500"
                   />
@@ -844,9 +860,12 @@ const TravelZoneManager: React.FC = () => {
                   <input
                     type="number"
                     step="0.01"
-                    value={editForm.HotelRate}
+                    value={editForm.HotelRate ?? ""}
                     onChange={(e) =>
-                      setEditForm({ ...editForm, HotelRate: e.target.value })
+                      setEditForm({
+                        ...editForm,
+                        HotelRate: e.target.value,
+                      })
                     }
                     className="w-full bg-gray-700 border border-gray-600 rounded px-3 py-2 focus:outline-none focus:border-blue-500"
                   />
@@ -859,9 +878,12 @@ const TravelZoneManager: React.FC = () => {
                   <input
                     type="number"
                     step="0.01"
-                    value={editForm.MealsRate}
+                    value={editForm.MealsRate ?? ""}
                     onChange={(e) =>
-                      setEditForm({ ...editForm, MealsRate: e.target.value })
+                      setEditForm({
+                        ...editForm,
+                        MealsRate: e.target.value,
+                      })
                     }
                     className="w-full bg-gray-700 border border-gray-600 rounded px-3 py-2 focus:outline-none focus:border-blue-500"
                   />
@@ -874,7 +896,7 @@ const TravelZoneManager: React.FC = () => {
                   <input
                     type="number"
                     step="0.01"
-                    value={editForm.RentalCarRate}
+                    value={editForm.RentalCarRate ?? ""}
                     onChange={(e) =>
                       setEditForm({
                         ...editForm,
@@ -892,9 +914,12 @@ const TravelZoneManager: React.FC = () => {
                   <input
                     type="number"
                     step="0.01"
-                    value={editForm.ParkingRate}
+                    value={editForm.ParkingRate ?? ""}
                     onChange={(e) =>
-                      setEditForm({ ...editForm, ParkingRate: e.target.value })
+                      setEditForm({
+                        ...editForm,
+                        ParkingRate: e.target.value,
+                      })
                     }
                     className="w-full bg-gray-700 border border-gray-600 rounded px-3 py-2 focus:outline-none focus:border-blue-500"
                   />

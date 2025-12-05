@@ -58,23 +58,6 @@ const SKUDefinitionManager: React.FC = () => {
     AcceptanceCriteria: "",
   });
 
-  useEffect(() => {
-    fetchPricingVersions();
-    fetchSKUs();
-  }, [selectedVersionFilter, fetchSKUs]);
-
-  const fetchPricingVersions = async () => {
-    try {
-      const response = await fetch(`${API_BASE_URL}/pricing-versions/`);
-      if (!response.ok) throw new Error("Failed to fetch pricing versions");
-      const data = await response.json();
-      setPricingVersions(data);
-    } catch (err) {
-      console.error("Error fetching pricing versions:", err);
-      setError(err instanceof Error ? err.message : "Unknown error");
-    }
-  };
-
   const fetchSKUs = useCallback(async () => {
     try {
       setLoading(true);
@@ -93,6 +76,23 @@ const SKUDefinitionManager: React.FC = () => {
       setLoading(false);
     }
   }, [selectedVersionFilter]);
+
+  useEffect(() => {
+    fetchPricingVersions();
+    fetchSKUs();
+  }, [fetchSKUs]);
+
+  const fetchPricingVersions = async () => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/pricing-versions/`);
+      if (!response.ok) throw new Error("Failed to fetch pricing versions");
+      const data = await response.json();
+      setPricingVersions(data);
+    } catch (err) {
+      console.error("Error fetching pricing versions:", err);
+      setError(err instanceof Error ? err.message : "Unknown error");
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -139,7 +139,7 @@ const SKUDefinitionManager: React.FC = () => {
 
   const handleUpdate = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!editModalSKU) return;
+    if (!editModalSKU || !editForm) return;
 
     try {
       const payload = {
@@ -147,16 +147,16 @@ const SKUDefinitionManager: React.FC = () => {
         Description: editForm.Description || null,
         Category: editForm.Category,
         FixedPrice: editForm.FixedPrice
-          ? parseFloat(editForm.FixedPrice)
+          ? parseFloat(editForm.FixedPrice.toString())
           : null,
         RequiresQuantity: editForm.RequiresQuantity,
         RequiresTravelZone: editForm.RequiresTravelZone,
         RequiresConfiguration: editForm.RequiresConfiguration,
         IsActive: editForm.IsActive,
-        SortOrder: editForm.SortOrder,
+        SortOrder: parseInt(editForm.SortOrder?.toString() || "0"),
         EarmarkedStatus: editForm.EarmarkedStatus,
         EstimatedHours: editForm.EstimatedHours
-          ? parseInt(editForm.EstimatedHours)
+          ? parseInt(editForm.EstimatedHours.toString())
           : null,
         AcceptanceCriteria: editForm.AcceptanceCriteria || null,
       };
@@ -209,7 +209,7 @@ const SKUDefinitionManager: React.FC = () => {
       IsActive: sku.IsActive,
       SortOrder: sku.SortOrder,
       EarmarkedStatus: sku.EarmarkedStatus,
-      EstimatedHours: sku.EstimatedHours?.toString() || "",
+      EstimatedHours: sku.EstimatedHours ?? "",
       AcceptanceCriteria: sku.AcceptanceCriteria || "",
     });
   };
@@ -778,7 +778,7 @@ const SKUDefinitionManager: React.FC = () => {
                     Description
                   </label>
                   <textarea
-                    value={editForm.Description}
+                    value={editForm.Description || ""}
                     onChange={(e) =>
                       setEditForm({ ...editForm, Description: e.target.value })
                     }
@@ -794,9 +794,12 @@ const SKUDefinitionManager: React.FC = () => {
                   <input
                     type="number"
                     step="0.01"
-                    value={editForm.FixedPrice}
+                    value={editForm.FixedPrice ?? ""}
                     onChange={(e) =>
-                      setEditForm({ ...editForm, FixedPrice: e.target.value })
+                      setEditForm({
+                        ...editForm,
+                        FixedPrice: e.target.value,
+                      })
                     }
                     className="w-full bg-gray-700 border border-gray-600 rounded px-3 py-2 focus:outline-none focus:border-blue-500"
                   />
@@ -808,7 +811,7 @@ const SKUDefinitionManager: React.FC = () => {
                   </label>
                   <input
                     type="number"
-                    value={editForm.EstimatedHours}
+                    value={editForm.EstimatedHours ?? ""}
                     onChange={(e) =>
                       setEditForm({
                         ...editForm,
@@ -829,7 +832,7 @@ const SKUDefinitionManager: React.FC = () => {
                     onChange={(e) =>
                       setEditForm({
                         ...editForm,
-                        SortOrder: parseInt(e.target.value),
+                        SortOrder: parseInt(e.target.value) || 0,
                       })
                     }
                     className="w-full bg-gray-700 border border-gray-600 rounded px-3 py-2 focus:outline-none focus:border-blue-500"
@@ -841,7 +844,7 @@ const SKUDefinitionManager: React.FC = () => {
                     Acceptance Criteria (max 500 chars)
                   </label>
                   <textarea
-                    value={editForm.AcceptanceCriteria}
+                    value={editForm.AcceptanceCriteria || ""}
                     onChange={(e) =>
                       setEditForm({
                         ...editForm,
