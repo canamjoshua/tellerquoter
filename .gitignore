@@ -99,3 +99,7 @@ secrets/
 *.pem
 *.key
 credentials.json
+
+# Branding assets (large files)
+branding/
+!branding/README.md
