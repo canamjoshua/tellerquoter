@@ -136,20 +136,27 @@ export default function PricingVersionManager() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-900 text-white p-8">
+    <div className="min-h-screen bg-[#F7F8F9] p-8">
       <div className="max-w-6xl mx-auto">
         <div className="flex justify-between items-center mb-8">
-          <h1 className="text-4xl font-bold">Pricing Version Management</h1>
+          <div>
+            <h1 className="text-4xl font-normal text-[#494D50]">
+              Pricing Version Management
+            </h1>
+            <p className="text-[#A5A5A5] font-light mt-2">
+              Manage pricing versions and compare changes
+            </p>
+          </div>
           <div className="flex space-x-3">
             <button
               onClick={() => setShowComparison(true)}
-              className="bg-purple-600 hover:bg-purple-700 px-6 py-2 rounded-lg font-semibold transition-colors"
+              className="bg-[#609bb0] hover:bg-[#516B84] text-white px-6 py-2 rounded-lg font-normal transition-colors"
             >
               🔄 Compare Versions
             </button>
             <button
               onClick={() => setShowForm(!showForm)}
-              className="bg-blue-600 hover:bg-blue-700 px-6 py-2 rounded-lg font-semibold transition-colors"
+              className="bg-[#6BC153] hover:bg-[#5ba845] text-white px-6 py-2 rounded-lg font-normal transition-colors"
             >
               {showForm ? "Cancel" : "+ New Version"}
             </button>
@@ -157,18 +164,20 @@ export default function PricingVersionManager() {
         </div>
 
         {error && (
-          <div className="bg-red-900/50 border border-red-500 text-red-200 px-4 py-3 rounded-lg mb-6">
+          <div className="bg-red-50 border border-red-300 text-red-700 px-4 py-3 rounded-xl mb-6 font-light">
             {error}
           </div>
         )}
 
         {showForm && (
-          <div className="bg-gray-800 rounded-lg p-6 mb-8">
-            <h2 className="text-2xl font-semibold mb-4">Create New Version</h2>
+          <div className="bg-white p-6 rounded-xl mb-6 border border-[#E6E6E6]">
+            <h2 className="text-2xl font-normal text-[#494D50] mb-4">
+              Create New Version
+            </h2>
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium mb-2">
+                  <label className="block text-sm font-light text-[#494D50] mb-2">
                     Version Number *
                   </label>
                   <input
@@ -181,12 +190,12 @@ export default function PricingVersionManager() {
                         VersionNumber: e.target.value,
                       })
                     }
-                    className="w-full bg-gray-700 border border-gray-600 rounded px-3 py-2 focus:outline-none focus:border-blue-500"
+                    className="w-full px-3 py-2 bg-white border border-[#E6E6E6] text-[#494D50] rounded focus:outline-none focus:border-[#6FCBDC] focus:ring-1 focus:ring-[#6FCBDC]"
                     placeholder="e.g., 2025.1"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium mb-2">
+                  <label className="block text-sm font-light text-[#494D50] mb-2">
                     Created By *
                   </label>
                   <input
@@ -199,13 +208,13 @@ export default function PricingVersionManager() {
                         CreatedBy: e.target.value,
                       })
                     }
-                    className="w-full bg-gray-700 border border-gray-600 rounded px-3 py-2 focus:outline-none focus:border-blue-500"
+                    className="w-full px-3 py-2 bg-white border border-[#E6E6E6] text-[#494D50] rounded focus:outline-none focus:border-[#6FCBDC] focus:ring-1 focus:ring-[#6FCBDC]"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-sm font-medium mb-2">
+                <label className="block text-sm font-light text-[#494D50] mb-2">
                   Description
                 </label>
                 <textarea
@@ -216,7 +225,7 @@ export default function PricingVersionManager() {
                       Description: e.target.value,
                     })
                   }
-                  className="w-full bg-gray-700 border border-gray-600 rounded px-3 py-2 focus:outline-none focus:border-blue-500"
+                  className="w-full px-3 py-2 bg-white border border-[#E6E6E6] text-[#494D50] rounded focus:outline-none focus:border-[#6FCBDC] focus:ring-1 focus:ring-[#6FCBDC]"
                   rows={3}
                   placeholder="Describe changes in this version..."
                 />
@@ -224,7 +233,7 @@ export default function PricingVersionManager() {
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium mb-2">
+                  <label className="block text-sm font-light text-[#494D50] mb-2">
                     Effective Date *
                   </label>
                   <input
@@ -237,11 +246,11 @@ export default function PricingVersionManager() {
                         EffectiveDate: e.target.value,
                       })
                     }
-                    className="w-full bg-gray-700 border border-gray-600 rounded px-3 py-2 focus:outline-none focus:border-blue-500"
+                    className="w-full px-3 py-2 bg-white border border-[#E6E6E6] text-[#494D50] rounded focus:outline-none focus:border-[#6FCBDC] focus:ring-1 focus:ring-[#6FCBDC]"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium mb-2">
+                  <label className="block text-sm font-light text-[#494D50] mb-2">
                     Expiration Date
                   </label>
                   <input
@@ -253,13 +262,13 @@ export default function PricingVersionManager() {
                         ExpirationDate: e.target.value,
                       })
                     }
-                    className="w-full bg-gray-700 border border-gray-600 rounded px-3 py-2 focus:outline-none focus:border-blue-500"
+                    className="w-full px-3 py-2 bg-white border border-[#E6E6E6] text-[#494D50] rounded focus:outline-none focus:border-[#6FCBDC] focus:ring-1 focus:ring-[#6FCBDC]"
                   />
                 </div>
               </div>
 
-              <div className="flex items-center space-x-6">
-                <label className="flex items-center">
+              <div className="flex items-center space-x-6 text-[#494D50]">
+                <label className="flex items-center font-light">
                   <input
                     type="checkbox"
                     checked={newVersion.IsCurrent}
@@ -273,7 +282,7 @@ export default function PricingVersionManager() {
                   />
                   Set as Current
                 </label>
-                <label className="flex items-center">
+                <label className="flex items-center font-light">
                   <input
                     type="checkbox"
                     checked={newVersion.IsLocked}
@@ -293,13 +302,13 @@ export default function PricingVersionManager() {
                 <button
                   type="button"
                   onClick={() => setShowForm(false)}
-                  className="bg-gray-600 hover:bg-gray-700 px-6 py-2 rounded-lg font-semibold transition-colors"
+                  className="px-4 py-2 bg-[#A5A5A5] hover:bg-[#494D50] text-white rounded font-light transition-colors"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="bg-blue-600 hover:bg-blue-700 px-6 py-2 rounded-lg font-semibold transition-colors"
+                  className="px-4 py-2 bg-[#6BC153] hover:bg-[#5ba845] text-white rounded font-normal transition-colors"
                 >
                   Create Version
                 </button>
@@ -310,62 +319,71 @@ export default function PricingVersionManager() {
 
         {loading ? (
           <div className="text-center py-12">
-            <p className="text-gray-400">Loading versions...</p>
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#6FCBDC] mx-auto"></div>
+            <p className="mt-4 text-[#A5A5A5] font-light">
+              Loading versions...
+            </p>
           </div>
         ) : versions.length === 0 ? (
-          <div className="text-center py-12 bg-gray-800 rounded-lg">
-            <p className="text-gray-400">
-              No pricing versions found. Create your first version!
+          <div className="text-center py-12 bg-white rounded-xl border border-[#E6E6E6]">
+            <p className="text-xl text-[#494D50] font-normal">
+              No pricing versions found
+            </p>
+            <p className="text-[#A5A5A5] font-light mt-2">
+              Create your first version to get started
             </p>
           </div>
         ) : (
-          <div className="bg-gray-800 rounded-lg overflow-hidden">
+          <div className="bg-white rounded-xl border border-[#E6E6E6] overflow-hidden">
             <table className="w-full">
-              <thead className="bg-gray-700">
+              <thead className="bg-[#F7F8F9] border-b border-[#E6E6E6]">
                 <tr>
-                  <th className="px-6 py-3 text-left text-sm font-semibold">
+                  <th className="px-6 py-3 text-left text-xs font-normal text-[#494D50] uppercase tracking-wider">
                     Version
                   </th>
-                  <th className="px-6 py-3 text-left text-sm font-semibold">
+                  <th className="px-6 py-3 text-left text-xs font-normal text-[#494D50] uppercase tracking-wider">
                     Description
                   </th>
-                  <th className="px-6 py-3 text-left text-sm font-semibold">
+                  <th className="px-6 py-3 text-left text-xs font-normal text-[#494D50] uppercase tracking-wider">
                     Effective Date
                   </th>
-                  <th className="px-6 py-3 text-left text-sm font-semibold">
+                  <th className="px-6 py-3 text-left text-xs font-normal text-[#494D50] uppercase tracking-wider">
                     Status
                   </th>
-                  <th className="px-6 py-3 text-left text-sm font-semibold">
+                  <th className="px-6 py-3 text-left text-xs font-normal text-[#494D50] uppercase tracking-wider">
                     Actions
                   </th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-700">
+              <tbody className="divide-y divide-[#E6E6E6] bg-white">
                 {versions.map((version) => (
-                  <tr key={version.Id} className="hover:bg-gray-750">
+                  <tr
+                    key={version.Id}
+                    className="hover:bg-[#F7F8F9] transition-colors"
+                  >
                     <td className="px-6 py-4">
-                      <div className="font-semibold">
+                      <div className="font-normal text-[#494D50]">
                         {version.VersionNumber}
                       </div>
-                      <div className="text-xs text-gray-400">
+                      <div className="text-xs text-[#A5A5A5] font-light">
                         by {version.CreatedBy}
                       </div>
                     </td>
-                    <td className="px-6 py-4 text-sm text-gray-300">
+                    <td className="px-6 py-4 text-sm text-[#A5A5A5] font-light">
                       {version.Description || "-"}
                     </td>
-                    <td className="px-6 py-4 text-sm">
+                    <td className="px-6 py-4 text-sm text-[#A5A5A5] font-light">
                       {new Date(version.EffectiveDate).toLocaleDateString()}
                     </td>
                     <td className="px-6 py-4">
                       <div className="flex flex-col space-y-1">
                         {version.IsCurrent && (
-                          <span className="inline-flex items-center px-2 py-1 rounded text-xs font-semibold bg-green-900/50 text-green-300 border border-green-500">
+                          <span className="inline-flex items-center px-2 py-1 rounded text-xs font-light bg-[#6BC153]/10 text-[#6BC153] border border-[#6BC153]/30">
                             Current
                           </span>
                         )}
                         {version.IsLocked && (
-                          <span className="inline-flex items-center px-2 py-1 rounded text-xs font-semibold bg-yellow-900/50 text-yellow-300 border border-yellow-500">
+                          <span className="inline-flex items-center px-2 py-1 rounded text-xs font-light bg-[#609bb0]/10 text-[#609bb0] border border-[#609bb0]/30">
                             Locked
                           </span>
                         )}
@@ -376,7 +394,7 @@ export default function PricingVersionManager() {
                         {!version.IsCurrent && !version.IsLocked && (
                           <button
                             onClick={() => handleSetCurrent(version.Id)}
-                            className="text-blue-400 hover:text-blue-300 text-sm font-medium"
+                            className="text-[#6FCBDC] hover:text-[#609bb0] text-sm font-light"
                           >
                             Set Current
                           </button>
@@ -384,7 +402,7 @@ export default function PricingVersionManager() {
                         {!version.IsLocked && (
                           <button
                             onClick={() => handleDelete(version.Id)}
-                            className="text-red-400 hover:text-red-300 text-sm font-medium"
+                            className="text-[#A5A5A5] hover:text-[#494D50] text-sm font-light"
                           >
                             Delete
                           </button>
@@ -398,7 +416,7 @@ export default function PricingVersionManager() {
           </div>
         )}
 
-        <div className="mt-6 text-sm text-gray-400">
+        <div className="mt-6 text-sm text-[#A5A5A5] font-light">
           <p>Total versions: {versions.length}</p>
         </div>
       </div>
