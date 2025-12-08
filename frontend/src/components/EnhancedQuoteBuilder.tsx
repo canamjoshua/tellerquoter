@@ -137,6 +137,29 @@ export default function EnhancedQuoteBuilder({
     }
   }, [newVersion.PricingVersionId]);
 
+  // Auto-open Version 1 for editing when it's the only draft version
+  useEffect(() => {
+    if (
+      quote &&
+      quote.Versions &&
+      quote.Versions.length === 1 &&
+      quote.Versions[0].VersionStatus === "DRAFT" &&
+      !showVersionForm
+    ) {
+      // Pre-fill the form with Version 1's data
+      const version1 = quote.Versions[0];
+      setNewVersion({
+        PricingVersionId: version1.PricingVersionId,
+        ClientData: version1.ClientData,
+        ProjectionYears: version1.ProjectionYears,
+        CreatedBy: "admin",
+        SaaSProducts: [],
+        SetupPackages: [],
+      });
+      setShowVersionForm(true);
+    }
+  }, [quote, showVersionForm]);
+
   const getSuggestedSKUs = (): SKUDefinition[] => {
     const selectedProducts = selectedSaaSProducts
       .map((sp) => saasProducts.find((p) => p.Id === sp.productId))
@@ -432,7 +455,11 @@ export default function EnhancedQuoteBuilder({
               onClick={() => setShowVersionForm(!showVersionForm)}
               className="bg-[#6BC153] hover:bg-[#5ba845] text-white px-6 py-3 rounded-lg font-normal transition-all transform hover:scale-105 shadow-lg"
             >
-              {showVersionForm ? "Cancel" : "+ New Version"}
+              {showVersionForm
+                ? "Cancel"
+                : quote.Versions && quote.Versions.length === 1
+                  ? "Edit Version 1"
+                  : "+ New Version"}
             </button>
           </div>
         </div>
