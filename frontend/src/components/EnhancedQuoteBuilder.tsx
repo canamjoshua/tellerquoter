@@ -357,13 +357,15 @@ export default function EnhancedQuoteBuilder({
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-blue-900 to-gray-900 text-white p-8 flex items-center justify-center">
+      <div className="min-h-screen bg-[#F7F8F9] p-8 flex items-center justify-center">
         <div className="text-center">
           <div className="relative w-20 h-20 mx-auto mb-4">
-            <div className="absolute top-0 left-0 w-full h-full border-4 border-blue-500 rounded-full animate-ping opacity-20"></div>
-            <div className="absolute top-0 left-0 w-full h-full border-4 border-t-blue-500 border-r-transparent border-b-transparent border-l-transparent rounded-full animate-spin"></div>
+            <div className="absolute top-0 left-0 w-full h-full border-4 border-[#6FCBDC] rounded-full animate-ping opacity-20"></div>
+            <div className="absolute top-0 left-0 w-full h-full border-4 border-t-[#6FCBDC] border-r-transparent border-b-transparent border-l-transparent rounded-full animate-spin"></div>
           </div>
-          <p className="mt-4 text-gray-300 text-lg">Loading quote...</p>
+          <p className="mt-4 text-[#494D50] font-light text-lg">
+            Loading quote...
+          </p>
         </div>
       </div>
     );
@@ -383,12 +385,12 @@ export default function EnhancedQuoteBuilder({
 
   if (!quote) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-blue-900 to-gray-900 text-white p-8 flex items-center justify-center">
+      <div className="min-h-screen bg-[#F7F8F9] p-8 flex items-center justify-center">
         <div className="text-center">
-          <p className="text-xl text-red-400">Quote not found</p>
+          <p className="text-xl text-red-500 font-normal">Quote not found</p>
           <button
             onClick={onClose}
-            className="mt-4 px-6 py-3 bg-blue-600 hover:bg-blue-700 rounded-lg transition-all transform hover:scale-105"
+            className="mt-4 px-6 py-3 bg-[#6FCBDC] hover:bg-[#609bb0] text-white rounded-lg transition-all transform hover:scale-105 font-normal"
           >
             Back to Quotes
           </button>
@@ -398,21 +400,21 @@ export default function EnhancedQuoteBuilder({
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-blue-900 to-gray-900 text-white p-8">
+    <div className="min-h-screen bg-[#F7F8F9] p-8">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="flex justify-between items-start mb-8">
           <div>
             <button
               onClick={onClose}
-              className="text-gray-400 hover:text-white mb-4 flex items-center gap-2 transition-colors"
+              className="text-[#A5A5A5] hover:text-[#494D50] mb-4 flex items-center gap-2 transition-colors font-light"
             >
               ← Back to Quotes
             </button>
-            <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
+            <h1 className="text-4xl font-normal text-[#494D50]">
               {quote.QuoteNumber}
             </h1>
-            <p className="text-gray-300 mt-2 text-lg">
+            <p className="text-[#A5A5A5] mt-2 text-lg font-light">
               {quote.ClientName}
               {quote.ClientOrganization && ` • ${quote.ClientOrganization}`}
             </p>
@@ -421,22 +423,22 @@ export default function EnhancedQuoteBuilder({
             {quote.Versions && quote.Versions.length >= 2 && (
               <button
                 onClick={() => setShowComparison(true)}
-                className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 px-6 py-3 rounded-lg font-semibold transition-all transform hover:scale-105 shadow-lg"
+                className="bg-[#609bb0] hover:bg-[#516B84] text-white px-6 py-3 rounded-lg font-normal transition-all transform hover:scale-105 shadow-lg"
               >
-                🔄 Compare
+                Compare
               </button>
             )}
             <button
               onClick={() => setShowVersionForm(!showVersionForm)}
-              className="bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 px-6 py-3 rounded-lg font-semibold transition-all transform hover:scale-105 shadow-lg"
+              className="bg-[#6BC153] hover:bg-[#5ba845] text-white px-6 py-3 rounded-lg font-normal transition-all transform hover:scale-105 shadow-lg"
             >
-              {showVersionForm ? "✕ Cancel" : "+ New Version"}
+              {showVersionForm ? "Cancel" : "+ New Version"}
             </button>
           </div>
         </div>
 
         {error && (
-          <div className="bg-red-900/50 border border-red-500 text-red-200 px-6 py-4 rounded-lg mb-6">
+          <div className="bg-red-50 border border-red-400 text-red-700 px-6 py-4 rounded-lg mb-6 font-light">
             {error}
           </div>
         )}
@@ -448,8 +450,8 @@ export default function EnhancedQuoteBuilder({
               {/* Left Panel - Builder */}
               <div className="lg:col-span-2 space-y-4">
                 {/* Pricing Version */}
-                <div className="bg-gray-800/50 backdrop-blur-xl rounded-xl border border-gray-700 p-6">
-                  <label className="block text-sm font-medium mb-2">
+                <div className="bg-white rounded-xl border border-[#E6E6E6] p-6">
+                  <label className="block text-sm font-normal text-[#494D50] mb-2">
                     Pricing Version
                   </label>
                   <select
@@ -461,7 +463,7 @@ export default function EnhancedQuoteBuilder({
                         PricingVersionId: e.target.value,
                       })
                     }
-                    className="w-full px-4 py-3 bg-gray-700/50 border border-gray-600 rounded-lg"
+                    className="w-full px-4 py-3 bg-white border border-[#E6E6E6] rounded-lg text-[#494D50] font-light focus:border-[#6FCBDC] focus:outline-none"
                   >
                     <option value="">Select Pricing Version</option>
                     {pricingVersions.map((pv) => (
@@ -473,24 +475,24 @@ export default function EnhancedQuoteBuilder({
                 </div>
 
                 {/* SaaS Products Section */}
-                <div className="bg-gray-800/50 backdrop-blur-xl rounded-xl border border-gray-700">
+                <div className="bg-white rounded-xl border border-[#E6E6E6]">
                   <button
                     type="button"
                     onClick={() => toggleSection("products")}
-                    className="w-full px-6 py-4 flex justify-between items-center hover:bg-gray-700/30 transition-colors rounded-t-xl"
+                    className="w-full px-6 py-4 flex justify-between items-center hover:bg-[#F7F8F9] transition-colors rounded-t-xl"
                   >
                     <div className="flex items-center gap-3">
                       <span className="text-2xl">☁️</span>
                       <div className="text-left">
-                        <h3 className="text-lg font-bold text-green-400">
+                        <h3 className="text-lg font-normal text-[#6FCBDC]">
                           SaaS Products
                         </h3>
-                        <p className="text-sm text-gray-400">
+                        <p className="text-sm text-[#A5A5A5] font-light">
                           {selectedSaaSProducts.length} selected
                         </p>
                       </div>
                     </div>
-                    <span className="text-2xl">
+                    <span className="text-2xl text-[#494D50]">
                       {expandedSections.products ? "−" : "+"}
                     </span>
                   </button>
@@ -509,19 +511,19 @@ export default function EnhancedQuoteBuilder({
                               onClick={() => toggleSaaSProduct(product.Id)}
                               className={`p-4 rounded-lg border-2 text-left transition-all ${
                                 isSelected
-                                  ? "bg-green-600/20 border-green-500"
-                                  : "bg-gray-700/30 border-gray-600 hover:border-green-400"
+                                  ? "bg-[#6FCBDC]/10 border-[#6FCBDC]"
+                                  : "bg-[#F7F8F9] border-[#E6E6E6] hover:border-[#6FCBDC]"
                               }`}
                             >
                               <div className="flex justify-between items-start mb-2">
-                                <span className="font-bold">
+                                <span className="font-normal text-[#494D50]">
                                   {product.Name}
                                 </span>
                                 {isSelected && (
-                                  <span className="text-green-400">✓</span>
+                                  <span className="text-[#6FCBDC]">✓</span>
                                 )}
                               </div>
-                              <div className="text-xl font-bold text-green-400">
+                              <div className="text-xl font-normal text-[#6FCBDC]">
                                 ${product.Tier1Price}/mo
                               </div>
                             </button>
@@ -533,24 +535,24 @@ export default function EnhancedQuoteBuilder({
                 </div>
 
                 {/* Setup Packages Section */}
-                <div className="bg-gray-800/50 backdrop-blur-xl rounded-xl border border-gray-700">
+                <div className="bg-white rounded-xl border border-[#E6E6E6]">
                   <button
                     type="button"
                     onClick={() => toggleSection("packages")}
-                    className="w-full px-6 py-4 flex justify-between items-center hover:bg-gray-700/30 transition-colors rounded-t-xl"
+                    className="w-full px-6 py-4 flex justify-between items-center hover:bg-[#F7F8F9] transition-colors rounded-t-xl"
                   >
                     <div className="flex items-center gap-3">
                       <span className="text-2xl">📦</span>
                       <div className="text-left">
-                        <h3 className="text-lg font-bold text-blue-400">
+                        <h3 className="text-lg font-normal text-[#609bb0]">
                           Setup Packages
                         </h3>
-                        <p className="text-sm text-gray-400">
+                        <p className="text-sm text-[#A5A5A5] font-light">
                           {selectedSetupPackages.length} selected
                         </p>
                       </div>
                     </div>
-                    <span className="text-2xl">
+                    <span className="text-2xl text-[#494D50]">
                       {expandedSections.packages ? "−" : "+"}
                     </span>
                   </button>
@@ -558,8 +560,8 @@ export default function EnhancedQuoteBuilder({
                   {expandedSections.packages && (
                     <div className="p-6 pt-0">
                       {getSuggestedSKUs().length > 0 && (
-                        <div className="bg-yellow-900/20 border border-yellow-600 rounded-lg p-3 mb-4">
-                          <p className="text-sm text-yellow-300 font-semibold mb-2">
+                        <div className="bg-[#6BC153]/10 border border-[#6BC153] rounded-lg p-3 mb-4">
+                          <p className="text-sm text-[#494D50] font-normal mb-2">
                             💡 Recommended for your selection
                           </p>
                         </div>
@@ -580,24 +582,26 @@ export default function EnhancedQuoteBuilder({
                               onClick={() => toggleSetupPackage(sku.Id)}
                               className={`p-4 rounded-lg border-2 text-left transition-all relative ${
                                 isSelected
-                                  ? "bg-blue-600/20 border-blue-500"
+                                  ? "bg-[#609bb0]/10 border-[#609bb0]"
                                   : isSuggested
-                                    ? "bg-yellow-900/10 border-yellow-600"
-                                    : "bg-gray-700/30 border-gray-600 hover:border-blue-400"
+                                    ? "bg-[#6BC153]/5 border-[#6BC153]"
+                                    : "bg-[#F7F8F9] border-[#E6E6E6] hover:border-[#609bb0]"
                               }`}
                             >
                               {isSuggested && !isSelected && (
-                                <span className="absolute -top-2 -right-2 bg-yellow-500 text-black text-xs px-2 py-1 rounded-full font-bold">
+                                <span className="absolute -top-2 -right-2 bg-[#6BC153] text-white text-xs px-2 py-1 rounded-full font-normal">
                                   ⭐
                                 </span>
                               )}
                               <div className="flex justify-between items-start mb-2">
-                                <span className="font-bold">{sku.Name}</span>
+                                <span className="font-normal text-[#494D50]">
+                                  {sku.Name}
+                                </span>
                                 {isSelected && (
-                                  <span className="text-blue-400">✓</span>
+                                  <span className="text-[#609bb0]">✓</span>
                                 )}
                               </div>
-                              <div className="text-xl font-bold text-blue-400">
+                              <div className="text-xl font-normal text-[#609bb0]">
                                 ${sku.FixedPrice?.toLocaleString() || "0"}
                               </div>
                             </button>
@@ -609,21 +613,21 @@ export default function EnhancedQuoteBuilder({
                 </div>
 
                 {/* Discounts Section */}
-                <div className="bg-gray-800/50 backdrop-blur-xl rounded-xl border border-gray-700">
+                <div className="bg-white rounded-xl border border-[#E6E6E6]">
                   <button
                     type="button"
                     onClick={() => toggleSection("discounts")}
-                    className="w-full px-6 py-4 flex justify-between items-center hover:bg-gray-700/30 transition-colors rounded-t-xl"
+                    className="w-full px-6 py-4 flex justify-between items-center hover:bg-[#F7F8F9] transition-colors rounded-t-xl"
                   >
                     <div className="flex items-center gap-3">
                       <span className="text-2xl">💰</span>
                       <div className="text-left">
-                        <h3 className="text-lg font-bold text-purple-400">
+                        <h3 className="text-lg font-normal text-[#516B84]">
                           Discounts (Optional)
                         </h3>
                       </div>
                     </div>
-                    <span className="text-2xl">
+                    <span className="text-2xl text-[#494D50]">
                       {expandedSections.discounts ? "−" : "+"}
                     </span>
                   </button>
@@ -631,7 +635,7 @@ export default function EnhancedQuoteBuilder({
                   {expandedSections.discounts && (
                     <div className="p-6 pt-0 grid grid-cols-2 gap-4">
                       <div>
-                        <label className="text-sm text-gray-300 mb-1 block">
+                        <label className="text-sm text-[#494D50] font-light mb-1 block">
                           SaaS Year 1 %
                         </label>
                         <input
@@ -648,11 +652,11 @@ export default function EnhancedQuoteBuilder({
                                 : undefined,
                             })
                           }
-                          className="w-full px-3 py-2 bg-gray-700/50 border border-gray-600 rounded-lg"
+                          className="w-full px-3 py-2 bg-white border border-[#E6E6E6] rounded-lg text-[#494D50] font-light focus:border-[#6FCBDC] focus:outline-none"
                         />
                       </div>
                       <div>
-                        <label className="text-sm text-gray-300 mb-1 block">
+                        <label className="text-sm text-[#494D50] font-light mb-1 block">
                           Setup %
                         </label>
                         <input
@@ -669,7 +673,7 @@ export default function EnhancedQuoteBuilder({
                                 : undefined,
                             })
                           }
-                          className="w-full px-3 py-2 bg-gray-700/50 border border-gray-600 rounded-lg"
+                          className="w-full px-3 py-2 bg-white border border-[#E6E6E6] rounded-lg text-[#494D50] font-light focus:border-[#6FCBDC] focus:outline-none"
                         />
                       </div>
                     </div>
@@ -681,16 +685,15 @@ export default function EnhancedQuoteBuilder({
               <div className="lg:col-span-1">
                 <div className="sticky top-8">
                   <div
-                    className="bg-white text-gray-900 rounded-lg shadow-2xl overflow-hidden"
+                    className="bg-white rounded-lg shadow-xl overflow-hidden border border-[#E6E6E6]"
                     style={{
-                      boxShadow:
-                        "0 20px 60px rgba(0,0,0,0.5), 0 0 0 1px rgba(0,0,0,0.1)",
+                      boxShadow: "0 10px 40px rgba(0,0,0,0.1)",
                     }}
                   >
                     {/* Paper Header */}
-                    <div className="bg-gradient-to-r from-blue-600 to-purple-600 text-white p-6">
-                      <h2 className="text-2xl font-bold">Quote Preview</h2>
-                      <p className="text-sm opacity-90">
+                    <div className="bg-[#6FCBDC] text-white p-6">
+                      <h2 className="text-2xl font-normal">Quote Preview</h2>
+                      <p className="text-sm opacity-90 font-light">
                         {quote.ClientName}
                         {quote.ClientOrganization &&
                           ` • ${quote.ClientOrganization}`}
@@ -702,7 +705,7 @@ export default function EnhancedQuoteBuilder({
                       {/* SaaS Products */}
                       {selectedSaaSProducts.length > 0 && (
                         <div>
-                          <h3 className="font-bold text-lg mb-3 text-green-700">
+                          <h3 className="font-normal text-lg mb-3 text-[#6FCBDC]">
                             ☁️ SaaS Services
                           </h3>
                           <div className="space-y-2">
@@ -713,12 +716,12 @@ export default function EnhancedQuoteBuilder({
                               return (
                                 <div
                                   key={sp.productId}
-                                  className="flex justify-between items-center p-2 bg-green-50 rounded"
+                                  className="flex justify-between items-center p-2 bg-[#F7F8F9] rounded border border-[#E6E6E6]"
                                 >
-                                  <span className="text-sm">
+                                  <span className="text-sm text-[#494D50] font-light">
                                     {product?.Name}
                                   </span>
-                                  <span className="font-mono font-bold text-green-700">
+                                  <span className="font-mono font-normal text-[#6FCBDC]">
                                     ${product?.Tier1Price}/mo
                                   </span>
                                 </div>
@@ -731,7 +734,7 @@ export default function EnhancedQuoteBuilder({
                       {/* Setup Packages */}
                       {selectedSetupPackages.length > 0 && (
                         <div>
-                          <h3 className="font-bold text-lg mb-3 text-blue-700">
+                          <h3 className="font-normal text-lg mb-3 text-[#609bb0]">
                             📦 Implementation
                           </h3>
                           <div className="space-y-2">
@@ -742,10 +745,12 @@ export default function EnhancedQuoteBuilder({
                               return (
                                 <div
                                   key={sp.skuId}
-                                  className="flex justify-between items-center p-2 bg-blue-50 rounded"
+                                  className="flex justify-between items-center p-2 bg-[#F7F8F9] rounded border border-[#E6E6E6]"
                                 >
-                                  <span className="text-sm">{sku?.Name}</span>
-                                  <span className="font-mono font-bold text-blue-700">
+                                  <span className="text-sm text-[#494D50] font-light">
+                                    {sku?.Name}
+                                  </span>
+                                  <span className="font-mono font-normal text-[#609bb0]">
                                     $
                                     {(
                                       (sku?.FixedPrice || 0) * sp.quantity
@@ -759,13 +764,13 @@ export default function EnhancedQuoteBuilder({
                       )}
 
                       {/* Totals */}
-                      <div className="border-t-2 border-gray-300 pt-4 space-y-2">
+                      <div className="border-t-2 border-[#E6E6E6] pt-4 space-y-2">
                         <div className="flex justify-between items-center">
-                          <span className="text-sm text-gray-600">
+                          <span className="text-sm text-[#A5A5A5] font-light">
                             SaaS Monthly
                           </span>
                           <span
-                            className={`font-mono font-bold text-lg transition-transform ${
+                            className={`font-mono font-normal text-lg text-[#494D50] transition-transform ${
                               animatingTotal ? "scale-110" : "scale-100"
                             }`}
                           >
@@ -773,11 +778,11 @@ export default function EnhancedQuoteBuilder({
                           </span>
                         </div>
                         <div className="flex justify-between items-center">
-                          <span className="text-sm text-gray-600">
+                          <span className="text-sm text-[#A5A5A5] font-light">
                             SaaS Year 1
                           </span>
                           <span
-                            className={`font-mono font-bold text-lg transition-transform ${
+                            className={`font-mono font-normal text-lg text-[#494D50] transition-transform ${
                               animatingTotal ? "scale-110" : "scale-100"
                             }`}
                           >
@@ -785,11 +790,11 @@ export default function EnhancedQuoteBuilder({
                           </span>
                         </div>
                         <div className="flex justify-between items-center">
-                          <span className="text-sm text-gray-600">
+                          <span className="text-sm text-[#A5A5A5] font-light">
                             Setup Total
                           </span>
                           <span
-                            className={`font-mono font-bold text-lg transition-transform ${
+                            className={`font-mono font-normal text-lg text-[#494D50] transition-transform ${
                               animatingTotal ? "scale-110" : "scale-100"
                             }`}
                           >
@@ -798,12 +803,12 @@ export default function EnhancedQuoteBuilder({
                         </div>
 
                         {/* Grand Total */}
-                        <div className="flex justify-between items-center pt-2 border-t-2 border-gray-900">
-                          <span className="font-bold text-lg">
+                        <div className="flex justify-between items-center pt-2 border-t-2 border-[#494D50]">
+                          <span className="font-normal text-lg text-[#494D50]">
                             Total Contract
                           </span>
                           <span
-                            className={`font-mono font-bold text-2xl transition-transform ${
+                            className={`font-mono font-normal text-2xl text-[#494D50] transition-transform ${
                               animatingTotal ? "scale-110" : "scale-100"
                             }`}
                           >
@@ -815,9 +820,11 @@ export default function EnhancedQuoteBuilder({
                       {/* Empty State */}
                       {selectedSaaSProducts.length === 0 &&
                         selectedSetupPackages.length === 0 && (
-                          <div className="text-center py-12 text-gray-400">
+                          <div className="text-center py-12 text-[#A5A5A5]">
                             <div className="text-6xl mb-4">📝</div>
-                            <p>Select products to see your quote</p>
+                            <p className="font-light">
+                              Select products to see your quote
+                            </p>
                           </div>
                         )}
                     </div>
@@ -831,9 +838,9 @@ export default function EnhancedQuoteBuilder({
                       (selectedSaaSProducts.length === 0 &&
                         selectedSetupPackages.length === 0)
                     }
-                    className="w-full mt-4 px-6 py-4 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 disabled:from-gray-600 disabled:to-gray-700 disabled:cursor-not-allowed rounded-lg font-bold text-lg transition-all transform hover:scale-105 shadow-xl"
+                    className="w-full mt-4 px-6 py-4 bg-[#6BC153] hover:bg-[#5ba845] disabled:bg-[#A5A5A5] disabled:cursor-not-allowed rounded-lg font-normal text-lg text-white transition-all transform hover:scale-105 shadow-xl"
                   >
-                    ✓ Create Version
+                    Create Version
                   </button>
                 </div>
               </div>
@@ -843,35 +850,39 @@ export default function EnhancedQuoteBuilder({
 
         {/* Version History */}
         <div>
-          <h2 className="text-2xl font-bold mb-6">Version History</h2>
+          <h2 className="text-2xl font-normal text-[#494D50] mb-6">
+            Version History
+          </h2>
           {!quote.Versions || quote.Versions.length === 0 ? (
-            <div className="bg-gray-800/30 border border-gray-700 rounded-xl p-12 text-center">
-              <p className="text-xl text-gray-400">No versions yet</p>
+            <div className="bg-white border border-[#E6E6E6] rounded-xl p-12 text-center">
+              <p className="text-xl text-[#A5A5A5] font-light">
+                No versions yet
+              </p>
             </div>
           ) : (
             <div className="space-y-4">
               {quote.Versions.map((version) => (
                 <div
                   key={version.Id}
-                  className="bg-gray-800/50 backdrop-blur-xl border border-gray-700 rounded-xl p-6 hover:border-blue-500 transition-all"
+                  className="bg-white border border-[#E6E6E6] rounded-xl p-6 hover:border-[#6FCBDC] transition-all"
                 >
                   <div className="flex justify-between items-start mb-4">
                     <div>
-                      <h3 className="text-xl font-bold">
+                      <h3 className="text-xl font-normal text-[#494D50]">
                         Version {version.VersionNumber}
                       </h3>
-                      <p className="text-sm text-gray-400">
+                      <p className="text-sm text-[#A5A5A5] font-light">
                         {new Date(version.CreatedAt).toLocaleDateString()}
                       </p>
                     </div>
                     <div className="flex gap-2">
                       <span
-                        className={`px-3 py-1 rounded-full text-sm font-semibold ${
+                        className={`px-3 py-1 rounded-full text-sm font-normal ${
                           version.VersionStatus === "DRAFT"
-                            ? "bg-gray-600"
+                            ? "bg-[#A5A5A5] text-white"
                             : version.VersionStatus === "SENT"
-                              ? "bg-blue-600"
-                              : "bg-green-600"
+                              ? "bg-[#6FCBDC] text-white"
+                              : "bg-[#6BC153] text-white"
                         }`}
                       >
                         {version.VersionStatus}
@@ -881,7 +892,7 @@ export default function EnhancedQuoteBuilder({
                           onClick={() =>
                             handleDeleteVersion(version.VersionNumber)
                           }
-                          className="px-3 py-1 bg-red-600 hover:bg-red-700 rounded-full text-sm"
+                          className="px-3 py-1 bg-red-500 hover:bg-red-600 text-white rounded-full text-sm font-normal"
                         >
                           Delete
                         </button>
@@ -890,25 +901,27 @@ export default function EnhancedQuoteBuilder({
                   </div>
 
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <div className="bg-green-900/20 border border-green-600 rounded-lg p-4">
-                      <p className="text-xs text-gray-400 mb-1">SaaS Monthly</p>
-                      <p className="text-2xl font-bold text-green-400">
+                    <div className="bg-[#6FCBDC]/10 border border-[#6FCBDC] rounded-lg p-4">
+                      <p className="text-xs text-[#A5A5A5] font-light mb-1">
+                        SaaS Monthly
+                      </p>
+                      <p className="text-2xl font-normal text-[#6FCBDC]">
                         ${version.TotalSaaSMonthly?.toLocaleString() || "0"}
                       </p>
                     </div>
-                    <div className="bg-green-900/20 border border-green-600 rounded-lg p-4">
-                      <p className="text-xs text-gray-400 mb-1">
+                    <div className="bg-[#6FCBDC]/10 border border-[#6FCBDC] rounded-lg p-4">
+                      <p className="text-xs text-[#A5A5A5] font-light mb-1">
                         SaaS Annual (Year 1)
                       </p>
-                      <p className="text-2xl font-bold text-green-400">
+                      <p className="text-2xl font-normal text-[#6FCBDC]">
                         ${version.TotalSaaSAnnualYear1?.toLocaleString() || "0"}
                       </p>
                     </div>
-                    <div className="bg-blue-900/20 border border-blue-600 rounded-lg p-4">
-                      <p className="text-xs text-gray-400 mb-1">
+                    <div className="bg-[#609bb0]/10 border border-[#609bb0] rounded-lg p-4">
+                      <p className="text-xs text-[#A5A5A5] font-light mb-1">
                         Setup Packages
                       </p>
-                      <p className="text-2xl font-bold text-blue-400">
+                      <p className="text-2xl font-normal text-[#609bb0]">
                         ${version.TotalSetupPackages?.toLocaleString() || "0"}
                       </p>
                     </div>

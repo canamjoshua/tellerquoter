@@ -62,25 +62,23 @@ function App() {
   const isAdminView = adminNavItems.some((item) => item.id === currentView);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-blue-900 to-gray-900">
+    <div className="min-h-screen bg-[#494D50]">
       {/* Sidebar Navigation */}
       <div className="flex h-screen">
         {/* Sidebar */}
-        <nav className="w-64 bg-gray-800/50 backdrop-blur-xl border-r border-gray-700 flex flex-col">
+        <nav className="w-64 bg-[#494D50] border-r border-[#6FCBDC]/20 flex flex-col">
           {/* Logo/Header */}
-          <div className="p-6 border-b border-gray-700">
-            <h1 className="text-2xl font-bold bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
-              Teller Quoter
-            </h1>
-            <p className="text-xs text-gray-400 mt-1">
-              Quote Management System
-            </p>
+          <div className="p-6 border-b border-[#6FCBDC]/20">
+            <div className="flex items-center gap-3">
+              <img src="/teller-logo.svg" alt="Teller" className="h-8" />
+            </div>
+            <p className="text-xs text-[#A5A5A5] mt-2 font-light">Quoter</p>
           </div>
 
           {/* Main Navigation */}
           <div className="flex-1 overflow-y-auto py-4">
             <div className="px-3 mb-2">
-              <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider px-3">
+              <p className="text-xs font-semibold text-[#A5A5A5] uppercase tracking-wider px-3">
                 Main
               </p>
             </div>
@@ -88,14 +86,14 @@ function App() {
               <button
                 key={item.id}
                 onClick={() => setCurrentView(item.id)}
-                className={`w-full px-6 py-3 text-left flex items-center gap-3 transition-all ${
+                className={`w-full px-6 py-3 text-left flex items-center gap-3 transition-all font-light ${
                   currentView === item.id
-                    ? "bg-gradient-to-r from-blue-600 to-purple-600 text-white border-l-4 border-blue-400"
-                    : "text-gray-300 hover:bg-gray-700/50 hover:text-white"
+                    ? "bg-[#6FCBDC]/10 text-[#6FCBDC] border-l-4 border-[#6FCBDC]"
+                    : "text-[#E6E6E6] hover:bg-[#6FCBDC]/5 hover:text-[#6FCBDC]"
                 }`}
               >
                 <span className="text-xl">{item.icon}</span>
-                <span className="font-medium">{item.label}</span>
+                <span className="font-normal">{item.label}</span>
               </button>
             ))}
 
@@ -103,26 +101,26 @@ function App() {
             <div className="mt-6">
               <button
                 onClick={() => setAdminExpanded(!adminExpanded)}
-                className="w-full px-6 py-3 text-left flex items-center justify-between text-gray-300 hover:bg-gray-700/50 hover:text-white transition-all"
+                className="w-full px-6 py-3 text-left flex items-center justify-between text-[#E6E6E6] hover:bg-[#6FCBDC]/5 hover:text-[#6FCBDC] transition-all font-light"
               >
                 <div className="flex items-center gap-3">
                   <span className="text-xl">⚙️</span>
-                  <span className="font-medium">Admin</span>
+                  <span className="font-normal">Admin</span>
                 </div>
                 <span className="text-sm">
                   {adminExpanded || isAdminView ? "−" : "+"}
                 </span>
               </button>
               {(adminExpanded || isAdminView) && (
-                <div className="bg-gray-900/30">
+                <div className="bg-black/10">
                   {adminNavItems.map((item) => (
                     <button
                       key={item.id}
                       onClick={() => setCurrentView(item.id)}
-                      className={`w-full px-6 py-2.5 pl-12 text-left flex items-center gap-3 text-sm transition-all ${
+                      className={`w-full px-6 py-2.5 pl-12 text-left flex items-center gap-3 text-sm transition-all font-light ${
                         currentView === item.id
-                          ? "bg-gray-700 text-white border-l-4 border-purple-400"
-                          : "text-gray-400 hover:bg-gray-800/50 hover:text-white"
+                          ? "bg-[#609bb0]/20 text-[#6FCBDC] border-l-4 border-[#609bb0]"
+                          : "text-[#A5A5A5] hover:bg-black/10 hover:text-[#E6E6E6]"
                       }`}
                     >
                       <span>{item.icon}</span>
@@ -135,16 +133,16 @@ function App() {
           </div>
 
           {/* Footer */}
-          <div className="p-4 border-t border-gray-700">
-            <div className="flex items-center gap-2 text-gray-400 text-xs">
-              <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
+          <div className="p-4 border-t border-[#6FCBDC]/20">
+            <div className="flex items-center gap-2 text-[#A5A5A5] text-xs font-light">
+              <span className="w-2 h-2 bg-[#6BC153] rounded-full animate-pulse"></span>
               <span>System Online</span>
             </div>
           </div>
         </nav>
 
         {/* Main Content Area */}
-        <main className="flex-1 overflow-y-auto">
+        <main className="flex-1 overflow-y-auto bg-[#F7F8F9]">
           <div className="p-8">{renderView()}</div>
         </main>
       </div>

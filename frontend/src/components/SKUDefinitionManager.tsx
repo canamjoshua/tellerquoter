@@ -209,7 +209,7 @@ const SKUDefinitionManager: React.FC = () => {
       IsActive: sku.IsActive,
       SortOrder: sku.SortOrder,
       EarmarkedStatus: sku.EarmarkedStatus,
-      EstimatedHours: sku.EstimatedHours ?? "",
+      EstimatedHours: sku.EstimatedHours,
       AcceptanceCriteria: sku.AcceptanceCriteria || "",
     });
   };
@@ -815,7 +815,9 @@ const SKUDefinitionManager: React.FC = () => {
                     onChange={(e) =>
                       setEditForm({
                         ...editForm,
-                        EstimatedHours: e.target.value,
+                        EstimatedHours: e.target.value
+                          ? parseFloat(e.target.value)
+                          : null,
                       })
                     }
                     className="w-full bg-gray-700 border border-gray-600 rounded px-3 py-2 focus:outline-none focus:border-blue-500"
