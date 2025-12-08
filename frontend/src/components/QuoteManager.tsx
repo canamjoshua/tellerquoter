@@ -4,11 +4,19 @@ import EnhancedQuoteBuilder from "./EnhancedQuoteBuilder";
 
 const API_BASE_URL = "/api";
 
-export default function QuoteManager() {
+interface QuoteManagerProps {
+  initialShowForm?: boolean;
+  onFormClose?: () => void;
+}
+
+export default function QuoteManager({
+  initialShowForm = false,
+  onFormClose,
+}: QuoteManagerProps = {}) {
   const [quotes, setQuotes] = useState<Quote[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [showForm, setShowForm] = useState(false);
+  const [showForm, setShowForm] = useState(initialShowForm);
   const [selectedQuoteId, setSelectedQuoteId] = useState<string | null>(null);
   const [newQuote, setNewQuote] = useState<NewQuote>({
     ClientName: "",
@@ -93,15 +101,15 @@ export default function QuoteManager() {
   const getStatusBadgeColor = (status: string) => {
     switch (status) {
       case "DRAFT":
-        return "bg-gray-500";
+        return "bg-[#F7F8F9] text-[#A5A5A5] border border-[#E6E6E6]";
       case "SENT":
-        return "bg-blue-500";
+        return "bg-[#6FCBDC]/10 text-[#609bb0] border border-[#6FCBDC]/30";
       case "ACCEPTED":
-        return "bg-green-500";
+        return "bg-[#6BC153]/10 text-[#6BC153] border border-[#6BC153]/30";
       case "REJECTED":
-        return "bg-red-500";
+        return "bg-red-500/10 text-red-600 border border-red-500/30";
       default:
-        return "bg-gray-500";
+        return "bg-[#F7F8F9] text-[#A5A5A5] border border-[#E6E6E6]";
     }
   };
 
@@ -119,36 +127,40 @@ export default function QuoteManager() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-900 text-white p-8">
+    <div className="min-h-screen bg-[#F7F8F9] p-8">
       <div className="max-w-6xl mx-auto">
         <div className="flex justify-between items-center mb-8">
           <div>
-            <h1 className="text-4xl font-bold">Quote Management</h1>
-            <p className="text-gray-400 mt-2">
+            <h1 className="text-4xl font-normal text-[#494D50]">
+              Quote Management
+            </h1>
+            <p className="text-[#A5A5A5] font-light mt-2">
               Create and manage client quotes with versions
             </p>
           </div>
           <button
             onClick={() => setShowForm(!showForm)}
-            className="bg-green-600 hover:bg-green-700 px-6 py-2 rounded-lg font-semibold transition-colors"
+            className="bg-[#6BC153] hover:bg-[#5ba845] text-white px-6 py-2 rounded-lg font-normal transition-colors"
           >
-            {showForm ? "✕ Cancel" : "+ New Quote"}
+            {showForm ? "Cancel" : "+ New Quote"}
           </button>
         </div>
 
         {error && (
-          <div className="bg-red-900/50 border border-red-500 text-red-200 px-4 py-3 rounded mb-6">
+          <div className="bg-red-50 border border-red-300 text-red-700 px-4 py-3 rounded-xl mb-6 font-light">
             {error}
           </div>
         )}
 
         {showForm && (
-          <div className="bg-gray-800 p-6 rounded-lg mb-6 border border-gray-700">
-            <h2 className="text-2xl font-bold mb-4">Create New Quote</h2>
+          <div className="bg-white p-6 rounded-xl mb-6 border border-[#E6E6E6]">
+            <h2 className="text-2xl font-normal text-[#494D50] mb-4">
+              Create New Quote
+            </h2>
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium mb-2">
+                  <label className="block text-sm font-light text-[#494D50] mb-2">
                     Client Name *
                   </label>
                   <input
@@ -158,13 +170,13 @@ export default function QuoteManager() {
                     onChange={(e) =>
                       setNewQuote({ ...newQuote, ClientName: e.target.value })
                     }
-                    className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="w-full px-3 py-2 bg-white border border-[#E6E6E6] text-[#494D50] rounded focus:outline-none focus:border-[#6FCBDC] focus:ring-1 focus:ring-[#6FCBDC]"
                     placeholder="John Doe"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium mb-2">
+                  <label className="block text-sm font-light text-[#494D50] mb-2">
                     Client Organization
                   </label>
                   <input
@@ -176,7 +188,7 @@ export default function QuoteManager() {
                         ClientOrganization: e.target.value,
                       })
                     }
-                    className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="w-full px-3 py-2 bg-white border border-[#E6E6E6] text-[#494D50] rounded focus:outline-none focus:border-[#6FCBDC] focus:ring-1 focus:ring-[#6FCBDC]"
                     placeholder="Acme Corp"
                   />
                 </div>
@@ -185,14 +197,17 @@ export default function QuoteManager() {
               <div className="flex justify-end space-x-3">
                 <button
                   type="button"
-                  onClick={() => setShowForm(false)}
-                  className="px-4 py-2 bg-gray-700 hover:bg-gray-600 rounded transition-colors"
+                  onClick={() => {
+                    setShowForm(false);
+                    onFormClose?.();
+                  }}
+                  className="px-4 py-2 bg-[#A5A5A5] hover:bg-[#494D50] text-white rounded font-light transition-colors"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-2 bg-green-600 hover:bg-green-700 rounded font-semibold transition-colors"
+                  className="px-4 py-2 bg-[#6BC153] hover:bg-[#5ba845] text-white rounded font-normal transition-colors"
                 >
                   Create Quote
                 </button>
@@ -203,83 +218,82 @@ export default function QuoteManager() {
 
         {loading ? (
           <div className="text-center py-12">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-white mx-auto"></div>
-            <p className="mt-4 text-gray-400">Loading quotes...</p>
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#6FCBDC] mx-auto"></div>
+            <p className="mt-4 text-[#A5A5A5] font-light">Loading quotes...</p>
           </div>
         ) : quotes.length === 0 ? (
-          <div className="text-center py-12 bg-gray-800 rounded-lg border border-gray-700">
-            <p className="text-xl text-gray-400">No quotes found</p>
-            <p className="text-gray-500 mt-2">
+          <div className="text-center py-12 bg-white rounded-xl border border-[#E6E6E6]">
+            <p className="text-xl text-[#494D50] font-normal">
+              No quotes found
+            </p>
+            <p className="text-[#A5A5A5] font-light mt-2">
               Create your first quote to get started
             </p>
           </div>
         ) : (
-          <div className="bg-gray-800 rounded-lg border border-gray-700 overflow-hidden">
+          <div className="bg-white rounded-xl border border-[#E6E6E6] overflow-hidden">
             <table className="w-full">
-              <thead className="bg-gray-700 border-b border-gray-600">
+              <thead className="bg-[#F7F8F9] border-b border-[#E6E6E6]">
                 <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-normal text-[#494D50] uppercase tracking-wider">
                     Quote Number
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-normal text-[#494D50] uppercase tracking-wider">
                     Client
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-normal text-[#494D50] uppercase tracking-wider">
                     Organization
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-normal text-[#494D50] uppercase tracking-wider">
                     Status
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-normal text-[#494D50] uppercase tracking-wider">
                     Created
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
-                    Actions
+                  <th className="px-6 py-3 text-right text-xs font-normal text-[#494D50] uppercase tracking-wider">
+                    Delete
                   </th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-700">
+              <tbody className="divide-y divide-[#E6E6E6] bg-white">
                 {quotes.map((quote) => (
                   <tr
                     key={quote.Id}
-                    className="hover:bg-gray-750 transition-colors"
+                    className="hover:bg-[#F7F8F9] transition-colors"
                   >
-                    <td className="px-6 py-4 whitespace-nowrap font-mono text-sm text-blue-400">
-                      {quote.QuoteNumber}
+                    <td className="px-6 py-4 whitespace-nowrap text-sm">
+                      <button
+                        onClick={() => setSelectedQuoteId(quote.Id)}
+                        className="font-mono text-[#6FCBDC] hover:text-[#609bb0] hover:underline font-light transition-colors"
+                      >
+                        {quote.QuoteNumber}
+                      </button>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
+                    <td className="px-6 py-4 whitespace-nowrap text-[#494D50] font-light">
                       {quote.ClientName}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-gray-400">
+                    <td className="px-6 py-4 whitespace-nowrap text-[#A5A5A5] font-light">
                       {quote.ClientOrganization || "-"}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <span
-                        className={`px-2 py-1 text-xs font-semibold rounded ${getStatusBadgeColor(
+                        className={`px-2 py-1 text-xs font-light rounded ${getStatusBadgeColor(
                           quote.Status,
                         )}`}
                       >
                         {quote.Status}
                       </span>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-400">
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-[#A5A5A5] font-light">
                       {new Date(quote.CreatedAt).toLocaleDateString()}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm">
-                      <div className="flex space-x-2">
-                        <button
-                          onClick={() => setSelectedQuoteId(quote.Id)}
-                          className="px-3 py-1 bg-blue-600 hover:bg-blue-700 rounded transition-colors"
-                        >
-                          📝 Open
-                        </button>
-                        <button
-                          onClick={() => handleDelete(quote.Id)}
-                          className="px-3 py-1 bg-red-600 hover:bg-red-700 rounded transition-colors"
-                        >
-                          🗑️ Delete
-                        </button>
-                      </div>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-right">
+                      <button
+                        onClick={() => handleDelete(quote.Id)}
+                        className="px-3 py-1 bg-[#A5A5A5] hover:bg-[#494D50] text-white rounded font-light transition-colors"
+                      >
+                        Delete
+                      </button>
                     </td>
                   </tr>
                 ))}

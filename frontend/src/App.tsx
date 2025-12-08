@@ -22,12 +22,27 @@ function App() {
   const [currentView, setCurrentView] = useState<View>("dashboard");
   const [adminExpanded, setAdminExpanded] = useState(false);
 
+  const [shouldShowQuoteForm, setShouldShowQuoteForm] = useState(false);
+
   const renderView = () => {
     switch (currentView) {
       case "dashboard":
-        return <Dashboard />;
+        return (
+          <Dashboard
+            onNavigate={setCurrentView}
+            onCreateQuote={() => {
+              setShouldShowQuoteForm(true);
+              setCurrentView("quotes");
+            }}
+          />
+        );
       case "quotes":
-        return <QuoteManager />;
+        return (
+          <QuoteManager
+            initialShowForm={shouldShowQuoteForm}
+            onFormClose={() => setShouldShowQuoteForm(false)}
+          />
+        );
       case "pricing":
         return <PricingVersionManager />;
       case "sku":
@@ -41,7 +56,15 @@ function App() {
       case "snippet":
         return <TextSnippetManager />;
       default:
-        return <Dashboard />;
+        return (
+          <Dashboard
+            onNavigate={setCurrentView}
+            onCreateQuote={() => {
+              setShouldShowQuoteForm(true);
+              setCurrentView("quotes");
+            }}
+          />
+        );
     }
   };
 

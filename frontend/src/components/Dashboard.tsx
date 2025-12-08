@@ -3,7 +3,25 @@ import type { Quote } from "../types/quote";
 
 const API_BASE_URL = "/api";
 
-export default function Dashboard() {
+type View =
+  | "dashboard"
+  | "quotes"
+  | "pricing"
+  | "sku"
+  | "saas"
+  | "travel"
+  | "referrer"
+  | "snippet";
+
+interface DashboardProps {
+  onNavigate: (view: View) => void;
+  onCreateQuote: () => void;
+}
+
+export default function Dashboard({
+  onNavigate,
+  onCreateQuote,
+}: DashboardProps) {
   const [recentQuotes, setRecentQuotes] = useState<Quote[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -179,8 +197,13 @@ export default function Dashboard() {
                     key={quote.Id}
                     className="hover:bg-[#F7F8F9] transition-colors"
                   >
-                    <td className="px-6 py-4 text-sm font-mono text-[#6FCBDC]">
-                      {quote.QuoteNumber}
+                    <td className="px-6 py-4 text-sm">
+                      <button
+                        onClick={() => onNavigate("quotes")}
+                        className="font-mono text-[#6FCBDC] hover:text-[#609bb0] hover:underline transition-colors"
+                      >
+                        {quote.QuoteNumber}
+                      </button>
                     </td>
                     <td className="px-6 py-4 text-sm text-[#494D50] font-light">
                       {quote.ClientName}
@@ -217,7 +240,10 @@ export default function Dashboard() {
 
       {/* Quick Actions */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        <button className="bg-[#6FCBDC] hover:bg-[#609bb0] text-white rounded-xl p-6 text-left transition-all transform hover:scale-105">
+        <button
+          onClick={onCreateQuote}
+          className="bg-[#6FCBDC] hover:bg-[#609bb0] text-white rounded-xl p-6 text-left transition-all transform hover:scale-105"
+        >
           <div className="text-3xl mb-2">➕</div>
           <div className="font-normal text-lg">Create New Quote</div>
           <div className="text-sm opacity-90 mt-1 font-light">
@@ -225,7 +251,10 @@ export default function Dashboard() {
           </div>
         </button>
 
-        <button className="bg-[#516B84] hover:bg-[#609bb0] text-white rounded-xl p-6 text-left transition-all transform hover:scale-105">
+        <button
+          onClick={() => onNavigate("quotes")}
+          className="bg-[#516B84] hover:bg-[#609bb0] text-white rounded-xl p-6 text-left transition-all transform hover:scale-105"
+        >
           <div className="text-3xl mb-2">📊</div>
           <div className="font-normal text-lg">View All Quotes</div>
           <div className="text-sm opacity-90 mt-1 font-light">
@@ -233,7 +262,10 @@ export default function Dashboard() {
           </div>
         </button>
 
-        <button className="bg-[#6BC153] hover:bg-[#6FCBDC] text-white rounded-xl p-6 text-left transition-all transform hover:scale-105">
+        <button
+          onClick={() => onNavigate("quotes")}
+          className="bg-[#6BC153] hover:bg-[#6FCBDC] text-white rounded-xl p-6 text-left transition-all transform hover:scale-105"
+        >
           <div className="text-3xl mb-2">📈</div>
           <div className="font-normal text-lg">Reports</div>
           <div className="text-sm opacity-90 mt-1 font-light">
