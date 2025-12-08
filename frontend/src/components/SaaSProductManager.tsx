@@ -253,857 +253,896 @@ const SaaSProductManager: React.FC = () => {
     return version ? version.VersionNumber : "Unknown";
   };
 
-  if (loading) return <div className="p-4">Loading SaaS products...</div>;
+  if (loading)
+    return (
+      <div className="min-h-screen bg-[#F7F8F9] flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#6FCBDC] mx-auto"></div>
+          <p className="mt-4 text-[#A5A5A5] font-light">
+            Loading SaaS products...
+          </p>
+        </div>
+      </div>
+    );
 
   return (
-    <div className="p-6 max-w-7xl mx-auto">
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="text-3xl font-bold">SaaS Products</h1>
-        <button
-          onClick={() => setShowForm(!showForm)}
-          className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
-        >
-          {showForm ? "Cancel" : "Add Product"}
-        </button>
-      </div>
-
-      {error && (
-        <div className="bg-red-900/50 border border-red-500 text-red-200 px-4 py-3 rounded-lg mb-6">
-          {error}
+    <div className="min-h-screen bg-[#F7F8F9] p-8">
+      <div className="max-w-7xl mx-auto">
+        <div className="flex justify-between items-center mb-8">
+          <div>
+            <h1 className="text-4xl font-normal text-[#494D50]">
+              SaaS Products
+            </h1>
+            <p className="text-[#A5A5A5] font-light mt-2">
+              Manage SaaS products and pricing tiers
+            </p>
+          </div>
+          <button
+            onClick={() => setShowForm(!showForm)}
+            className="bg-[#6BC153] hover:bg-[#5ba845] text-white px-6 py-2 rounded-lg font-normal transition-colors"
+          >
+            {showForm ? "Cancel" : "+ Add Product"}
+          </button>
         </div>
-      )}
 
-      {/* Filter */}
-      <div className="mb-4">
-        <label className="block text-sm font-medium mb-2">
-          Filter by Pricing Version:
-        </label>
-        <select
-          value={selectedVersionFilter}
-          onChange={(e) => setSelectedVersionFilter(e.target.value)}
-          className="bg-gray-700 border border-gray-600 rounded px-3 py-2 w-64 focus:outline-none focus:border-blue-500"
-        >
-          <option value="">All Versions</option>
-          {pricingVersions.map((version) => (
-            <option key={version.Id} value={version.Id}>
-              {version.VersionNumber}
-              {version.IsCurrent && " (Current)"}
-              {version.IsLocked && " 🔒"}
-            </option>
-          ))}
-        </select>
-      </div>
+        {error && (
+          <div className="bg-red-50 border border-red-300 text-red-700 px-4 py-3 rounded-xl mb-6 font-light">
+            {error}
+          </div>
+        )}
 
-      {showForm && (
-        <form
-          onSubmit={handleSubmit}
-          className="bg-gray-800 p-6 rounded-lg shadow-md mb-6"
-        >
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium mb-2">
-                Pricing Version <span className="text-red-500">*</span>
-              </label>
-              <select
-                value={newProduct.PricingVersionId}
-                onChange={(e) =>
-                  setNewProduct({
-                    ...newProduct,
-                    PricingVersionId: e.target.value,
-                  })
-                }
-                className="w-full bg-gray-700 border border-gray-600 rounded px-3 py-2 focus:outline-none focus:border-blue-500"
-                required
-              >
-                <option value="">Select Version</option>
-                {pricingVersions
-                  .filter((v) => !v.IsLocked)
-                  .map((version) => (
-                    <option key={version.Id} value={version.Id}>
-                      {version.VersionNumber}
-                      {version.IsCurrent && " (Current)"}
-                    </option>
-                  ))}
-              </select>
-            </div>
+        {/* Filter */}
+        <div className="mb-6">
+          <label className="block text-sm font-light text-[#494D50] mb-2">
+            Filter by Pricing Version:
+          </label>
+          <select
+            value={selectedVersionFilter}
+            onChange={(e) => setSelectedVersionFilter(e.target.value)}
+            className="px-3 py-2 bg-white border border-[#E6E6E6] text-[#494D50] rounded focus:outline-none focus:border-[#6FCBDC] focus:ring-1 focus:ring-[#6FCBDC] w-64"
+          >
+            <option value="">All Versions</option>
+            {pricingVersions.map((version) => (
+              <option key={version.Id} value={version.Id}>
+                {version.VersionNumber}
+                {version.IsCurrent && " (Current)"}
+                {version.IsLocked && " 🔒"}
+              </option>
+            ))}
+          </select>
+        </div>
 
-            <div>
-              <label className="block text-sm font-medium mb-2">
-                Product Code <span className="text-red-500">*</span>
-              </label>
-              <input
-                type="text"
-                value={newProduct.ProductCode}
-                onChange={(e) =>
-                  setNewProduct({ ...newProduct, ProductCode: e.target.value })
-                }
-                className="w-full bg-gray-700 border border-gray-600 rounded px-3 py-2 focus:outline-none focus:border-blue-500"
-                placeholder="SAAS-001"
-                required
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium mb-2">
-                Name <span className="text-red-500">*</span>
-              </label>
-              <input
-                type="text"
-                value={newProduct.Name}
-                onChange={(e) =>
-                  setNewProduct({ ...newProduct, Name: e.target.value })
-                }
-                className="w-full bg-gray-700 border border-gray-600 rounded px-3 py-2 focus:outline-none focus:border-blue-500"
-                required
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium mb-2">
-                Category <span className="text-red-500">*</span>
-              </label>
-              <input
-                type="text"
-                value={newProduct.Category}
-                onChange={(e) =>
-                  setNewProduct({ ...newProduct, Category: e.target.value })
-                }
-                className="w-full bg-gray-700 border border-gray-600 rounded px-3 py-2 focus:outline-none focus:border-blue-500"
-                placeholder="Core, Optional"
-                required
-              />
-            </div>
-
-            <div className="col-span-2">
-              <label className="block text-sm font-medium mb-2">
-                Description
-              </label>
-              <textarea
-                value={newProduct.Description}
-                onChange={(e) =>
-                  setNewProduct({ ...newProduct, Description: e.target.value })
-                }
-                className="w-full bg-gray-700 border border-gray-600 rounded px-3 py-2 focus:outline-none focus:border-blue-500"
-                rows={2}
-              />
-            </div>
-
-            <div className="col-span-2">
-              <h3 className="font-semibold mb-2">Tier 1 (Required)</h3>
-            </div>
-            <div>
-              <label className="block text-sm font-medium mb-2">
-                Min Users
-              </label>
-              <input
-                type="number"
-                value={newProduct.Tier1Min}
-                onChange={(e) =>
-                  setNewProduct({
-                    ...newProduct,
-                    Tier1Min: parseInt(e.target.value),
-                  })
-                }
-                className="w-full bg-gray-700 border border-gray-600 rounded px-3 py-2 focus:outline-none focus:border-blue-500"
-                required
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium mb-2">
-                Max Users
-              </label>
-              <input
-                type="number"
-                value={newProduct.Tier1Max}
-                onChange={(e) =>
-                  setNewProduct({
-                    ...newProduct,
-                    Tier1Max: parseInt(e.target.value),
-                  })
-                }
-                className="w-full bg-gray-700 border border-gray-600 rounded px-3 py-2 focus:outline-none focus:border-blue-500"
-                required
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium mb-2">
-                Price per User
-              </label>
-              <input
-                type="number"
-                step="0.01"
-                value={newProduct.Tier1Price}
-                onChange={(e) =>
-                  setNewProduct({ ...newProduct, Tier1Price: e.target.value })
-                }
-                className="w-full bg-gray-700 border border-gray-600 rounded px-3 py-2 focus:outline-none focus:border-blue-500"
-                required
-              />
-            </div>
-
-            <div className="col-span-2">
-              <h3 className="font-semibold mb-2">Tier 2 (Optional)</h3>
-            </div>
-            <div>
-              <label className="block text-sm font-medium mb-2">
-                Min Users
-              </label>
-              <input
-                type="number"
-                value={newProduct.Tier2Min}
-                onChange={(e) =>
-                  setNewProduct({ ...newProduct, Tier2Min: e.target.value })
-                }
-                className="w-full bg-gray-700 border border-gray-600 rounded px-3 py-2 focus:outline-none focus:border-blue-500"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium mb-2">
-                Max Users
-              </label>
-              <input
-                type="number"
-                value={newProduct.Tier2Max}
-                onChange={(e) =>
-                  setNewProduct({ ...newProduct, Tier2Max: e.target.value })
-                }
-                className="w-full bg-gray-700 border border-gray-600 rounded px-3 py-2 focus:outline-none focus:border-blue-500"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium mb-2">
-                Price per User
-              </label>
-              <input
-                type="number"
-                step="0.01"
-                value={newProduct.Tier2Price}
-                onChange={(e) =>
-                  setNewProduct({ ...newProduct, Tier2Price: e.target.value })
-                }
-                className="w-full bg-gray-700 border border-gray-600 rounded px-3 py-2 focus:outline-none focus:border-blue-500"
-              />
-            </div>
-
-            <div className="col-span-2">
-              <h3 className="font-semibold mb-2">Tier 3 (Optional)</h3>
-            </div>
-            <div>
-              <label className="block text-sm font-medium mb-2">
-                Min Users
-              </label>
-              <input
-                type="number"
-                value={newProduct.Tier3Min}
-                onChange={(e) =>
-                  setNewProduct({ ...newProduct, Tier3Min: e.target.value })
-                }
-                className="w-full bg-gray-700 border border-gray-600 rounded px-3 py-2 focus:outline-none focus:border-blue-500"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium mb-2">
-                Max Users (blank = unlimited)
-              </label>
-              <input
-                type="number"
-                value={newProduct.Tier3Max}
-                onChange={(e) =>
-                  setNewProduct({ ...newProduct, Tier3Max: e.target.value })
-                }
-                className="w-full bg-gray-700 border border-gray-600 rounded px-3 py-2 focus:outline-none focus:border-blue-500"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium mb-2">
-                Price per User
-              </label>
-              <input
-                type="number"
-                step="0.01"
-                value={newProduct.Tier3Price}
-                onChange={(e) =>
-                  setNewProduct({ ...newProduct, Tier3Price: e.target.value })
-                }
-                className="w-full bg-gray-700 border border-gray-600 rounded px-3 py-2 focus:outline-none focus:border-blue-500"
-              />
-            </div>
-
-            <div className="col-span-2 space-y-2">
-              <label className="flex items-center">
-                <input
-                  type="checkbox"
-                  checked={newProduct.IsActive}
-                  onChange={(e) =>
-                    setNewProduct({ ...newProduct, IsActive: e.target.checked })
-                  }
-                  className="mr-2"
-                />
-                Active
-              </label>
-              <label className="flex items-center">
-                <input
-                  type="checkbox"
-                  checked={newProduct.IsRequired}
+        {showForm && (
+          <form
+            onSubmit={handleSubmit}
+            className="bg-white p-6 rounded-xl mb-6 border border-[#E6E6E6]"
+          >
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-light text-[#494D50] mb-2">
+                  Pricing Version <span className="text-red-500">*</span>
+                </label>
+                <select
+                  value={newProduct.PricingVersionId}
                   onChange={(e) =>
                     setNewProduct({
                       ...newProduct,
-                      IsRequired: e.target.checked,
+                      PricingVersionId: e.target.value,
                     })
                   }
-                  className="mr-2"
+                  className="w-full px-3 py-2 bg-white border border-[#E6E6E6] text-[#494D50] rounded focus:outline-none focus:border-[#6FCBDC] focus:ring-1 focus:ring-[#6FCBDC]"
+                  required
+                >
+                  <option value="">Select Version</option>
+                  {pricingVersions
+                    .filter((v) => !v.IsLocked)
+                    .map((version) => (
+                      <option key={version.Id} value={version.Id}>
+                        {version.VersionNumber}
+                        {version.IsCurrent && " (Current)"}
+                      </option>
+                    ))}
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-sm font-light text-[#494D50] mb-2">
+                  Product Code <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="text"
+                  value={newProduct.ProductCode}
+                  onChange={(e) =>
+                    setNewProduct({
+                      ...newProduct,
+                      ProductCode: e.target.value,
+                    })
+                  }
+                  className="w-full px-3 py-2 bg-white border border-[#E6E6E6] text-[#494D50] rounded focus:outline-none focus:border-[#6FCBDC] focus:ring-1 focus:ring-[#6FCBDC]"
+                  placeholder="SAAS-001"
+                  required
                 />
-                Required in all quotes
-              </label>
+              </div>
+
+              <div>
+                <label className="block text-sm font-light text-[#494D50] mb-2">
+                  Name <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="text"
+                  value={newProduct.Name}
+                  onChange={(e) =>
+                    setNewProduct({ ...newProduct, Name: e.target.value })
+                  }
+                  className="w-full px-3 py-2 bg-white border border-[#E6E6E6] text-[#494D50] rounded focus:outline-none focus:border-[#6FCBDC] focus:ring-1 focus:ring-[#6FCBDC]"
+                  required
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-light text-[#494D50] mb-2">
+                  Category <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="text"
+                  value={newProduct.Category}
+                  onChange={(e) =>
+                    setNewProduct({ ...newProduct, Category: e.target.value })
+                  }
+                  className="w-full px-3 py-2 bg-white border border-[#E6E6E6] text-[#494D50] rounded focus:outline-none focus:border-[#6FCBDC] focus:ring-1 focus:ring-[#6FCBDC]"
+                  placeholder="Core, Optional"
+                  required
+                />
+              </div>
+
+              <div className="col-span-2">
+                <label className="block text-sm font-light text-[#494D50] mb-2">
+                  Description
+                </label>
+                <textarea
+                  value={newProduct.Description}
+                  onChange={(e) =>
+                    setNewProduct({
+                      ...newProduct,
+                      Description: e.target.value,
+                    })
+                  }
+                  className="w-full px-3 py-2 bg-white border border-[#E6E6E6] text-[#494D50] rounded focus:outline-none focus:border-[#6FCBDC] focus:ring-1 focus:ring-[#6FCBDC]"
+                  rows={2}
+                />
+              </div>
+
+              <div className="col-span-2">
+                <h3 className="font-semibold mb-2">Tier 1 (Required)</h3>
+              </div>
+              <div>
+                <label className="block text-sm font-light text-[#494D50] mb-2">
+                  Min Users
+                </label>
+                <input
+                  type="number"
+                  value={newProduct.Tier1Min}
+                  onChange={(e) =>
+                    setNewProduct({
+                      ...newProduct,
+                      Tier1Min: parseInt(e.target.value),
+                    })
+                  }
+                  className="w-full px-3 py-2 bg-white border border-[#E6E6E6] text-[#494D50] rounded focus:outline-none focus:border-[#6FCBDC] focus:ring-1 focus:ring-[#6FCBDC]"
+                  required
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-light text-[#494D50] mb-2">
+                  Max Users
+                </label>
+                <input
+                  type="number"
+                  value={newProduct.Tier1Max}
+                  onChange={(e) =>
+                    setNewProduct({
+                      ...newProduct,
+                      Tier1Max: parseInt(e.target.value),
+                    })
+                  }
+                  className="w-full px-3 py-2 bg-white border border-[#E6E6E6] text-[#494D50] rounded focus:outline-none focus:border-[#6FCBDC] focus:ring-1 focus:ring-[#6FCBDC]"
+                  required
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-light text-[#494D50] mb-2">
+                  Price per User
+                </label>
+                <input
+                  type="number"
+                  step="0.01"
+                  value={newProduct.Tier1Price}
+                  onChange={(e) =>
+                    setNewProduct({ ...newProduct, Tier1Price: e.target.value })
+                  }
+                  className="w-full px-3 py-2 bg-white border border-[#E6E6E6] text-[#494D50] rounded focus:outline-none focus:border-[#6FCBDC] focus:ring-1 focus:ring-[#6FCBDC]"
+                  required
+                />
+              </div>
+
+              <div className="col-span-2">
+                <h3 className="font-semibold mb-2">Tier 2 (Optional)</h3>
+              </div>
+              <div>
+                <label className="block text-sm font-light text-[#494D50] mb-2">
+                  Min Users
+                </label>
+                <input
+                  type="number"
+                  value={newProduct.Tier2Min}
+                  onChange={(e) =>
+                    setNewProduct({ ...newProduct, Tier2Min: e.target.value })
+                  }
+                  className="w-full px-3 py-2 bg-white border border-[#E6E6E6] text-[#494D50] rounded focus:outline-none focus:border-[#6FCBDC] focus:ring-1 focus:ring-[#6FCBDC]"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-light text-[#494D50] mb-2">
+                  Max Users
+                </label>
+                <input
+                  type="number"
+                  value={newProduct.Tier2Max}
+                  onChange={(e) =>
+                    setNewProduct({ ...newProduct, Tier2Max: e.target.value })
+                  }
+                  className="w-full px-3 py-2 bg-white border border-[#E6E6E6] text-[#494D50] rounded focus:outline-none focus:border-[#6FCBDC] focus:ring-1 focus:ring-[#6FCBDC]"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-light text-[#494D50] mb-2">
+                  Price per User
+                </label>
+                <input
+                  type="number"
+                  step="0.01"
+                  value={newProduct.Tier2Price}
+                  onChange={(e) =>
+                    setNewProduct({ ...newProduct, Tier2Price: e.target.value })
+                  }
+                  className="w-full px-3 py-2 bg-white border border-[#E6E6E6] text-[#494D50] rounded focus:outline-none focus:border-[#6FCBDC] focus:ring-1 focus:ring-[#6FCBDC]"
+                />
+              </div>
+
+              <div className="col-span-2">
+                <h3 className="font-semibold mb-2">Tier 3 (Optional)</h3>
+              </div>
+              <div>
+                <label className="block text-sm font-light text-[#494D50] mb-2">
+                  Min Users
+                </label>
+                <input
+                  type="number"
+                  value={newProduct.Tier3Min}
+                  onChange={(e) =>
+                    setNewProduct({ ...newProduct, Tier3Min: e.target.value })
+                  }
+                  className="w-full px-3 py-2 bg-white border border-[#E6E6E6] text-[#494D50] rounded focus:outline-none focus:border-[#6FCBDC] focus:ring-1 focus:ring-[#6FCBDC]"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-light text-[#494D50] mb-2">
+                  Max Users (blank = unlimited)
+                </label>
+                <input
+                  type="number"
+                  value={newProduct.Tier3Max}
+                  onChange={(e) =>
+                    setNewProduct({ ...newProduct, Tier3Max: e.target.value })
+                  }
+                  className="w-full px-3 py-2 bg-white border border-[#E6E6E6] text-[#494D50] rounded focus:outline-none focus:border-[#6FCBDC] focus:ring-1 focus:ring-[#6FCBDC]"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-light text-[#494D50] mb-2">
+                  Price per User
+                </label>
+                <input
+                  type="number"
+                  step="0.01"
+                  value={newProduct.Tier3Price}
+                  onChange={(e) =>
+                    setNewProduct({ ...newProduct, Tier3Price: e.target.value })
+                  }
+                  className="w-full px-3 py-2 bg-white border border-[#E6E6E6] text-[#494D50] rounded focus:outline-none focus:border-[#6FCBDC] focus:ring-1 focus:ring-[#6FCBDC]"
+                />
+              </div>
+
+              <div className="col-span-2 space-y-2">
+                <label className="flex items-center">
+                  <input
+                    type="checkbox"
+                    checked={newProduct.IsActive}
+                    onChange={(e) =>
+                      setNewProduct({
+                        ...newProduct,
+                        IsActive: e.target.checked,
+                      })
+                    }
+                    className="mr-2"
+                  />
+                  Active
+                </label>
+                <label className="flex items-center">
+                  <input
+                    type="checkbox"
+                    checked={newProduct.IsRequired}
+                    onChange={(e) =>
+                      setNewProduct({
+                        ...newProduct,
+                        IsRequired: e.target.checked,
+                      })
+                    }
+                    className="mr-2"
+                  />
+                  Required in all quotes
+                </label>
+              </div>
             </div>
-          </div>
 
-          <button
-            type="submit"
-            className="mt-4 bg-green-600 text-white px-6 py-2 rounded hover:bg-green-700"
-          >
-            Create Product
-          </button>
-        </form>
-      )}
-
-      <div className="bg-gray-800 rounded-lg shadow overflow-hidden">
-        <table className="min-w-full divide-y divide-gray-700">
-          <thead className="bg-gray-700">
-            <tr>
-              <th className="px-6 py-3 text-left text-sm font-semibold">
-                Code
-              </th>
-              <th className="px-6 py-3 text-left text-sm font-semibold">
-                Name
-              </th>
-              <th className="px-6 py-3 text-left text-sm font-semibold">
-                Category
-              </th>
-              <th className="px-6 py-3 text-left text-sm font-semibold">
-                Version
-              </th>
-              <th className="px-6 py-3 text-left text-sm font-semibold">
-                Tiers
-              </th>
-              <th className="px-6 py-3 text-left text-sm font-semibold">
-                Status
-              </th>
-              <th className="px-6 py-3 text-left text-sm font-semibold">
-                Actions
-              </th>
-            </tr>
-          </thead>
-          <tbody className="bg-gray-800 divide-y divide-gray-700">
-            {products.map((product) => (
-              <tr key={product.Id} className="hover:bg-gray-700/50">
-                <td className="px-6 py-4 whitespace-nowrap font-mono text-sm">
-                  {product.ProductCode}
-                </td>
-                <td className="px-6 py-4">{product.Name}</td>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <span className="px-2 py-1 text-xs bg-blue-100 text-blue-800 rounded">
-                    {product.Category}
-                  </span>
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm">
-                  {getVersionNumber(product.PricingVersionId)}
-                </td>
-                <td className="px-6 py-4 text-xs">
-                  <div>
-                    T1: {product.Tier1Min}-{product.Tier1Max} @ $
-                    {parseFloat(product.Tier1Price).toFixed(2)}
-                  </div>
-                  {product.Tier2Price && (
-                    <div>
-                      T2: {product.Tier2Min}-{product.Tier2Max} @ $
-                      {parseFloat(product.Tier2Price).toFixed(2)}
-                    </div>
-                  )}
-                  {product.Tier3Price && (
-                    <div>
-                      T3: {product.Tier3Min}-{product.Tier3Max || "∞"} @ $
-                      {parseFloat(product.Tier3Price).toFixed(2)}
-                    </div>
-                  )}
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <div className="space-y-1">
-                    {product.IsActive ? (
-                      <span className="px-2 py-1 text-xs bg-green-100 text-green-800 rounded block w-fit">
-                        Active
-                      </span>
-                    ) : (
-                      <span className="px-2 py-1 text-xs bg-gray-100 text-gray-800 rounded block w-fit">
-                        Inactive
-                      </span>
-                    )}
-                    {product.IsRequired && (
-                      <span className="px-2 py-1 text-xs bg-orange-100 text-orange-800 rounded block w-fit">
-                        Required
-                      </span>
-                    )}
-                  </div>
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm space-x-2">
-                  <button
-                    onClick={() => setViewModal(product)}
-                    className="text-blue-400 hover:text-blue-300"
-                  >
-                    View
-                  </button>
-                  <button
-                    onClick={() => openEditModal(product)}
-                    className="text-green-400 hover:text-green-300"
-                  >
-                    Edit
-                  </button>
-                  <button
-                    onClick={() => handleDelete(product.Id)}
-                    className="text-red-400 hover:text-red-300"
-                  >
-                    Delete
-                  </button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-        {products.length === 0 && (
-          <div className="text-center py-8 text-gray-400">
-            No SaaS products found
-          </div>
+            <button
+              type="submit"
+              className="mt-4 bg-[#6BC153] hover:bg-[#5ba845] text-white px-6 py-2 rounded-lg font-normal transition-colors"
+            >
+              Create Product
+            </button>
+          </form>
         )}
-      </div>
 
-      {/* View Modal */}
-      {viewModal && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <div className="bg-gray-800 rounded-lg shadow-xl max-w-3xl w-full max-h-[90vh] overflow-y-auto">
-            <div className="p-6">
-              <div className="flex justify-between items-center mb-4">
-                <h2 className="text-2xl font-bold">SaaS Product Details</h2>
+        <div className="bg-white rounded-xl border border-[#E6E6E6] overflow-hidden">
+          <table className="min-w-full">
+            <thead className="bg-[#F7F8F9] border-b border-[#E6E6E6]">
+              <tr>
+                <th className="px-6 py-3 text-left text-xs font-normal text-[#494D50] uppercase tracking-wider">
+                  Code
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-normal text-[#494D50] uppercase tracking-wider">
+                  Name
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-normal text-[#494D50] uppercase tracking-wider">
+                  Category
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-normal text-[#494D50] uppercase tracking-wider">
+                  Version
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-normal text-[#494D50] uppercase tracking-wider">
+                  Tiers
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-normal text-[#494D50] uppercase tracking-wider">
+                  Status
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-normal text-[#494D50] uppercase tracking-wider">
+                  Actions
+                </th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-[#E6E6E6] bg-white">
+              {products.map((product) => (
+                <tr
+                  key={product.Id}
+                  className="hover:bg-[#F7F8F9] transition-colors"
+                >
+                  <td className="px-6 py-4 whitespace-nowrap font-mono text-sm">
+                    {product.ProductCode}
+                  </td>
+                  <td className="px-6 py-4">{product.Name}</td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <span className="px-2 py-1 text-xs bg-blue-100 text-blue-800 rounded">
+                      {product.Category}
+                    </span>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm">
+                    {getVersionNumber(product.PricingVersionId)}
+                  </td>
+                  <td className="px-6 py-4 text-xs">
+                    <div>
+                      T1: {product.Tier1Min}-{product.Tier1Max} @ $
+                      {parseFloat(product.Tier1Price).toFixed(2)}
+                    </div>
+                    {product.Tier2Price && (
+                      <div>
+                        T2: {product.Tier2Min}-{product.Tier2Max} @ $
+                        {parseFloat(product.Tier2Price).toFixed(2)}
+                      </div>
+                    )}
+                    {product.Tier3Price && (
+                      <div>
+                        T3: {product.Tier3Min}-{product.Tier3Max || "∞"} @ $
+                        {parseFloat(product.Tier3Price).toFixed(2)}
+                      </div>
+                    )}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <div className="space-y-1">
+                      {product.IsActive ? (
+                        <span className="px-2 py-1 text-xs bg-[#6BC153]/10 text-[#6BC153] border border-[#6BC153]/30 font-light rounded block w-fit">
+                          Active
+                        </span>
+                      ) : (
+                        <span className="px-2 py-1 text-xs bg-[#A5A5A5]/10 text-[#A5A5A5] border border-[#A5A5A5]/30 font-light rounded block w-fit">
+                          Inactive
+                        </span>
+                      )}
+                      {product.IsRequired && (
+                        <span className="px-2 py-1 text-xs bg-orange-50 text-orange-700 border border-orange-300 font-light rounded block w-fit">
+                          Required
+                        </span>
+                      )}
+                    </div>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm space-x-2">
+                    <button
+                      onClick={() => setViewModal(product)}
+                      className="text-[#6FCBDC] hover:text-[#609bb0] font-light"
+                    >
+                      View
+                    </button>
+                    <button
+                      onClick={() => openEditModal(product)}
+                      className="text-[#609bb0] hover:text-[#516B84] font-light"
+                    >
+                      Edit
+                    </button>
+                    <button
+                      onClick={() => handleDelete(product.Id)}
+                      className="text-[#A5A5A5] hover:text-[#494D50] font-light"
+                    >
+                      Delete
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+          {products.length === 0 && (
+            <div className="text-center py-12 text-teller-dark-silver font-light">
+              No SaaS products found
+            </div>
+          )}
+        </div>
+
+        {/* View Modal */}
+        {viewModal && (
+          <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+            <div className="bg-gray-800 rounded-lg shadow-xl max-w-3xl w-full max-h-[90vh] overflow-y-auto">
+              <div className="p-6">
+                <div className="flex justify-between items-center mb-4">
+                  <h2 className="text-2xl font-bold">SaaS Product Details</h2>
+                  <button
+                    onClick={() => setViewModal(null)}
+                    className="text-teller-dark-silver hover:text-teller-charcoal text-2xl transition-colors"
+                  >
+                    ×
+                  </button>
+                </div>
+
+                <div className="grid grid-cols-2 gap-4 text-sm text-teller-charcoal">
+                  <div>
+                    <label className="text-gray-400">Product Code:</label>
+                    <p className="font-mono">{viewModal.ProductCode}</p>
+                  </div>
+                  <div>
+                    <label className="text-gray-400">Name:</label>
+                    <p className="font-normal text-teller-dark-silver">
+                      {viewModal.Name}
+                    </p>
+                  </div>
+                  <div>
+                    <label className="text-gray-400">Category:</label>
+                    <p>{viewModal.Category}</p>
+                  </div>
+                  <div>
+                    <label className="text-gray-400">Pricing Model:</label>
+                    <p>{viewModal.PricingModel}</p>
+                  </div>
+                  <div className="col-span-2">
+                    <label className="text-gray-400">Description:</label>
+                    <p>{viewModal.Description || "—"}</p>
+                  </div>
+
+                  <div className="col-span-2 border-t border-gray-700 pt-4 mt-4">
+                    <h3 className="font-semibold mb-2">Tier 1</h3>
+                  </div>
+                  <div>
+                    <label className="text-gray-400">Users:</label>
+                    <p>
+                      {viewModal.Tier1Min} - {viewModal.Tier1Max}
+                    </p>
+                  </div>
+                  <div>
+                    <label className="text-gray-400">Price per User:</label>
+                    <p>${parseFloat(viewModal.Tier1Price).toFixed(2)}</p>
+                  </div>
+
+                  {viewModal.Tier2Price && (
+                    <>
+                      <div className="col-span-2 border-t border-gray-700 pt-4 mt-4">
+                        <h3 className="font-semibold mb-2">Tier 2</h3>
+                      </div>
+                      <div>
+                        <label className="text-gray-400">Users:</label>
+                        <p>
+                          {viewModal.Tier2Min} - {viewModal.Tier2Max}
+                        </p>
+                      </div>
+                      <div>
+                        <label className="text-gray-400">Price per User:</label>
+                        <p>${parseFloat(viewModal.Tier2Price).toFixed(2)}</p>
+                      </div>
+                    </>
+                  )}
+
+                  {viewModal.Tier3Price && (
+                    <>
+                      <div className="col-span-2 border-t border-gray-700 pt-4 mt-4">
+                        <h3 className="font-semibold mb-2">Tier 3</h3>
+                      </div>
+                      <div>
+                        <label className="text-gray-400">Users:</label>
+                        <p>
+                          {viewModal.Tier3Min} - {viewModal.Tier3Max || "∞"}
+                        </p>
+                      </div>
+                      <div>
+                        <label className="text-gray-400">Price per User:</label>
+                        <p>${parseFloat(viewModal.Tier3Price).toFixed(2)}</p>
+                      </div>
+                    </>
+                  )}
+
+                  <div className="col-span-2 border-t border-gray-700 pt-4 mt-4"></div>
+                  <div>
+                    <label className="text-gray-400">Active:</label>
+                    <p>{viewModal.IsActive ? "✅ Yes" : "❌ No"}</p>
+                  </div>
+                  <div>
+                    <label className="text-gray-400">Required:</label>
+                    <p>{viewModal.IsRequired ? "✅ Yes" : "❌ No"}</p>
+                  </div>
+                  <div>
+                    <label className="text-gray-400">Sort Order:</label>
+                    <p>{viewModal.SortOrder}</p>
+                  </div>
+                  <div>
+                    <label className="text-gray-400">Version:</label>
+                    <p>{getVersionNumber(viewModal.PricingVersionId)}</p>
+                  </div>
+                  <div>
+                    <label className="text-gray-400">Created:</label>
+                    <p className="text-xs">
+                      {new Date(viewModal.CreatedAt).toLocaleString()}
+                    </p>
+                  </div>
+                  <div>
+                    <label className="text-gray-400">Updated:</label>
+                    <p className="text-xs">
+                      {new Date(viewModal.UpdatedAt).toLocaleString()}
+                    </p>
+                  </div>
+                </div>
+
                 <button
                   onClick={() => setViewModal(null)}
-                  className="text-gray-400 hover:text-white text-2xl"
+                  className="mt-6 bg-gray-700 text-white px-6 py-2 rounded hover:bg-gray-600"
                 >
-                  ×
+                  Close
                 </button>
               </div>
-
-              <div className="grid grid-cols-2 gap-4 text-sm">
-                <div>
-                  <label className="text-gray-400">Product Code:</label>
-                  <p className="font-mono">{viewModal.ProductCode}</p>
-                </div>
-                <div>
-                  <label className="text-gray-400">Name:</label>
-                  <p className="font-semibold">{viewModal.Name}</p>
-                </div>
-                <div>
-                  <label className="text-gray-400">Category:</label>
-                  <p>{viewModal.Category}</p>
-                </div>
-                <div>
-                  <label className="text-gray-400">Pricing Model:</label>
-                  <p>{viewModal.PricingModel}</p>
-                </div>
-                <div className="col-span-2">
-                  <label className="text-gray-400">Description:</label>
-                  <p>{viewModal.Description || "—"}</p>
-                </div>
-
-                <div className="col-span-2 border-t border-gray-700 pt-4 mt-4">
-                  <h3 className="font-semibold mb-2">Tier 1</h3>
-                </div>
-                <div>
-                  <label className="text-gray-400">Users:</label>
-                  <p>
-                    {viewModal.Tier1Min} - {viewModal.Tier1Max}
-                  </p>
-                </div>
-                <div>
-                  <label className="text-gray-400">Price per User:</label>
-                  <p>${parseFloat(viewModal.Tier1Price).toFixed(2)}</p>
-                </div>
-
-                {viewModal.Tier2Price && (
-                  <>
-                    <div className="col-span-2 border-t border-gray-700 pt-4 mt-4">
-                      <h3 className="font-semibold mb-2">Tier 2</h3>
-                    </div>
-                    <div>
-                      <label className="text-gray-400">Users:</label>
-                      <p>
-                        {viewModal.Tier2Min} - {viewModal.Tier2Max}
-                      </p>
-                    </div>
-                    <div>
-                      <label className="text-gray-400">Price per User:</label>
-                      <p>${parseFloat(viewModal.Tier2Price).toFixed(2)}</p>
-                    </div>
-                  </>
-                )}
-
-                {viewModal.Tier3Price && (
-                  <>
-                    <div className="col-span-2 border-t border-gray-700 pt-4 mt-4">
-                      <h3 className="font-semibold mb-2">Tier 3</h3>
-                    </div>
-                    <div>
-                      <label className="text-gray-400">Users:</label>
-                      <p>
-                        {viewModal.Tier3Min} - {viewModal.Tier3Max || "∞"}
-                      </p>
-                    </div>
-                    <div>
-                      <label className="text-gray-400">Price per User:</label>
-                      <p>${parseFloat(viewModal.Tier3Price).toFixed(2)}</p>
-                    </div>
-                  </>
-                )}
-
-                <div className="col-span-2 border-t border-gray-700 pt-4 mt-4"></div>
-                <div>
-                  <label className="text-gray-400">Active:</label>
-                  <p>{viewModal.IsActive ? "✅ Yes" : "❌ No"}</p>
-                </div>
-                <div>
-                  <label className="text-gray-400">Required:</label>
-                  <p>{viewModal.IsRequired ? "✅ Yes" : "❌ No"}</p>
-                </div>
-                <div>
-                  <label className="text-gray-400">Sort Order:</label>
-                  <p>{viewModal.SortOrder}</p>
-                </div>
-                <div>
-                  <label className="text-gray-400">Version:</label>
-                  <p>{getVersionNumber(viewModal.PricingVersionId)}</p>
-                </div>
-                <div>
-                  <label className="text-gray-400">Created:</label>
-                  <p className="text-xs">
-                    {new Date(viewModal.CreatedAt).toLocaleString()}
-                  </p>
-                </div>
-                <div>
-                  <label className="text-gray-400">Updated:</label>
-                  <p className="text-xs">
-                    {new Date(viewModal.UpdatedAt).toLocaleString()}
-                  </p>
-                </div>
-              </div>
-
-              <button
-                onClick={() => setViewModal(null)}
-                className="mt-6 bg-gray-700 text-white px-6 py-2 rounded hover:bg-gray-600"
-              >
-                Close
-              </button>
             </div>
           </div>
-        </div>
-      )}
+        )}
 
-      {/* Edit Modal */}
-      {editModal && editForm && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <div className="bg-gray-800 rounded-lg shadow-xl max-w-3xl w-full max-h-[90vh] overflow-y-auto">
-            <form onSubmit={handleUpdate} className="p-6">
-              <div className="flex justify-between items-center mb-4">
-                <h2 className="text-2xl font-bold">Edit SaaS Product</h2>
-                <button
-                  type="button"
-                  onClick={() => {
-                    setEditModal(null);
-                    setEditForm(null);
-                  }}
-                  className="text-gray-400 hover:text-white text-2xl"
-                >
-                  ×
-                </button>
-              </div>
-
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium mb-2">
-                    Name <span className="text-red-500">*</span>
-                  </label>
-                  <input
-                    type="text"
-                    value={editForm.Name}
-                    onChange={(e) =>
-                      setEditForm({ ...editForm, Name: e.target.value })
-                    }
-                    className="w-full bg-gray-700 border border-gray-600 rounded px-3 py-2 focus:outline-none focus:border-blue-500"
-                    required
-                  />
+        {/* Edit Modal */}
+        {editModal && editForm && (
+          <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+            <div className="bg-gray-800 rounded-lg shadow-xl max-w-3xl w-full max-h-[90vh] overflow-y-auto">
+              <form onSubmit={handleUpdate} className="p-6">
+                <div className="flex justify-between items-center mb-4">
+                  <h2 className="text-2xl font-bold">Edit SaaS Product</h2>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setEditModal(null);
+                      setEditForm(null);
+                    }}
+                    className="text-teller-dark-silver hover:text-teller-charcoal text-2xl transition-colors"
+                  >
+                    ×
+                  </button>
                 </div>
 
-                <div>
-                  <label className="block text-sm font-medium mb-2">
-                    Category <span className="text-red-500">*</span>
-                  </label>
-                  <input
-                    type="text"
-                    value={editForm.Category}
-                    onChange={(e) =>
-                      setEditForm({ ...editForm, Category: e.target.value })
-                    }
-                    className="w-full bg-gray-700 border border-gray-600 rounded px-3 py-2 focus:outline-none focus:border-blue-500"
-                    required
-                  />
-                </div>
-
-                <div className="col-span-2">
-                  <label className="block text-sm font-medium mb-2">
-                    Description
-                  </label>
-                  <textarea
-                    value={editForm.Description ?? ""}
-                    onChange={(e) =>
-                      setEditForm({ ...editForm, Description: e.target.value })
-                    }
-                    className="w-full bg-gray-700 border border-gray-600 rounded px-3 py-2 focus:outline-none focus:border-blue-500"
-                    rows={2}
-                  />
-                </div>
-
-                <div className="col-span-2">
-                  <h3 className="font-semibold mb-2">Tier 1</h3>
-                </div>
-                <div>
-                  <label className="block text-sm font-medium mb-2">
-                    Min Users
-                  </label>
-                  <input
-                    type="number"
-                    value={editForm.Tier1Min ?? ""}
-                    onChange={(e) =>
-                      setEditForm({
-                        ...editForm,
-                        Tier1Min: parseInt(e.target.value) || 0,
-                      })
-                    }
-                    className="w-full bg-gray-700 border border-gray-600 rounded px-3 py-2 focus:outline-none focus:border-blue-500"
-                    required
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium mb-2">
-                    Max Users
-                  </label>
-                  <input
-                    type="number"
-                    value={editForm.Tier1Max ?? ""}
-                    onChange={(e) =>
-                      setEditForm({
-                        ...editForm,
-                        Tier1Max: parseInt(e.target.value) || 0,
-                      })
-                    }
-                    className="w-full bg-gray-700 border border-gray-600 rounded px-3 py-2 focus:outline-none focus:border-blue-500"
-                    required
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium mb-2">
-                    Price per User
-                  </label>
-                  <input
-                    type="number"
-                    step="0.01"
-                    value={editForm.Tier1Price ?? ""}
-                    onChange={(e) =>
-                      setEditForm({ ...editForm, Tier1Price: e.target.value })
-                    }
-                    className="w-full bg-gray-700 border border-gray-600 rounded px-3 py-2 focus:outline-none focus:border-blue-500"
-                    required
-                  />
-                </div>
-
-                <div className="col-span-2">
-                  <h3 className="font-semibold mb-2">Tier 2 (Optional)</h3>
-                </div>
-                <div>
-                  <label className="block text-sm font-medium mb-2">
-                    Min Users
-                  </label>
-                  <input
-                    type="number"
-                    value={editForm.Tier2Min ?? ""}
-                    onChange={(e) =>
-                      setEditForm({
-                        ...editForm,
-                        Tier2Min: e.target.value
-                          ? parseInt(e.target.value)
-                          : undefined,
-                      })
-                    }
-                    className="w-full bg-gray-700 border border-gray-600 rounded px-3 py-2 focus:outline-none focus:border-blue-500"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium mb-2">
-                    Max Users
-                  </label>
-                  <input
-                    type="number"
-                    value={editForm.Tier2Max ?? ""}
-                    onChange={(e) =>
-                      setEditForm({
-                        ...editForm,
-                        Tier2Max: e.target.value
-                          ? parseInt(e.target.value)
-                          : undefined,
-                      })
-                    }
-                    className="w-full bg-gray-700 border border-gray-600 rounded px-3 py-2 focus:outline-none focus:border-blue-500"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium mb-2">
-                    Price per User
-                  </label>
-                  <input
-                    type="number"
-                    step="0.01"
-                    value={editForm.Tier2Price ?? ""}
-                    onChange={(e) =>
-                      setEditForm({
-                        ...editForm,
-                        Tier2Price: e.target.value || undefined,
-                      })
-                    }
-                    className="w-full bg-gray-700 border border-gray-600 rounded px-3 py-2 focus:outline-none focus:border-blue-500"
-                  />
-                </div>
-
-                <div className="col-span-2">
-                  <h3 className="font-semibold mb-2">Tier 3 (Optional)</h3>
-                </div>
-                <div>
-                  <label className="block text-sm font-medium mb-2">
-                    Min Users
-                  </label>
-                  <input
-                    type="number"
-                    value={editForm.Tier3Min ?? ""}
-                    onChange={(e) =>
-                      setEditForm({
-                        ...editForm,
-                        Tier3Min: e.target.value
-                          ? parseInt(e.target.value)
-                          : undefined,
-                      })
-                    }
-                    className="w-full bg-gray-700 border border-gray-600 rounded px-3 py-2 focus:outline-none focus:border-blue-500"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium mb-2">
-                    Max Users
-                  </label>
-                  <input
-                    type="number"
-                    value={editForm.Tier3Max ?? ""}
-                    onChange={(e) =>
-                      setEditForm({
-                        ...editForm,
-                        Tier3Max: e.target.value
-                          ? parseInt(e.target.value)
-                          : undefined,
-                      })
-                    }
-                    className="w-full bg-gray-700 border border-gray-600 rounded px-3 py-2 focus:outline-none focus:border-blue-500"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium mb-2">
-                    Price per User
-                  </label>
-                  <input
-                    type="number"
-                    step="0.01"
-                    value={editForm.Tier3Price ?? ""}
-                    onChange={(e) =>
-                      setEditForm({
-                        ...editForm,
-                        Tier3Price: e.target.value || undefined,
-                      })
-                    }
-                    className="w-full bg-gray-700 border border-gray-600 rounded px-3 py-2 focus:outline-none focus:border-blue-500"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium mb-2">
-                    Sort Order
-                  </label>
-                  <input
-                    type="number"
-                    value={editForm.SortOrder ?? ""}
-                    onChange={(e) =>
-                      setEditForm({
-                        ...editForm,
-                        SortOrder: parseInt(e.target.value) || 0,
-                      })
-                    }
-                    className="w-full bg-gray-700 border border-gray-600 rounded px-3 py-2 focus:outline-none focus:border-blue-500"
-                  />
-                </div>
-
-                <div className="col-span-2 space-y-2">
-                  <label className="flex items-center">
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-light text-[#494D50] mb-2">
+                      Name <span className="text-red-500">*</span>
+                    </label>
                     <input
-                      type="checkbox"
-                      checked={editForm.IsActive}
+                      type="text"
+                      value={editForm.Name}
                       onChange={(e) =>
-                        setEditForm({ ...editForm, IsActive: e.target.checked })
+                        setEditForm({ ...editForm, Name: e.target.value })
                       }
-                      className="mr-2"
+                      className="w-full px-3 py-2 bg-white border border-[#E6E6E6] text-[#494D50] rounded focus:outline-none focus:border-[#6FCBDC] focus:ring-1 focus:ring-[#6FCBDC]"
+                      required
                     />
-                    Active
-                  </label>
-                  <label className="flex items-center">
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-light text-[#494D50] mb-2">
+                      Category <span className="text-red-500">*</span>
+                    </label>
                     <input
-                      type="checkbox"
-                      checked={editForm.IsRequired}
+                      type="text"
+                      value={editForm.Category}
+                      onChange={(e) =>
+                        setEditForm({ ...editForm, Category: e.target.value })
+                      }
+                      className="w-full px-3 py-2 bg-white border border-[#E6E6E6] text-[#494D50] rounded focus:outline-none focus:border-[#6FCBDC] focus:ring-1 focus:ring-[#6FCBDC]"
+                      required
+                    />
+                  </div>
+
+                  <div className="col-span-2">
+                    <label className="block text-sm font-light text-[#494D50] mb-2">
+                      Description
+                    </label>
+                    <textarea
+                      value={editForm.Description ?? ""}
                       onChange={(e) =>
                         setEditForm({
                           ...editForm,
-                          IsRequired: e.target.checked,
+                          Description: e.target.value,
                         })
                       }
-                      className="mr-2"
+                      className="w-full px-3 py-2 bg-white border border-[#E6E6E6] text-[#494D50] rounded focus:outline-none focus:border-[#6FCBDC] focus:ring-1 focus:ring-[#6FCBDC]"
+                      rows={2}
                     />
-                    Required in all quotes
-                  </label>
-                </div>
-              </div>
+                  </div>
 
-              <div className="mt-6 flex space-x-3">
-                <button
-                  type="submit"
-                  className="bg-green-600 text-white px-6 py-2 rounded hover:bg-green-700"
-                >
-                  Save Changes
-                </button>
-                <button
-                  type="button"
-                  onClick={() => {
-                    setEditModal(null);
-                    setEditForm(null);
-                  }}
-                  className="bg-gray-700 text-white px-6 py-2 rounded hover:bg-gray-600"
-                >
-                  Cancel
-                </button>
-              </div>
-            </form>
+                  <div className="col-span-2">
+                    <h3 className="font-semibold mb-2">Tier 1</h3>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-light text-[#494D50] mb-2">
+                      Min Users
+                    </label>
+                    <input
+                      type="number"
+                      value={editForm.Tier1Min ?? ""}
+                      onChange={(e) =>
+                        setEditForm({
+                          ...editForm,
+                          Tier1Min: parseInt(e.target.value) || 0,
+                        })
+                      }
+                      className="w-full px-3 py-2 bg-white border border-[#E6E6E6] text-[#494D50] rounded focus:outline-none focus:border-[#6FCBDC] focus:ring-1 focus:ring-[#6FCBDC]"
+                      required
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-light text-[#494D50] mb-2">
+                      Max Users
+                    </label>
+                    <input
+                      type="number"
+                      value={editForm.Tier1Max ?? ""}
+                      onChange={(e) =>
+                        setEditForm({
+                          ...editForm,
+                          Tier1Max: parseInt(e.target.value) || 0,
+                        })
+                      }
+                      className="w-full px-3 py-2 bg-white border border-[#E6E6E6] text-[#494D50] rounded focus:outline-none focus:border-[#6FCBDC] focus:ring-1 focus:ring-[#6FCBDC]"
+                      required
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-light text-[#494D50] mb-2">
+                      Price per User
+                    </label>
+                    <input
+                      type="number"
+                      step="0.01"
+                      value={editForm.Tier1Price ?? ""}
+                      onChange={(e) =>
+                        setEditForm({ ...editForm, Tier1Price: e.target.value })
+                      }
+                      className="w-full px-3 py-2 bg-white border border-[#E6E6E6] text-[#494D50] rounded focus:outline-none focus:border-[#6FCBDC] focus:ring-1 focus:ring-[#6FCBDC]"
+                      required
+                    />
+                  </div>
+
+                  <div className="col-span-2">
+                    <h3 className="font-semibold mb-2">Tier 2 (Optional)</h3>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-light text-[#494D50] mb-2">
+                      Min Users
+                    </label>
+                    <input
+                      type="number"
+                      value={editForm.Tier2Min ?? ""}
+                      onChange={(e) =>
+                        setEditForm({
+                          ...editForm,
+                          Tier2Min: e.target.value
+                            ? parseInt(e.target.value)
+                            : undefined,
+                        })
+                      }
+                      className="w-full px-3 py-2 bg-white border border-[#E6E6E6] text-[#494D50] rounded focus:outline-none focus:border-[#6FCBDC] focus:ring-1 focus:ring-[#6FCBDC]"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-light text-[#494D50] mb-2">
+                      Max Users
+                    </label>
+                    <input
+                      type="number"
+                      value={editForm.Tier2Max ?? ""}
+                      onChange={(e) =>
+                        setEditForm({
+                          ...editForm,
+                          Tier2Max: e.target.value
+                            ? parseInt(e.target.value)
+                            : undefined,
+                        })
+                      }
+                      className="w-full px-3 py-2 bg-white border border-[#E6E6E6] text-[#494D50] rounded focus:outline-none focus:border-[#6FCBDC] focus:ring-1 focus:ring-[#6FCBDC]"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-light text-[#494D50] mb-2">
+                      Price per User
+                    </label>
+                    <input
+                      type="number"
+                      step="0.01"
+                      value={editForm.Tier2Price ?? ""}
+                      onChange={(e) =>
+                        setEditForm({
+                          ...editForm,
+                          Tier2Price: e.target.value || undefined,
+                        })
+                      }
+                      className="w-full px-3 py-2 bg-white border border-[#E6E6E6] text-[#494D50] rounded focus:outline-none focus:border-[#6FCBDC] focus:ring-1 focus:ring-[#6FCBDC]"
+                    />
+                  </div>
+
+                  <div className="col-span-2">
+                    <h3 className="font-semibold mb-2">Tier 3 (Optional)</h3>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-light text-[#494D50] mb-2">
+                      Min Users
+                    </label>
+                    <input
+                      type="number"
+                      value={editForm.Tier3Min ?? ""}
+                      onChange={(e) =>
+                        setEditForm({
+                          ...editForm,
+                          Tier3Min: e.target.value
+                            ? parseInt(e.target.value)
+                            : undefined,
+                        })
+                      }
+                      className="w-full px-3 py-2 bg-white border border-[#E6E6E6] text-[#494D50] rounded focus:outline-none focus:border-[#6FCBDC] focus:ring-1 focus:ring-[#6FCBDC]"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-light text-[#494D50] mb-2">
+                      Max Users
+                    </label>
+                    <input
+                      type="number"
+                      value={editForm.Tier3Max ?? ""}
+                      onChange={(e) =>
+                        setEditForm({
+                          ...editForm,
+                          Tier3Max: e.target.value
+                            ? parseInt(e.target.value)
+                            : undefined,
+                        })
+                      }
+                      className="w-full px-3 py-2 bg-white border border-[#E6E6E6] text-[#494D50] rounded focus:outline-none focus:border-[#6FCBDC] focus:ring-1 focus:ring-[#6FCBDC]"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-light text-[#494D50] mb-2">
+                      Price per User
+                    </label>
+                    <input
+                      type="number"
+                      step="0.01"
+                      value={editForm.Tier3Price ?? ""}
+                      onChange={(e) =>
+                        setEditForm({
+                          ...editForm,
+                          Tier3Price: e.target.value || undefined,
+                        })
+                      }
+                      className="w-full px-3 py-2 bg-white border border-[#E6E6E6] text-[#494D50] rounded focus:outline-none focus:border-[#6FCBDC] focus:ring-1 focus:ring-[#6FCBDC]"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-light text-[#494D50] mb-2">
+                      Sort Order
+                    </label>
+                    <input
+                      type="number"
+                      value={editForm.SortOrder ?? ""}
+                      onChange={(e) =>
+                        setEditForm({
+                          ...editForm,
+                          SortOrder: parseInt(e.target.value) || 0,
+                        })
+                      }
+                      className="w-full px-3 py-2 bg-white border border-[#E6E6E6] text-[#494D50] rounded focus:outline-none focus:border-[#6FCBDC] focus:ring-1 focus:ring-[#6FCBDC]"
+                    />
+                  </div>
+
+                  <div className="col-span-2 space-y-2">
+                    <label className="flex items-center">
+                      <input
+                        type="checkbox"
+                        checked={editForm.IsActive}
+                        onChange={(e) =>
+                          setEditForm({
+                            ...editForm,
+                            IsActive: e.target.checked,
+                          })
+                        }
+                        className="mr-2"
+                      />
+                      Active
+                    </label>
+                    <label className="flex items-center">
+                      <input
+                        type="checkbox"
+                        checked={editForm.IsRequired}
+                        onChange={(e) =>
+                          setEditForm({
+                            ...editForm,
+                            IsRequired: e.target.checked,
+                          })
+                        }
+                        className="mr-2"
+                      />
+                      Required in all quotes
+                    </label>
+                  </div>
+                </div>
+
+                <div className="mt-6 flex space-x-3">
+                  <button
+                    type="submit"
+                    className="bg-teller-cta-green hover:bg-teller-cta-green-hover text-white px-6 py-2 rounded-lg font-normal transition-colors"
+                  >
+                    Save Changes
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setEditModal(null);
+                      setEditForm(null);
+                    }}
+                    className="bg-teller-dark-silver hover:bg-teller-charcoal text-white px-6 py-2 rounded-lg font-light transition-colors"
+                  >
+                    Cancel
+                  </button>
+                </div>
+              </form>
+            </div>
           </div>
-        </div>
-      )}
+        )}
+      </div>
     </div>
   );
 };
