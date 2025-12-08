@@ -1,6 +1,6 @@
 """Schemas for pricing version comparison."""
 
-from typing import Any, Dict
+from typing import Any
 
 from pydantic import BaseModel
 
@@ -16,8 +16,8 @@ class ComparisonItem(BaseModel):
     """A single comparison item showing what changed."""
 
     status: str  # "added", "removed", "modified", "unchanged"
-    old_value: dict | None = None
-    new_value: dict | None = None
+    old_value: dict[str, Any] | None = None
+    new_value: dict[str, Any] | None = None
 
 
 class VersionComparison(BaseModel):
@@ -29,31 +29,31 @@ class VersionComparison(BaseModel):
     # SKU comparisons
     skus_added: list[SKUDefinitionResponse] = []
     skus_removed: list[SKUDefinitionResponse] = []
-    skus_modified: list[dict] = []  # {sku_code, old, new, changed_fields}
+    skus_modified: list[dict[str, Any]] = []  # {sku_code, old, new, changed_fields}
     skus_unchanged: list[SKUDefinitionResponse] = []
 
     # SaaS product comparisons
     saas_added: list[SaaSProductResponse] = []
     saas_removed: list[SaaSProductResponse] = []
-    saas_modified: list[dict] = []
+    saas_modified: list[dict[str, Any]] = []
     saas_unchanged: list[SaaSProductResponse] = []
 
     # Travel zone comparisons
     zones_added: list[TravelZoneResponse] = []
     zones_removed: list[TravelZoneResponse] = []
-    zones_modified: list[dict] = []
+    zones_modified: list[dict[str, Any]] = []
     zones_unchanged: list[TravelZoneResponse] = []
 
     # Referrer comparisons
     referrers_added: list[ReferrerResponse] = []
     referrers_removed: list[ReferrerResponse] = []
-    referrers_modified: list[dict] = []
+    referrers_modified: list[dict[str, Any]] = []
     referrers_unchanged: list[ReferrerResponse] = []
 
     # Text snippet comparisons
     snippets_added: list[TextSnippetResponse] = []
     snippets_removed: list[TextSnippetResponse] = []
-    snippets_modified: list[dict] = []
+    snippets_modified: list[dict[str, Any]] = []
     snippets_unchanged: list[TextSnippetResponse] = []
 
     # Summary counts

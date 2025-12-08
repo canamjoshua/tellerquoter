@@ -8,6 +8,7 @@ from sqlalchemy.orm import Session, joinedload
 
 from app.core.deps import get_db
 from app.models import (
+    PricingVersion,
     Quote,
     QuoteVersion,
     QuoteVersionSaaSProduct,
@@ -113,7 +114,7 @@ def create_quote(
     quote_data: QuoteCreate,
     db: Session = Depends(get_db),
 ) -> Quote:
-    """Create a new quote.
+    """Create a new quote with an initial version.
 
     Args:
         quote_data: Quote data
@@ -121,9 +122,23 @@ def create_quote(
 
     Returns:
         Created quote
+
+    Raises:
+        HTTPException: If no current pricing version exists
     """
     # Generate quote number
     quote_number = generate_quote_number(db)
+
+    # Get current pricing version
+    current_pricing = (
+        db.query(PricingVersion).filter(PricingVersion.IsCurrent == True).first()  # noqa: E712
+    )
+
+    if not current_pricing:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="No current pricing version found. Please set a pricing version as current before creating quotes.",
+        )
 
     # Create quote
     quote = Quote(
@@ -131,6 +146,30 @@ def create_quote(
         **quote_data.model_dump(),
     )
     db.add(quote)
+    db.flush()  # Get quote ID for version creation
+
+    # Create initial version with current pricing
+    initial_version = QuoteVersion(
+        QuoteId=quote.Id,
+        VersionNumber=1,
+        VersionDescription="Initial version",
+        PricingVersionId=current_pricing.Id,
+        ClientData={
+            "ClientName": quote_data.ClientName,
+            "ClientOrganization": quote_data.ClientOrganization or "",
+        },
+        ProjectionYears=5,
+        EscalationModel="STANDARD_4PCT",
+        LevelLoadingEnabled=False,
+        TellerPaymentsEnabled=False,
+        MilestoneStyle="FIXED_MONTHLY",
+        InitialPaymentPercentage=Decimal("25.00"),
+        ProjectDurationMonths=10,
+        CreatedBy=quote_data.CreatedBy,
+        VersionStatus="DRAFT",
+    )
+    db.add(initial_version)
+
     db.commit()
     db.refresh(quote)
     return quote

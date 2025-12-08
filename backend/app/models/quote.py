@@ -2,7 +2,7 @@
 
 from datetime import datetime
 from decimal import Decimal
-from typing import Any, Dict
+from typing import Any
 from uuid import UUID as UUIDType
 from uuid import uuid4
 
@@ -133,7 +133,7 @@ class QuoteVersion(Base):  # type: ignore[misc]
     )
 
     # Client Information (JSONB)
-    ClientData: Mapped[dict] = mapped_column(
+    ClientData: Mapped[dict[str, Any]] = mapped_column(
         "ClientData",
         JSON,
         nullable=False,
@@ -171,7 +171,7 @@ class QuoteVersion(Base):  # type: ignore[misc]
     )
 
     # Discounts (JSONB)
-    DiscountConfig: Mapped[Dict[str, Any] | None] = mapped_column(
+    DiscountConfig: Mapped[dict[str, Any] | None] = mapped_column(
         "DiscountConfig",
         JSON,
         nullable=True,
@@ -217,7 +217,7 @@ class QuoteVersion(Base):  # type: ignore[misc]
         ForeignKey("TravelZones.Id"),
         nullable=True,
     )
-    TravelConfig: Mapped[Dict[str, Any] | None] = mapped_column(
+    TravelConfig: Mapped[dict[str, Any] | None] = mapped_column(
         "TravelConfig",
         JSON,
         nullable=True,
