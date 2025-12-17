@@ -8,6 +8,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from app.api import (
     pricing,
     quote,
+    quote_calculations,
     referrer,
     saas,
     saas_config,
@@ -40,6 +41,7 @@ app.include_router(referrer.router, prefix="/api")
 app.include_router(text_snippet.router, prefix="/api")
 app.include_router(quote.router, prefix="/api")
 app.include_router(saas_config.router, prefix="/api")  # Configuration-driven API
+app.include_router(quote_calculations.router, prefix="/api")  # Quote calculations API
 
 
 @app.get("/health")

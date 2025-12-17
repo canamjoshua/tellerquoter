@@ -81,6 +81,39 @@ class TravelZone(Base):  # type: ignore[misc]
         default=0,
         comment="Number of on-site days included in base price",
     )
+    # v2.0 Travel Cost Calculation columns
+    AirfareEstimate: Mapped[Decimal] = mapped_column(
+        "AirfareEstimate",
+        DECIMAL(10, 2),
+        nullable=False,
+        default=0,
+        server_default="0",
+        comment="Estimated airfare per person for this zone",
+    )
+    HotelRate: Mapped[Decimal] = mapped_column(
+        "HotelRate",
+        DECIMAL(10, 2),
+        nullable=False,
+        default=180,
+        server_default="180",
+        comment="Hotel rate per night per person",
+    )
+    PerDiemRate: Mapped[Decimal] = mapped_column(
+        "PerDiemRate",
+        DECIMAL(10, 2),
+        nullable=False,
+        default=60,
+        server_default="60",
+        comment="Per diem (meals/incidentals) per day per person",
+    )
+    VehicleRate: Mapped[Decimal] = mapped_column(
+        "VehicleRate",
+        DECIMAL(10, 2),
+        nullable=False,
+        default=125,
+        server_default="125",
+        comment="Vehicle rental rate per day (shared)",
+    )
     IsActive: Mapped[bool] = mapped_column(
         "IsActive",
         Boolean,

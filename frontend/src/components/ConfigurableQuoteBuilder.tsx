@@ -12,6 +12,7 @@ const API_BASE_URL = "/api";
 
 // API Response Types
 interface SaaSProductResult {
+  product_id: string;
   product_code: string;
   name: string;
   category: string;
@@ -29,6 +30,7 @@ interface SaaSProductResult {
 }
 
 interface SetupSKUResult {
+  sku_id: string;
   sku_code: string;
   name: string;
   quantity: number;
@@ -158,6 +160,13 @@ export default function ConfigurableQuoteBuilder({
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  // Save state
+  const [saving, setSaving] = useState(false);
+  const [saveError, setSaveError] = useState<string | null>(null);
+  const [saveSuccess, setSaveSuccess] = useState(false);
+  const [versionNumber, setVersionNumber] = useState<number | null>(null);
+  const [pricingVersionId, setPricingVersionId] = useState<string | null>(null);
+
   // Load available integrations
   useEffect(() => {
     const fetchIntegrations = async () => {
@@ -269,6 +278,193 @@ export default function ConfigurableQuoteBuilder({
       console.error("Configuration error:", err);
     } finally {
       setLoading(false);
+    }
+  };
+
+  // Load quote version data when editing an existing quote
+  useEffect(() => {
+    if (!quoteId) return;
+
+    const loadQuoteVersion = async () => {
+      try {
+        // Load quote with versions
+        const response = await fetch(`${API_BASE_URL}/quotes/${quoteId}`);
+        if (!response.ok) throw new Error("Failed to load quote");
+        const quote = await response.json();
+
+        // Find the latest version (for editing)
+        const versions = quote.versions || [];
+        if (versions.length === 0) return;
+
+        const latestVersion = versions.reduce(
+          (prev: { VersionNumber: number }, curr: { VersionNumber: number }) =>
+            curr.VersionNumber > prev.VersionNumber ? curr : prev,
+          versions[0],
+        );
+
+        setVersionNumber(latestVersion.VersionNumber);
+        setPricingVersionId(latestVersion.PricingVersionId);
+
+        // Load configuration from version's ClientData if available
+        const clientData = latestVersion.ClientData || {};
+        if (clientData.configuration) {
+          const config = clientData.configuration;
+          // Restore base product
+          if (config.base_product) {
+            setBaseProduct(config.base_product);
+          }
+          if (config.additional_users) {
+            setAdditionalUsers(config.additional_users);
+          }
+          // Restore modules
+          if (config.modules?.check_recognition) {
+            setCheckRecognition(config.modules.check_recognition);
+          }
+          if (config.modules?.revenue_submission) {
+            setRevenueSubmission(config.modules.revenue_submission);
+          }
+          if (config.modules?.teller_online) {
+            setTellerOnline(config.modules.teller_online);
+          }
+          // Restore integrations
+          if (config.integrations?.bidirectional) {
+            setBidirectionalIntegrations(config.integrations.bidirectional);
+          }
+          if (config.integrations?.payment_import) {
+            setPaymentImportIntegrations(config.integrations.payment_import);
+          }
+        }
+
+        // Restore discount config
+        if (latestVersion.DiscountConfig) {
+          setDiscounts(latestVersion.DiscountConfig);
+        }
+
+        // Restore quote options
+        setQuoteOptions({
+          projectionYears: latestVersion.ProjectionYears || 5,
+          escalationModel: latestVersion.EscalationModel || "STANDARD_4PCT",
+          multiYearFreezeYears: latestVersion.MultiYearFreezeYears,
+          levelLoadingEnabled: latestVersion.LevelLoadingEnabled || false,
+          tellerPaymentsEnabled: latestVersion.TellerPaymentsEnabled || false,
+        });
+
+        // Restore travel
+        if (latestVersion.TravelZoneId) {
+          setTravelZoneId(latestVersion.TravelZoneId);
+        }
+        if (latestVersion.TravelConfig?.trips) {
+          setTravelTrips(latestVersion.TravelConfig.trips);
+        }
+
+        // Restore referral
+        if (latestVersion.ReferrerId) {
+          setReferrerId(latestVersion.ReferrerId);
+        }
+        if (latestVersion.ReferralRateOverride) {
+          setReferralRateOverride(latestVersion.ReferralRateOverride);
+        }
+      } catch (err) {
+        console.error("Error loading quote:", err);
+        setError(err instanceof Error ? err.message : "Failed to load quote");
+      }
+    };
+
+    loadQuoteVersion();
+  }, [quoteId]);
+
+  // Save quote to backend
+  const saveQuote = async () => {
+    if (!quoteId || !configResult || !pricingVersionId) {
+      setSaveError("Cannot save: missing quote ID or configuration");
+      return;
+    }
+
+    setSaving(true);
+    setSaveError(null);
+    setSaveSuccess(false);
+
+    try {
+      // Build configuration payload to store in ClientData
+      const configurationPayload = {
+        base_product: baseProduct,
+        additional_users: additionalUsers,
+        modules: {
+          check_recognition: checkRecognition,
+          revenue_submission: revenueSubmission,
+          teller_online: tellerOnline,
+        },
+        integrations: {
+          bidirectional: bidirectionalIntegrations,
+          payment_import: paymentImportIntegrations,
+        },
+      };
+
+      // Build SaaS products payload
+      const saasProducts = configResult.selected_products
+        .filter((p) => p.product_id) // Only include products with IDs
+        .map((p) => ({
+          SaaSProductId: p.product_id,
+          Quantity: p.quantity,
+          Notes: p.integration_details
+            ? `${p.integration_details.system_name} (${p.integration_details.vendor})`
+            : null,
+        }));
+
+      // Build setup packages payload
+      const setupPackages = configResult.setup_skus
+        .filter((s) => s.sku_id) // Only include SKUs with IDs
+        .map((s, index) => ({
+          SKUDefinitionId: s.sku_id,
+          Quantity: s.quantity,
+          CustomScopeNotes: s.reason,
+          SequenceOrder: index,
+        }));
+
+      // Build version update payload
+      const versionPayload = {
+        ClientData: {
+          configuration: configurationPayload,
+        },
+        ProjectionYears: quoteOptions.projectionYears,
+        EscalationModel: quoteOptions.escalationModel,
+        MultiYearFreezeYears: quoteOptions.multiYearFreezeYears,
+        LevelLoadingEnabled: quoteOptions.levelLoadingEnabled,
+        TellerPaymentsEnabled: quoteOptions.tellerPaymentsEnabled,
+        DiscountConfig: discounts,
+        ReferrerId: referrerId,
+        ReferralRateOverride: referralRateOverride,
+        TravelZoneId: travelZoneId,
+        TravelConfig: {
+          trips: travelTrips,
+        },
+        SaaSProducts: saasProducts,
+        SetupPackages: setupPackages,
+      };
+
+      // Update the quote version
+      const response = await fetch(
+        `${API_BASE_URL}/quotes/${quoteId}/versions/${versionNumber}`,
+        {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(versionPayload),
+        },
+      );
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(`Failed to save quote: ${errorText}`);
+      }
+
+      setSaveSuccess(true);
+      // Clear success message after 3 seconds
+      setTimeout(() => setSaveSuccess(false), 3000);
+    } catch (err) {
+      setSaveError(err instanceof Error ? err.message : "Failed to save quote");
+      console.error("Save error:", err);
+    } finally {
+      setSaving(false);
     }
   };
 
@@ -1499,15 +1695,41 @@ export default function ConfigurableQuoteBuilder({
                       </div>
 
                       {/* Save Quote Button */}
-                      <div className="pt-4">
+                      <div className="pt-4 space-y-2">
+                        {saveError && (
+                          <div className="bg-red-500/10 border border-red-500/30 rounded-lg p-3">
+                            <p className="text-red-400 text-sm">{saveError}</p>
+                          </div>
+                        )}
+                        {saveSuccess && (
+                          <div className="bg-green-500/10 border border-green-500/30 rounded-lg p-3">
+                            <p className="text-green-400 text-sm">
+                              Quote saved successfully!
+                            </p>
+                          </div>
+                        )}
                         <button
-                          onClick={() =>
-                            alert("Save quote functionality coming soon!")
-                          }
-                          className="w-full px-6 py-3 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-semibold rounded-lg transition-all transform hover:scale-[1.02] flex items-center justify-center gap-2"
+                          onClick={saveQuote}
+                          disabled={saving || !quoteId}
+                          className={`w-full px-6 py-3 font-semibold rounded-lg transition-all transform flex items-center justify-center gap-2 ${
+                            !quoteId
+                              ? "bg-gray-500 text-gray-300 cursor-not-allowed"
+                              : saving
+                                ? "bg-gray-600 text-gray-300 cursor-wait"
+                                : "bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white hover:scale-[1.02]"
+                          }`}
                         >
-                          <Check size={20} />
-                          Save Quote
+                          {saving ? (
+                            <>
+                              <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
+                              Saving...
+                            </>
+                          ) : (
+                            <>
+                              <Check size={20} />
+                              {quoteId ? "Save Quote" : "Select a Quote First"}
+                            </>
+                          )}
                         </button>
                       </div>
                     </>

@@ -180,6 +180,7 @@ class SaaSConfigurationService:
 
         # Build product result
         product_result = {
+            "product_id": str(product.Id),
             "product_code": product.ProductCode,
             "name": product.Name,
             "category": product.Category,
@@ -201,6 +202,7 @@ class SaaSConfigurationService:
                     unit_price = float(sku.FixedPrice or 0)
                     setup_skus.append(
                         {
+                            "sku_id": str(sku.Id),
                             "sku_code": sku.SKUCode,
                             "name": sku.Name,
                             "quantity": quantity,
@@ -273,6 +275,7 @@ class SaaSConfigurationService:
 
                 products.append(
                     {
+                        "product_id": str(product.Id),
                         "product_code": product.ProductCode,
                         "name": product.Name,
                         "category": product.Category,
@@ -344,6 +347,7 @@ class SaaSConfigurationService:
                         volume_unit = volume_param_path.split(".")[-1].replace("_", " ")
 
                     product_result = {
+                        "product_id": str(saas_product.Id),
                         "product_code": saas_product.ProductCode,
                         "name": module.ModuleName,
                         "category": "Module",
@@ -373,6 +377,7 @@ class SaaSConfigurationService:
                         unit_price = float(sku.FixedPrice or 0)
                         setup_skus.append(
                             {
+                                "sku_id": str(sku.Id),
                                 "sku_code": sku.SKUCode,
                                 "name": sku.Name,
                                 "quantity": quantity,
@@ -408,11 +413,16 @@ class SaaSConfigurationService:
         if bidirectional:
             int_type = self.config.get_integration_type("BIDIRECTIONAL")
             if int_type:
+                # Get the bidirectional interface SaaS product for saving
+                bidir_product = self.config.get_saas_product("INTERFACE-BIDIRECTIONAL")
+                bidir_product_id = str(bidir_product.Id) if bidir_product else ""
+
                 for integration in bidirectional:
                     # Add monthly cost
                     products.append(
                         {
-                            "product_code": "BIDIRECTIONAL-INTERFACE",
+                            "product_id": bidir_product_id,
+                            "product_code": "INTERFACE-BIDIRECTIONAL",
                             "name": f"Bi-Directional Interface: {integration.get('system_name', 'Unknown')}",
                             "category": "Interface",
                             "monthly_cost": float(int_type.MonthlyCost),
@@ -444,6 +454,7 @@ class SaaSConfigurationService:
                             if sku:
                                 setup_skus.append(
                                     {
+                                        "sku_id": str(sku.Id),
                                         "sku_code": sku.SKUCode,
                                         "name": sku.Name,
                                         "quantity": 1,
@@ -458,11 +469,16 @@ class SaaSConfigurationService:
         if payment_import:
             int_type = self.config.get_integration_type("PAYMENT_IMPORT")
             if int_type:
+                # Get the payment import interface SaaS product for saving
+                pi_product = self.config.get_saas_product("INTERFACE-PAYMENT-IMPORT")
+                pi_product_id = str(pi_product.Id) if pi_product else ""
+
                 for integration in payment_import:
                     # Add monthly cost
                     products.append(
                         {
-                            "product_code": "PAYMENT-IMPORT-INTERFACE",
+                            "product_id": pi_product_id,
+                            "product_code": "INTERFACE-PAYMENT-IMPORT",
                             "name": f"Payment Import: {integration.get('system_name', 'Unknown')}",
                             "category": "Interface",
                             "monthly_cost": float(int_type.MonthlyCost),
@@ -494,6 +510,7 @@ class SaaSConfigurationService:
                             if sku:
                                 setup_skus.append(
                                     {
+                                        "sku_id": str(sku.Id),
                                         "sku_code": sku.SKUCode,
                                         "name": sku.Name,
                                         "quantity": 1,

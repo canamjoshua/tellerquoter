@@ -105,6 +105,7 @@ class SaaSConfigurationRequest(BaseModel):
 class SaaSProductResponse(BaseModel):
     """Response for a selected SaaS product."""
 
+    product_id: str  # UUID as string for saving
     product_code: str
     name: str
     category: str
@@ -120,6 +121,7 @@ class SaaSProductResponse(BaseModel):
 class SetupSKUResponse(BaseModel):
     """Response for a selected setup SKU."""
 
+    sku_id: str  # UUID as string for saving
     sku_code: str
     name: str
     quantity: int
