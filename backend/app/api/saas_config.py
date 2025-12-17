@@ -310,10 +310,13 @@ def get_available_modules(db: Session = Depends(get_db)) -> dict[str, Any]:
     config = ConfigurationService(db)
     modules = config.get_all_application_modules()
 
-    result_modules = []
+    result_modules: list[dict[str, Any]] = []
     for module in modules:
+        # Get sub-parameters for dynamic UI rendering
+        sub_parameters = module.SubParameters or {}
+
+        # Get selection rules for SKU/SaaS auto-selection logic
         selection_rules = module.SelectionRules or {}
-        parameters = selection_rules.get("parameters", [])
 
         # Get the SaaS product code if there's a linked product
         saas_product_code = None
@@ -328,11 +331,15 @@ def get_available_modules(db: Session = Depends(get_db)) -> dict[str, Any]:
                 "module_code": module.ModuleCode,
                 "module_name": module.ModuleName,
                 "description": module.Description,
-                "parameters": parameters,
+                "sub_parameters": sub_parameters,
+                "selection_rules": selection_rules,
                 "saas_product_code": saas_product_code,
                 "sort_order": module.SortOrder,
             }
         )
+
+    # Sort by sort_order
+    result_modules.sort(key=lambda x: x.get("sort_order") or 0)
 
     return {"modules": result_modules}
 

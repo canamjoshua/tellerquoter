@@ -1,14 +1,23 @@
 /**
  * Configuration-Driven Quote Builder
  *
- * This component uses the new /api/saas-config/configure endpoint
- * with module-based configuration and named integrations.
+ * This component dynamically renders modules and parameters from the backend
+ * configuration. Adding a new module only requires database configuration,
+ * not code changes.
  */
 
 import { useState, useEffect } from "react";
 import { Plus, Trash2, ChevronDown, ChevronRight, Check } from "lucide-react";
+import DynamicModuleRenderer, {
+  ModuleConfig,
+  ModuleValues,
+} from "./DynamicModuleRenderer";
 
 const API_BASE_URL = "/api";
+
+// =============================================================================
+// TYPE DEFINITIONS
+// =============================================================================
 
 // API Response Types
 interface SaaSProductResult {
@@ -59,6 +68,9 @@ interface Integration {
   vendor: string;
   is_new: boolean;
 }
+
+// Dynamic module state type - maps module_code to its parameter values
+type ModuleState = Record<string, ModuleValues & { enabled: boolean }>;
 
 interface ConfigurableQuoteBuilderProps {
   quoteId?: string;
@@ -115,24 +127,10 @@ export default function ConfigurableQuoteBuilder({
     workflowCount: 0,
   });
 
-  // Modules state
-  const [checkRecognition, setCheckRecognition] = useState({
-    enabled: false,
-    is_new: true,
-    scan_volume: 50000,
-  });
-
-  const [revenueSubmission, setRevenueSubmission] = useState({
-    enabled: false,
-    is_new: true,
-    num_submitters: 25,
-  });
-
-  const [tellerOnline, setTellerOnline] = useState({
-    enabled: false,
-    is_new: true,
-    transactions_per_year: 50000,
-  });
+  // Dynamic modules state - loaded from API
+  const [availableModules, setAvailableModules] = useState<ModuleConfig[]>([]);
+  const [moduleValues, setModuleValues] = useState<ModuleState>({});
+  const [modulesLoading, setModulesLoading] = useState(true);
 
   // Integrations state
   const [bidirectionalIntegrations, setBidirectionalIntegrations] = useState<
@@ -247,6 +245,45 @@ export default function ConfigurableQuoteBuilder({
     fetchTravelZones();
   }, []);
 
+  // Load available modules from API (configuration-driven)
+  useEffect(() => {
+    const fetchModules = async () => {
+      try {
+        setModulesLoading(true);
+        const response = await fetch(
+          `${API_BASE_URL}/saas-config/available-modules`,
+        );
+        if (!response.ok) throw new Error("Failed to load modules");
+        const data = await response.json();
+        setAvailableModules(data.modules || []);
+
+        // Initialize module state with defaults from sub_parameters
+        const initialState: ModuleState = {};
+        for (const module of data.modules || []) {
+          const paramDefaults: ModuleValues = {};
+          for (const [paramKey, param] of Object.entries(
+            module.sub_parameters || {},
+          )) {
+            const paramConfig = param as { default?: unknown };
+            if (paramConfig.default !== undefined) {
+              paramDefaults[paramKey] = paramConfig.default;
+            }
+          }
+          initialState[module.module_code] = {
+            ...paramDefaults,
+            enabled: false,
+          };
+        }
+        setModuleValues(initialState);
+      } catch (err) {
+        console.error("Error loading modules:", err);
+      } finally {
+        setModulesLoading(false);
+      }
+    };
+    fetchModules();
+  }, []);
+
   // Calculate complexity factor when org params change
   useEffect(() => {
     const calculateComplexity = async () => {
@@ -278,6 +315,9 @@ export default function ConfigurableQuoteBuilder({
 
   // Auto-configure on changes
   useEffect(() => {
+    // Don't auto-configure until modules are loaded
+    if (modulesLoading) return;
+
     const timer = setTimeout(() => {
       configure();
     }, 500); // Debounce 500ms
@@ -286,11 +326,10 @@ export default function ConfigurableQuoteBuilder({
   }, [
     baseProduct,
     additionalUsers,
-    checkRecognition,
-    revenueSubmission,
-    tellerOnline,
+    moduleValues,
     bidirectionalIntegrations,
     paymentImportIntegrations,
+    modulesLoading,
   ]);
 
   const configure = async () => {
@@ -298,20 +337,20 @@ export default function ConfigurableQuoteBuilder({
       setLoading(true);
       setError(null);
 
+      // Build modules object from dynamic moduleValues
+      const modulesPayload: Record<string, unknown> = {};
+      for (const [moduleCode, values] of Object.entries(moduleValues)) {
+        if (values.enabled) {
+          // Convert module_code to snake_case for API compatibility
+          const apiKey = moduleCode.toLowerCase().replace(/-/g, "_");
+          modulesPayload[apiKey] = values;
+        }
+      }
+
       const payload = {
         base_product: baseProduct,
         additional_users: additionalUsers,
-        modules: {
-          ...(checkRecognition.enabled && {
-            check_recognition: checkRecognition,
-          }),
-          ...(revenueSubmission.enabled && {
-            revenue_submission: revenueSubmission,
-          }),
-          ...(tellerOnline.enabled && {
-            teller_online: tellerOnline,
-          }),
-        },
+        modules: modulesPayload,
         integrations: {
           bidirectional: bidirectionalIntegrations,
           payment_import: paymentImportIntegrations,
@@ -374,15 +413,24 @@ export default function ConfigurableQuoteBuilder({
           if (config.additional_users) {
             setAdditionalUsers(config.additional_users);
           }
-          // Restore modules
-          if (config.modules?.check_recognition) {
-            setCheckRecognition(config.modules.check_recognition);
-          }
-          if (config.modules?.revenue_submission) {
-            setRevenueSubmission(config.modules.revenue_submission);
-          }
-          if (config.modules?.teller_online) {
-            setTellerOnline(config.modules.teller_online);
+          // Restore modules dynamically
+          if (config.modules) {
+            setModuleValues((prev) => {
+              const updated = { ...prev };
+              for (const [moduleKey, moduleData] of Object.entries(
+                config.modules,
+              )) {
+                // Convert snake_case API key back to module code format
+                const moduleCode = moduleKey.toUpperCase().replace(/_/g, "-");
+                if (updated[moduleCode]) {
+                  updated[moduleCode] = {
+                    ...updated[moduleCode],
+                    ...(moduleData as Record<string, unknown>),
+                  };
+                }
+              }
+              return updated;
+            });
           }
           // Restore integrations
           if (config.integrations?.bidirectional) {
@@ -443,15 +491,19 @@ export default function ConfigurableQuoteBuilder({
     setSaveSuccess(false);
 
     try {
+      // Build modules object from dynamic moduleValues for saving
+      const modulesForSave: Record<string, unknown> = {};
+      for (const [moduleCode, values] of Object.entries(moduleValues)) {
+        // Convert module_code to snake_case for storage
+        const apiKey = moduleCode.toLowerCase().replace(/-/g, "_");
+        modulesForSave[apiKey] = values;
+      }
+
       // Build configuration payload to store in ClientData
       const configurationPayload = {
         base_product: baseProduct,
         additional_users: additionalUsers,
-        modules: {
-          check_recognition: checkRecognition,
-          revenue_submission: revenueSubmission,
-          teller_online: tellerOnline,
-        },
+        modules: modulesForSave,
         integrations: {
           bidirectional: bidirectionalIntegrations,
           payment_import: paymentImportIntegrations,
@@ -862,190 +914,58 @@ export default function ConfigurableQuoteBuilder({
               </button>
 
               {expandedSections.modules && (
-                <div className="p-6 space-y-6">
-                  {/* Check Recognition */}
-                  <div className="bg-[#1a1d21] rounded-lg p-4 border border-[#4a5563]">
-                    <div className="flex items-center gap-3 mb-3">
-                      <input
-                        type="checkbox"
-                        checked={checkRecognition.enabled}
-                        onChange={(e) =>
-                          setCheckRecognition({
-                            ...checkRecognition,
-                            enabled: e.target.checked,
-                          })
-                        }
-                        className="w-5 h-5 rounded border-[#4a5563] text-[#6FCBDC] focus:ring-[#6FCBDC]"
-                      />
-                      <label className="text-base font-medium text-[#E6E6E6]">
-                        Check Recognition & Bulk Scanning
-                      </label>
+                <div className="p-6 space-y-4">
+                  {modulesLoading ? (
+                    <div className="text-center py-8">
+                      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#6FCBDC] mx-auto"></div>
+                      <p className="text-[#6a7583] mt-4">Loading modules...</p>
                     </div>
-                    {checkRecognition.enabled && (
-                      <div className="ml-8 space-y-3">
-                        <div>
-                          <label className="block text-sm text-[#A5A5A5] mb-1">
-                            Annual Scan Volume
-                          </label>
-                          <input
-                            type="number"
-                            min="0"
-                            value={checkRecognition.scan_volume}
-                            onChange={(e) =>
-                              setCheckRecognition({
-                                ...checkRecognition,
-                                scan_volume: parseInt(e.target.value) || 0,
-                              })
+                  ) : availableModules.length === 0 ? (
+                    <p className="text-[#6a7583] text-center py-4">
+                      No modules available
+                    </p>
+                  ) : (
+                    availableModules
+                      .sort((a, b) => a.sort_order - b.sort_order)
+                      .map((module) => (
+                        <DynamicModuleRenderer
+                          key={module.module_code}
+                          module={module}
+                          values={moduleValues[module.module_code] || {}}
+                          onChange={(moduleCode, paramKey, value) => {
+                            setModuleValues((prev) => ({
+                              ...prev,
+                              [moduleCode]: {
+                                ...prev[moduleCode],
+                                [paramKey]: value,
+                              },
+                            }));
+                          }}
+                          onEnabledChange={(moduleCode, enabled) => {
+                            setModuleValues((prev) => ({
+                              ...prev,
+                              [moduleCode]: {
+                                ...prev[moduleCode],
+                                enabled,
+                              },
+                            }));
+                          }}
+                          isEnabled={
+                            moduleValues[module.module_code]?.enabled || false
+                          }
+                          isExpanded={
+                            moduleValues[module.module_code]?.enabled || false
+                          }
+                          onToggleExpand={() => {
+                            // Auto-expand when enabled, allow toggle when enabled
+                            if (moduleValues[module.module_code]?.enabled) {
+                              // Toggle expanded state by storing in a separate state if needed
+                              // For simplicity, always show when enabled
                             }
-                            className="w-full px-3 py-2 bg-[#2a2f35] border border-[#4a5563] rounded text-[#E6E6E6] focus:outline-none focus:border-[#6FCBDC]"
-                          />
-                          <p className="text-xs text-[#A5A5A5] mt-1">
-                            ≤50K: $1,030/mo | 50K-150K: $1,500/mo | &gt;150K:
-                            $2,100/mo
-                          </p>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <input
-                            type="checkbox"
-                            checked={checkRecognition.is_new}
-                            onChange={(e) =>
-                              setCheckRecognition({
-                                ...checkRecognition,
-                                is_new: e.target.checked,
-                              })
-                            }
-                            className="w-4 h-4 rounded border-[#4a5563] text-[#6FCBDC] focus:ring-[#6FCBDC]"
-                          />
-                          <label className="text-sm text-[#A5A5A5]">
-                            New implementation (requires setup: $12,880)
-                          </label>
-                        </div>
-                      </div>
-                    )}
-                  </div>
-
-                  {/* Revenue Submission */}
-                  <div className="bg-[#1a1d21] rounded-lg p-4 border border-[#4a5563]">
-                    <div className="flex items-center gap-3 mb-3">
-                      <input
-                        type="checkbox"
-                        checked={revenueSubmission.enabled}
-                        onChange={(e) =>
-                          setRevenueSubmission({
-                            ...revenueSubmission,
-                            enabled: e.target.checked,
-                          })
-                        }
-                        className="w-5 h-5 rounded border-[#4a5563] text-[#6FCBDC] focus:ring-[#6FCBDC]"
-                      />
-                      <label className="text-base font-medium text-[#E6E6E6]">
-                        Revenue Submission Portal
-                      </label>
-                    </div>
-                    {revenueSubmission.enabled && (
-                      <div className="ml-8 space-y-3">
-                        <div>
-                          <label className="block text-sm text-[#A5A5A5] mb-1">
-                            Number of Submitters
-                          </label>
-                          <input
-                            type="number"
-                            min="0"
-                            value={revenueSubmission.num_submitters}
-                            onChange={(e) =>
-                              setRevenueSubmission({
-                                ...revenueSubmission,
-                                num_submitters: parseInt(e.target.value) || 0,
-                              })
-                            }
-                            className="w-full px-3 py-2 bg-[#2a2f35] border border-[#4a5563] rounded text-[#E6E6E6] focus:outline-none focus:border-[#6FCBDC]"
-                          />
-                          <p className="text-xs text-[#A5A5A5] mt-1">
-                            ≤25: $600/mo | 26-100: $1,000/mo | &gt;100:
-                            $1,500/mo
-                          </p>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <input
-                            type="checkbox"
-                            checked={revenueSubmission.is_new}
-                            onChange={(e) =>
-                              setRevenueSubmission({
-                                ...revenueSubmission,
-                                is_new: e.target.checked,
-                              })
-                            }
-                            className="w-4 h-4 rounded border-[#4a5563] text-[#6FCBDC] focus:ring-[#6FCBDC]"
-                          />
-                          <label className="text-sm text-[#A5A5A5]">
-                            New implementation (requires setup: $9,200)
-                          </label>
-                        </div>
-                      </div>
-                    )}
-                  </div>
-
-                  {/* Teller Online */}
-                  <div className="bg-[#1a1d21] rounded-lg p-4 border border-[#4a5563]">
-                    <div className="flex items-center gap-3 mb-3">
-                      <input
-                        type="checkbox"
-                        checked={tellerOnline.enabled}
-                        onChange={(e) =>
-                          setTellerOnline({
-                            ...tellerOnline,
-                            enabled: e.target.checked,
-                          })
-                        }
-                        className="w-5 h-5 rounded border-[#4a5563] text-[#6FCBDC] focus:ring-[#6FCBDC]"
-                      />
-                      <label className="text-base font-medium text-[#E6E6E6]">
-                        Teller Online Customer Portal
-                      </label>
-                    </div>
-                    {tellerOnline.enabled && (
-                      <div className="ml-8 space-y-3">
-                        <div>
-                          <label className="block text-sm text-[#A5A5A5] mb-1">
-                            Estimated Transactions Per Year
-                          </label>
-                          <input
-                            type="number"
-                            min="0"
-                            value={tellerOnline.transactions_per_year}
-                            onChange={(e) =>
-                              setTellerOnline({
-                                ...tellerOnline,
-                                transactions_per_year:
-                                  parseInt(e.target.value) || 0,
-                              })
-                            }
-                            className="w-full px-3 py-2 bg-[#2a2f35] border border-[#4a5563] rounded text-[#E6E6E6] focus:outline-none focus:border-[#6FCBDC]"
-                          />
-                          <p className="text-xs text-[#A5A5A5] mt-1">
-                            ≤50K: $800/mo | 50K-150K: $1,200/mo | &gt;150K:
-                            $1,600/mo
-                          </p>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <input
-                            type="checkbox"
-                            checked={tellerOnline.is_new}
-                            onChange={(e) =>
-                              setTellerOnline({
-                                ...tellerOnline,
-                                is_new: e.target.checked,
-                              })
-                            }
-                            className="w-4 h-4 rounded border-[#4a5563] text-[#6FCBDC] focus:ring-[#6FCBDC]"
-                          />
-                          <label className="text-sm text-[#A5A5A5]">
-                            New implementation (requires setup: $6,440)
-                          </label>
-                        </div>
-                      </div>
-                    )}
-                  </div>
+                          }}
+                        />
+                      ))
+                  )}
                 </div>
               )}
             </div>
