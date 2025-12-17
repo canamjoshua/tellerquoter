@@ -1,6 +1,6 @@
 """API endpoints for pricing version management."""
 
-from typing import Any, Dict
+from typing import Any
 from uuid import UUID
 
 from fastapi import APIRouter, Depends, HTTPException, status
@@ -472,8 +472,8 @@ def compare_pricing_versions(
 
     # Helper function to compare items
     def compare_items(
-        v1_dict: Dict[str, Any], v2_dict: Dict[str, Any], compare_fields: list[str]
-    ) -> tuple[list[Dict[str, Any]], list[Dict[str, Any]], list[Dict[str, Any]]]:
+        v1_dict: dict[str, Any], v2_dict: dict[str, Any], compare_fields: list[str]
+    ) -> tuple[list[Any], list[Any], list[dict[str, Any]], list[Any]]:
         added = []
         removed = []
         modified = []

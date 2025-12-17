@@ -1,0 +1,25 @@
+{
+  "base_product": "standard",
+  "additional_users": 3,
+  "modules": {
+    "check_recognition": {
+      "enabled": true,
+      "is_new": true,
+      "scan_volume": 75000
+    },
+    "revenue_submission": {
+      "enabled": true,
+      "is_new": true,
+      "num_submitters": 50
+    }
+  },
+  "integrations": {
+    "bidirectional": [
+      {
+        "system_name": "Tyler Munis",
+        "vendor": "Tyler Technologies",
+        "is_new": true
+      }
+    ]
+  }
+}

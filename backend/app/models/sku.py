@@ -2,11 +2,12 @@
 
 from datetime import datetime
 from decimal import Decimal
+from typing import Any
 from uuid import UUID as UUIDType
 from uuid import uuid4
 
-from sqlalchemy import DECIMAL, Boolean, ForeignKey, String, Text
-from sqlalchemy.dialects.postgresql import UUID
+from sqlalchemy import DECIMAL, Boolean, ForeignKey, Integer, String, Text
+from sqlalchemy.dialects.postgresql import JSON, UUID
 from sqlalchemy.orm import Mapped, mapped_column
 from sqlalchemy.sql import func
 
@@ -124,9 +125,47 @@ class SKUDefinition(Base):  # type: ignore[misc]
     )
     AcceptanceCriteria: Mapped[str | None] = mapped_column(
         "AcceptanceCriteria",
-        String(500),
+        Text,
         nullable=True,
         comment="Acceptance criteria for deliverable completion",
+    )
+    ScopeDescription: Mapped[str | None] = mapped_column(
+        "ScopeDescription",
+        Text,
+        nullable=True,
+        comment="What's included in this SKU (for Implementation Plan)",
+    )
+    Deliverables: Mapped[dict[str, Any] | None] = mapped_column(
+        "Deliverables",
+        JSON,
+        nullable=True,
+        comment="List of specific deliverables as JSON array",
+    )
+    TypicalDuration: Mapped[int | None] = mapped_column(
+        "TypicalDuration",
+        Integer,
+        nullable=True,
+        comment="Typical duration in weeks (for schedule building)",
+    )
+    QuickbooksCategory: Mapped[str | None] = mapped_column(
+        "QuickbooksCategory",
+        String(100),
+        nullable=True,
+        comment="Category/account code for Quickbooks",
+    )
+    Dependencies: Mapped[dict[str, Any] | None] = mapped_column(
+        "Dependencies",
+        JSON,
+        nullable=True,
+        comment="Required prerequisite SKUs as JSON array of SKU IDs",
+    )
+    IsRepeatable: Mapped[bool] = mapped_column(
+        "IsRepeatable",
+        Boolean,
+        default=False,
+        server_default="false",
+        nullable=False,
+        comment="Can be added multiple times (e.g., integrations)",
     )
     CreatedAt: Mapped[datetime] = mapped_column(
         "CreatedAt",

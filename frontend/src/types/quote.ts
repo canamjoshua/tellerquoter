@@ -74,7 +74,7 @@ export interface QuoteVersionSetupPackage {
 }
 
 export interface QuoteWithVersions extends Quote {
-  Versions: QuoteVersion[];
+  versions: QuoteVersion[];
 }
 
 export interface NewQuote {

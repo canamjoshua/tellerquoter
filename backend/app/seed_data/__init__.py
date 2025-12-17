@@ -4,6 +4,6 @@ Data seeding module for Teller Quoting System.
 This module provides functionality to populate the database with initial/test data.
 """
 
-from app.seed_data.seeder import DataSeeder
+from app.seed_data.seeder import seed_all
 
-__all__ = ["DataSeeder"]
+__all__ = ["seed_all"]

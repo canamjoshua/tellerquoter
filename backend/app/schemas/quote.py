@@ -2,7 +2,7 @@
 
 from datetime import datetime
 from decimal import Decimal
-from typing import Any, Dict
+from typing import Any
 from uuid import UUID
 
 from pydantic import BaseModel, Field
@@ -69,20 +69,20 @@ class QuoteVersionBase(BaseModel):
 
     VersionDescription: str | None = None
     PricingVersionId: UUID
-    ClientData: Dict[str, Any]
+    ClientData: dict[str, Any]
     ProjectionYears: int = Field(default=5, ge=1, le=10)
     EscalationModel: str = Field(default="STANDARD_4PCT")
     MultiYearFreezeYears: int | None = None
     LevelLoadingEnabled: bool = False
     TellerPaymentsEnabled: bool = False
-    DiscountConfig: Dict[str, Any] | None = None
+    DiscountConfig: dict[str, Any] | None = None
     ReferrerId: UUID | None = None
     ReferralRateOverride: Decimal | None = Field(None, ge=0, le=100)
     MilestoneStyle: str = Field(default="FIXED_MONTHLY")
     InitialPaymentPercentage: Decimal = Field(default=Decimal("25.00"), ge=0, le=100)
     ProjectDurationMonths: int = Field(default=10, ge=1)
     TravelZoneId: UUID | None = None
-    TravelConfig: Dict[str, Any] | None = None
+    TravelConfig: dict[str, Any] | None = None
 
 
 class QuoteVersionCreate(QuoteVersionBase):
@@ -98,20 +98,20 @@ class QuoteVersionUpdate(BaseModel):
     """Schema for updating a QuoteVersion."""
 
     VersionDescription: str | None = None
-    ClientData: Dict[str, Any] | None = None
+    ClientData: dict[str, Any] | None = None
     ProjectionYears: int | None = Field(None, ge=1, le=10)
     EscalationModel: str | None = None
     MultiYearFreezeYears: int | None = None
     LevelLoadingEnabled: bool | None = None
     TellerPaymentsEnabled: bool | None = None
-    DiscountConfig: Dict[str, Any] | None = None
+    DiscountConfig: dict[str, Any] | None = None
     ReferrerId: UUID | None = None
     ReferralRateOverride: Decimal | None = Field(None, ge=0, le=100)
     MilestoneStyle: str | None = None
     InitialPaymentPercentage: Decimal | None = Field(None, ge=0, le=100)
     ProjectDurationMonths: int | None = Field(None, ge=1)
     TravelZoneId: UUID | None = None
-    TravelConfig: Dict[str, Any] | None = None
+    TravelConfig: dict[str, Any] | None = None
     SaaSProducts: list[QuoteVersionSaaSProductInput] | None = None
     SetupPackages: list[QuoteVersionSetupPackageInput] | None = None
     VersionStatus: str | None = None
@@ -174,7 +174,7 @@ class QuoteVersionResponse(QuoteVersionBase):
 class QuoteWithVersionsResponse(QuoteResponse):
     """Schema for Quote with all its versions."""
 
-    Versions: list[QuoteVersionResponse] = Field(default_factory=list)
+    versions: list[QuoteVersionResponse] = Field(default_factory=list)
 
     class Config:
         """Pydantic config."""

@@ -2,11 +2,12 @@
 
 from datetime import datetime
 from decimal import Decimal
+from typing import Any
 from uuid import UUID as UUIDType
 from uuid import uuid4
 
 from sqlalchemy import DECIMAL, Boolean, ForeignKey, Integer, String, Text
-from sqlalchemy.dialects.postgresql import UUID
+from sqlalchemy.dialects.postgresql import JSONB, UUID
 from sqlalchemy.orm import Mapped, mapped_column
 from sqlalchemy.sql import func
 
@@ -161,6 +162,56 @@ class SaaSProduct(Base):  # type: ignore[misc]
         onupdate=func.now(),
         nullable=False,
         comment="Timestamp when product was last updated",
+    )
+
+    # Configuration-driven fields
+    ProductType: Mapped[str] = mapped_column(
+        "ProductType",
+        String(50),
+        nullable=False,
+        default="module",
+        server_default="module",
+        comment="Product type: 'base', 'module', 'addon', 'interface'",
+    )
+    RequiredParameters: Mapped[list[dict[str, Any]]] = mapped_column(
+        "RequiredParameters",
+        JSONB,
+        nullable=False,
+        default=list,
+        server_default="[]",
+        comment="Parameter definitions needed for this product",
+    )
+    SelectionRules: Mapped[dict[str, Any]] = mapped_column(
+        "SelectionRules",
+        JSONB,
+        nullable=False,
+        default=dict,
+        server_default="{}",
+        comment="Rules for when to include this product",
+    )
+    PricingFormula: Mapped[dict[str, Any]] = mapped_column(
+        "PricingFormula",
+        JSONB,
+        nullable=False,
+        default=dict,
+        server_default="{}",
+        comment="Formula for calculating price dynamically",
+    )
+    RelatedSetupSKUs: Mapped[list[dict[str, Any]]] = mapped_column(
+        "RelatedSetupSKUs",
+        JSONB,
+        nullable=False,
+        default=list,
+        server_default="[]",
+        comment="Setup SKUs to auto-include with this product",
+    )
+    Dependencies: Mapped[list[dict[str, Any]]] = mapped_column(
+        "Dependencies",
+        JSONB,
+        nullable=False,
+        default=list,
+        server_default="[]",
+        comment="Other products this product depends on",
     )
 
     def __repr__(self) -> str:
