@@ -70,8 +70,10 @@ export default function ConfigurableQuoteBuilder({
   onClose,
 }: ConfigurableQuoteBuilderProps = {}) {
   const [expandedSections, setExpandedSections] = useState({
+    orgParams: true,
     saas: true,
     modules: true,
+    onlineForms: false,
     integrations: false,
     discounts: false,
     referral: false,
@@ -85,6 +87,33 @@ export default function ConfigurableQuoteBuilder({
     "standard",
   );
   const [additionalUsers, setAdditionalUsers] = useState(0);
+
+  // Organization Parameters state (for Complexity Factor)
+  const [orgParams, setOrgParams] = useState({
+    departments: 1,
+    revenueTemplates: 0,
+    paymentImports: 0,
+  });
+
+  // Complexity Factor calculation result
+  const [complexityResult, setComplexityResult] = useState<{
+    complexity_score: number;
+    tier: string;
+    tier_name: string;
+    base_price: number;
+    sku_code: string;
+    additional_dept_count: number;
+    additional_dept_price: number;
+  } | null>(null);
+
+  // Online Forms state (separate forms and workflows)
+  const [onlineForms, setOnlineForms] = useState({
+    enabled: false,
+    simpleCount: 0,
+    mediumCount: 0,
+    complexCount: 0,
+    workflowCount: 0,
+  });
 
   // Modules state
   const [checkRecognition, setCheckRecognition] = useState({
@@ -217,6 +246,35 @@ export default function ConfigurableQuoteBuilder({
     };
     fetchTravelZones();
   }, []);
+
+  // Calculate complexity factor when org params change
+  useEffect(() => {
+    const calculateComplexity = async () => {
+      try {
+        const response = await fetch(
+          `${API_BASE_URL}/quote-calculations/complexity-factor`,
+          {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              departments: orgParams.departments,
+              revenue_templates: orgParams.revenueTemplates,
+              payment_imports: orgParams.paymentImports,
+            }),
+          },
+        );
+        if (response.ok) {
+          const result = await response.json();
+          setComplexityResult(result);
+        }
+      } catch (err) {
+        console.error("Error calculating complexity:", err);
+      }
+    };
+
+    const timer = setTimeout(calculateComplexity, 300);
+    return () => clearTimeout(timer);
+  }, [orgParams]);
 
   // Auto-configure on changes
   useEffect(() => {
@@ -548,6 +606,166 @@ export default function ConfigurableQuoteBuilder({
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Configuration Panel */}
           <div className="lg:col-span-2 space-y-6">
+            {/* Organization Parameters Section */}
+            <div className="bg-[#2a2f35] rounded-xl shadow-xl overflow-hidden border border-[#6FCBDC]/20">
+              <button
+                onClick={() => toggleSection("orgParams")}
+                className="w-full px-6 py-4 flex items-center justify-between bg-gradient-to-r from-[#6FCBDC]/20 to-[#6FCBDC]/5 hover:from-[#6FCBDC]/30 hover:to-[#6FCBDC]/10 transition-all"
+              >
+                <div className="flex items-center gap-3">
+                  <span className="text-2xl">🏢</span>
+                  <h2 className="text-xl font-semibold text-white">
+                    Organization Parameters
+                  </h2>
+                </div>
+                <div className="flex items-center gap-3">
+                  {complexityResult && (
+                    <span className="text-xs bg-[#6FCBDC]/20 text-[#6FCBDC] px-2 py-1 rounded-full">
+                      {complexityResult.tier_name} Tier
+                    </span>
+                  )}
+                  {expandedSections.orgParams ? (
+                    <ChevronDown className="text-[#6FCBDC]" />
+                  ) : (
+                    <ChevronRight className="text-[#6FCBDC]" />
+                  )}
+                </div>
+              </button>
+
+              {expandedSections.orgParams && (
+                <div className="p-6 space-y-6">
+                  {/* Complexity Factor Inputs */}
+                  <div className="grid grid-cols-3 gap-4">
+                    <div>
+                      <label className="block text-sm font-medium text-[#E6E6E6] mb-2">
+                        Number of Departments
+                      </label>
+                      <input
+                        type="number"
+                        min="1"
+                        max="99"
+                        value={orgParams.departments}
+                        onChange={(e) =>
+                          setOrgParams({
+                            ...orgParams,
+                            departments: parseInt(e.target.value) || 1,
+                          })
+                        }
+                        className="w-full px-4 py-2 bg-[#1a1d21] border border-[#4a5563] rounded-lg text-[#E6E6E6] focus:outline-none focus:border-[#6FCBDC]"
+                      />
+                      <p className="text-xs text-[#A5A5A5] mt-1">
+                        Cashiering departments
+                      </p>
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-[#E6E6E6] mb-2">
+                        Revenue Submission Templates
+                      </label>
+                      <input
+                        type="number"
+                        min="0"
+                        max="999"
+                        value={orgParams.revenueTemplates}
+                        onChange={(e) =>
+                          setOrgParams({
+                            ...orgParams,
+                            revenueTemplates: parseInt(e.target.value) || 0,
+                          })
+                        }
+                        className="w-full px-4 py-2 bg-[#1a1d21] border border-[#4a5563] rounded-lg text-[#E6E6E6] focus:outline-none focus:border-[#6FCBDC]"
+                      />
+                      <p className="text-xs text-[#A5A5A5] mt-1">
+                        Number of templates (÷4 in formula)
+                      </p>
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-[#E6E6E6] mb-2">
+                        Payment Imports
+                      </label>
+                      <input
+                        type="number"
+                        min="0"
+                        max="99"
+                        value={orgParams.paymentImports}
+                        onChange={(e) =>
+                          setOrgParams({
+                            ...orgParams,
+                            paymentImports: parseInt(e.target.value) || 0,
+                          })
+                        }
+                        className="w-full px-4 py-2 bg-[#1a1d21] border border-[#4a5563] rounded-lg text-[#E6E6E6] focus:outline-none focus:border-[#6FCBDC]"
+                      />
+                      <p className="text-xs text-[#A5A5A5] mt-1">
+                        Number of payment import interfaces
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Complexity Factor Result Display */}
+                  {complexityResult && (
+                    <div className="bg-gradient-to-r from-[#6FCBDC]/10 to-[#4A9BAA]/10 rounded-lg p-4 border border-[#6FCBDC]/30">
+                      <div className="flex items-center justify-between mb-3">
+                        <h4 className="text-sm font-semibold text-white">
+                          Complexity Factor Calculation
+                        </h4>
+                        <span
+                          className={`px-3 py-1 rounded-full text-sm font-bold ${
+                            complexityResult.tier === "BASIC"
+                              ? "bg-green-500/20 text-green-400"
+                              : complexityResult.tier === "MEDIUM"
+                                ? "bg-yellow-500/20 text-yellow-400"
+                                : "bg-orange-500/20 text-orange-400"
+                          }`}
+                        >
+                          {complexityResult.tier_name}
+                        </span>
+                      </div>
+                      <div className="grid grid-cols-2 gap-4 text-sm">
+                        <div>
+                          <p className="text-[#A5A5A5]">Formula:</p>
+                          <p className="text-[#E6E6E6] font-mono">
+                            {orgParams.departments} + (
+                            {orgParams.revenueTemplates} ÷ 4) +{" "}
+                            {orgParams.paymentImports}
+                          </p>
+                        </div>
+                        <div>
+                          <p className="text-[#A5A5A5]">Complexity Score:</p>
+                          <p className="text-[#6FCBDC] text-xl font-bold">
+                            {complexityResult.complexity_score}
+                          </p>
+                        </div>
+                        <div>
+                          <p className="text-[#A5A5A5]">Organization Setup:</p>
+                          <p className="text-[#E6E6E6]">
+                            ${complexityResult.base_price.toLocaleString()}
+                          </p>
+                        </div>
+                        {complexityResult.additional_dept_count > 0 && (
+                          <div>
+                            <p className="text-[#A5A5A5]">
+                              Additional Depts (
+                              {complexityResult.additional_dept_count}):
+                            </p>
+                            <p className="text-[#E6E6E6]">
+                              $
+                              {complexityResult.additional_dept_price.toLocaleString()}
+                            </p>
+                          </div>
+                        )}
+                      </div>
+                      <div className="mt-3 pt-3 border-t border-[#6FCBDC]/20">
+                        <p className="text-xs text-[#A5A5A5]">
+                          Tier thresholds: Basic (0-10) | Medium (11-20) | Large
+                          (21+)
+                        </p>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+
             {/* SaaS Products Section */}
             <div className="bg-[#2a2f35] rounded-xl shadow-xl overflow-hidden border border-[#6FCBDC]/20">
               <button
@@ -828,6 +1046,263 @@ export default function ConfigurableQuoteBuilder({
                       </div>
                     )}
                   </div>
+                </div>
+              )}
+            </div>
+
+            {/* Online Forms Section */}
+            <div className="bg-[#2a2f35] rounded-xl shadow-xl overflow-hidden border border-pink-500/20">
+              <button
+                onClick={() => toggleSection("onlineForms")}
+                className="w-full px-6 py-4 flex items-center justify-between bg-gradient-to-r from-pink-500/10 to-pink-600/10 hover:from-pink-500/20 hover:to-pink-600/20 transition-all"
+              >
+                <div className="flex items-center gap-3">
+                  <span className="text-2xl">📝</span>
+                  <div className="text-left">
+                    <h3 className="text-lg font-semibold text-white">
+                      Online Forms
+                    </h3>
+                    <p className="text-sm text-[#A5A5A5]">
+                      Web forms with optional workflows
+                    </p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-3">
+                  {onlineForms.enabled && (
+                    <span className="text-xs bg-pink-500/20 text-pink-300 px-2 py-1 rounded-full">
+                      {onlineForms.simpleCount +
+                        onlineForms.mediumCount +
+                        onlineForms.complexCount}{" "}
+                      forms
+                    </span>
+                  )}
+                  {expandedSections.onlineForms ? (
+                    <ChevronDown className="text-[#6FCBDC]" />
+                  ) : (
+                    <ChevronRight className="text-[#6FCBDC]" />
+                  )}
+                </div>
+              </button>
+
+              {expandedSections.onlineForms && (
+                <div className="p-6 space-y-6 border-t border-pink-500/20">
+                  {/* Enable Toggle */}
+                  <div className="flex items-center gap-3">
+                    <input
+                      type="checkbox"
+                      checked={onlineForms.enabled}
+                      onChange={(e) =>
+                        setOnlineForms({
+                          ...onlineForms,
+                          enabled: e.target.checked,
+                        })
+                      }
+                      className="w-5 h-5 rounded border-[#4a5563] text-pink-500 focus:ring-pink-500"
+                    />
+                    <label className="text-base font-medium text-[#E6E6E6]">
+                      Enable Online Forms
+                    </label>
+                  </div>
+
+                  {onlineForms.enabled && (
+                    <>
+                      {/* Form Counts by Tier */}
+                      <div>
+                        <h4 className="text-sm font-semibold text-white mb-3">
+                          Form Counts by Complexity
+                        </h4>
+                        <div className="grid grid-cols-3 gap-4">
+                          <div className="bg-[#1a1d21] rounded-lg p-4 border border-[#4a5563]">
+                            <label className="block text-sm text-green-400 mb-2 font-medium">
+                              Tier 1 - Simple
+                            </label>
+                            <input
+                              type="number"
+                              min="0"
+                              max="99"
+                              value={onlineForms.simpleCount}
+                              onChange={(e) =>
+                                setOnlineForms({
+                                  ...onlineForms,
+                                  simpleCount: parseInt(e.target.value) || 0,
+                                })
+                              }
+                              className="w-full px-3 py-2 bg-[#2a2f35] border border-[#4a5563] rounded text-[#E6E6E6] focus:outline-none focus:border-pink-500"
+                            />
+                            <p className="text-xs text-[#A5A5A5] mt-2">
+                              &lt;15 fields, simple sums
+                            </p>
+                            <p className="text-xs text-green-400 mt-1">
+                              $4,600 each
+                            </p>
+                          </div>
+                          <div className="bg-[#1a1d21] rounded-lg p-4 border border-[#4a5563]">
+                            <label className="block text-sm text-yellow-400 mb-2 font-medium">
+                              Tier 2 - Medium
+                            </label>
+                            <input
+                              type="number"
+                              min="0"
+                              max="99"
+                              value={onlineForms.mediumCount}
+                              onChange={(e) =>
+                                setOnlineForms({
+                                  ...onlineForms,
+                                  mediumCount: parseInt(e.target.value) || 0,
+                                })
+                              }
+                              className="w-full px-3 py-2 bg-[#2a2f35] border border-[#4a5563] rounded text-[#E6E6E6] focus:outline-none focus:border-pink-500"
+                            />
+                            <p className="text-xs text-[#A5A5A5] mt-2">
+                              15-29 fields OR complex calcs
+                            </p>
+                            <p className="text-xs text-yellow-400 mt-1">
+                              $9,200 each
+                            </p>
+                          </div>
+                          <div className="bg-[#1a1d21] rounded-lg p-4 border border-[#4a5563]">
+                            <label className="block text-sm text-orange-400 mb-2 font-medium">
+                              Tier 3 - Complex
+                            </label>
+                            <input
+                              type="number"
+                              min="0"
+                              max="99"
+                              value={onlineForms.complexCount}
+                              onChange={(e) =>
+                                setOnlineForms({
+                                  ...onlineForms,
+                                  complexCount: parseInt(e.target.value) || 0,
+                                })
+                              }
+                              className="w-full px-3 py-2 bg-[#2a2f35] border border-[#4a5563] rounded text-[#E6E6E6] focus:outline-none focus:border-pink-500"
+                            />
+                            <p className="text-xs text-[#A5A5A5] mt-2">
+                              30+ fields OR custom code
+                            </p>
+                            <p className="text-xs text-orange-400 mt-1">
+                              $13,800 each
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Workflow Count (separate from forms) */}
+                      <div className="bg-[#1a1d21] rounded-lg p-4 border border-[#4a5563]">
+                        <label className="block text-sm font-medium text-[#E6E6E6] mb-2">
+                          Workflow Add-ons
+                        </label>
+                        <div className="flex items-center gap-4">
+                          <input
+                            type="number"
+                            min="0"
+                            max={
+                              onlineForms.simpleCount +
+                              onlineForms.mediumCount +
+                              onlineForms.complexCount
+                            }
+                            value={onlineForms.workflowCount}
+                            onChange={(e) =>
+                              setOnlineForms({
+                                ...onlineForms,
+                                workflowCount: parseInt(e.target.value) || 0,
+                              })
+                            }
+                            className="w-24 px-3 py-2 bg-[#2a2f35] border border-[#4a5563] rounded text-[#E6E6E6] focus:outline-none focus:border-pink-500"
+                          />
+                          <div>
+                            <p className="text-sm text-[#A5A5A5]">
+                              Approval/routing workflows ($11,500 each)
+                            </p>
+                            <p className="text-xs text-[#6a7583] mt-1">
+                              Multiple forms can share a workflow. Max:{" "}
+                              {onlineForms.simpleCount +
+                                onlineForms.mediumCount +
+                                onlineForms.complexCount}{" "}
+                              (total forms)
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Cost Summary */}
+                      {(onlineForms.simpleCount > 0 ||
+                        onlineForms.mediumCount > 0 ||
+                        onlineForms.complexCount > 0) && (
+                        <div className="bg-gradient-to-r from-pink-500/10 to-pink-600/10 rounded-lg p-4 border border-pink-500/30">
+                          <h4 className="text-sm font-semibold text-white mb-3">
+                            Online Forms Setup Cost
+                          </h4>
+                          <div className="space-y-2 text-sm">
+                            {onlineForms.simpleCount > 0 && (
+                              <div className="flex justify-between">
+                                <span className="text-[#A5A5A5]">
+                                  {onlineForms.simpleCount} × Tier 1 (Simple)
+                                </span>
+                                <span className="text-[#E6E6E6]">
+                                  $
+                                  {(
+                                    onlineForms.simpleCount * 4600
+                                  ).toLocaleString()}
+                                </span>
+                              </div>
+                            )}
+                            {onlineForms.mediumCount > 0 && (
+                              <div className="flex justify-between">
+                                <span className="text-[#A5A5A5]">
+                                  {onlineForms.mediumCount} × Tier 2 (Medium)
+                                </span>
+                                <span className="text-[#E6E6E6]">
+                                  $
+                                  {(
+                                    onlineForms.mediumCount * 9200
+                                  ).toLocaleString()}
+                                </span>
+                              </div>
+                            )}
+                            {onlineForms.complexCount > 0 && (
+                              <div className="flex justify-between">
+                                <span className="text-[#A5A5A5]">
+                                  {onlineForms.complexCount} × Tier 3 (Complex)
+                                </span>
+                                <span className="text-[#E6E6E6]">
+                                  $
+                                  {(
+                                    onlineForms.complexCount * 13800
+                                  ).toLocaleString()}
+                                </span>
+                              </div>
+                            )}
+                            {onlineForms.workflowCount > 0 && (
+                              <div className="flex justify-between">
+                                <span className="text-[#A5A5A5]">
+                                  {onlineForms.workflowCount} × Workflow Add-on
+                                </span>
+                                <span className="text-[#E6E6E6]">
+                                  $
+                                  {(
+                                    onlineForms.workflowCount * 11500
+                                  ).toLocaleString()}
+                                </span>
+                              </div>
+                            )}
+                            <div className="flex justify-between pt-2 border-t border-pink-500/20 font-bold">
+                              <span className="text-white">Total Setup</span>
+                              <span className="text-pink-400">
+                                $
+                                {(
+                                  onlineForms.simpleCount * 4600 +
+                                  onlineForms.mediumCount * 9200 +
+                                  onlineForms.complexCount * 13800 +
+                                  onlineForms.workflowCount * 11500
+                                ).toLocaleString()}
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+                      )}
+                    </>
+                  )}
                 </div>
               )}
             </div>
@@ -1660,6 +2135,156 @@ export default function ConfigurableQuoteBuilder({
                         </div>
                       )}
 
+                      {/* Organization Setup Summary (from Complexity Calculation) */}
+                      {complexityResult && (
+                        <div>
+                          <h4 className="text-sm font-semibold text-white mb-3 flex items-center gap-2">
+                            <span className="text-[#6FCBDC]">🏢</span>
+                            Organization Setup
+                            <span
+                              className={`text-xs px-2 py-0.5 rounded-full ${
+                                complexityResult.tier === "BASIC"
+                                  ? "bg-green-500/20 text-green-400"
+                                  : complexityResult.tier === "MEDIUM"
+                                    ? "bg-yellow-500/20 text-yellow-400"
+                                    : "bg-orange-500/20 text-orange-400"
+                              }`}
+                            >
+                              {complexityResult.tier_name}
+                            </span>
+                          </h4>
+                          <div className="bg-[#1a1d21] rounded-lg p-3 border border-[#4a5563] space-y-2">
+                            <div className="flex justify-between text-sm">
+                              <span className="text-[#A5A5A5]">
+                                Complexity Score ({orgParams.departments} depts
+                                + {orgParams.revenueTemplates}/4 templates +{" "}
+                                {orgParams.paymentImports} imports)
+                              </span>
+                              <span className="text-[#6FCBDC] font-bold">
+                                {complexityResult.complexity_score}
+                              </span>
+                            </div>
+                            <div className="flex justify-between text-sm">
+                              <span className="text-[#A5A5A5]">
+                                Teller Setup - {complexityResult.tier_name}
+                              </span>
+                              <span className="text-[#E6E6E6]">
+                                ${complexityResult.base_price.toLocaleString()}
+                              </span>
+                            </div>
+                            {complexityResult.additional_dept_count > 0 && (
+                              <div className="flex justify-between text-sm">
+                                <span className="text-[#A5A5A5]">
+                                  Additional Departments (
+                                  {complexityResult.additional_dept_count})
+                                </span>
+                                <span className="text-[#E6E6E6]">
+                                  $
+                                  {complexityResult.additional_dept_price.toLocaleString()}
+                                </span>
+                              </div>
+                            )}
+                            <div className="flex justify-between text-sm pt-2 border-t border-[#4a5563] font-medium">
+                              <span className="text-white">
+                                Org Setup Total
+                              </span>
+                              <span className="text-[#6FCBDC]">
+                                $
+                                {(
+                                  complexityResult.base_price +
+                                  complexityResult.additional_dept_price
+                                ).toLocaleString()}
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Online Forms Summary */}
+                      {onlineForms.enabled &&
+                        (onlineForms.simpleCount > 0 ||
+                          onlineForms.mediumCount > 0 ||
+                          onlineForms.complexCount > 0) && (
+                          <div>
+                            <h4 className="text-sm font-semibold text-white mb-3 flex items-center gap-2">
+                              <span className="text-pink-400">📝</span>
+                              Online Forms (
+                              {onlineForms.simpleCount +
+                                onlineForms.mediumCount +
+                                onlineForms.complexCount}{" "}
+                              forms)
+                            </h4>
+                            <div className="bg-[#1a1d21] rounded-lg p-3 border border-[#4a5563] space-y-2">
+                              {onlineForms.simpleCount > 0 && (
+                                <div className="flex justify-between text-sm">
+                                  <span className="text-[#A5A5A5]">
+                                    Tier 1 - Simple ({onlineForms.simpleCount})
+                                  </span>
+                                  <span className="text-[#E6E6E6]">
+                                    $
+                                    {(
+                                      onlineForms.simpleCount * 4600
+                                    ).toLocaleString()}
+                                  </span>
+                                </div>
+                              )}
+                              {onlineForms.mediumCount > 0 && (
+                                <div className="flex justify-between text-sm">
+                                  <span className="text-[#A5A5A5]">
+                                    Tier 2 - Medium ({onlineForms.mediumCount})
+                                  </span>
+                                  <span className="text-[#E6E6E6]">
+                                    $
+                                    {(
+                                      onlineForms.mediumCount * 9200
+                                    ).toLocaleString()}
+                                  </span>
+                                </div>
+                              )}
+                              {onlineForms.complexCount > 0 && (
+                                <div className="flex justify-between text-sm">
+                                  <span className="text-[#A5A5A5]">
+                                    Tier 3 - Complex ({onlineForms.complexCount}
+                                    )
+                                  </span>
+                                  <span className="text-[#E6E6E6]">
+                                    $
+                                    {(
+                                      onlineForms.complexCount * 13800
+                                    ).toLocaleString()}
+                                  </span>
+                                </div>
+                              )}
+                              {onlineForms.workflowCount > 0 && (
+                                <div className="flex justify-between text-sm">
+                                  <span className="text-[#A5A5A5]">
+                                    Workflow Add-ons (
+                                    {onlineForms.workflowCount})
+                                  </span>
+                                  <span className="text-[#E6E6E6]">
+                                    $
+                                    {(
+                                      onlineForms.workflowCount * 11500
+                                    ).toLocaleString()}
+                                  </span>
+                                </div>
+                              )}
+                              <div className="flex justify-between text-sm pt-2 border-t border-[#4a5563] font-medium">
+                                <span className="text-white">Forms Total</span>
+                                <span className="text-pink-400">
+                                  $
+                                  {(
+                                    onlineForms.simpleCount * 4600 +
+                                    onlineForms.mediumCount * 9200 +
+                                    onlineForms.complexCount * 13800 +
+                                    onlineForms.workflowCount * 11500
+                                  ).toLocaleString()}
+                                </span>
+                              </div>
+                            </div>
+                          </div>
+                        )}
+
                       {/* Totals Summary */}
                       <div className="pt-4 border-t border-green-500/20">
                         <div className="space-y-2">
@@ -1679,6 +2304,18 @@ export default function ConfigurableQuoteBuilder({
                               ${configResult.total_setup_cost.toFixed(2)}
                             </span>
                           </div>
+                          {/* Show Organization Setup and Online Forms additions */}
+                          {(complexityResult ||
+                            (onlineForms.enabled &&
+                              onlineForms.simpleCount +
+                                onlineForms.mediumCount +
+                                onlineForms.complexCount >
+                                0)) && (
+                            <div className="text-xs text-[#6a7583] italic">
+                              + Organization Setup & Online Forms from
+                              parameters above
+                            </div>
+                          )}
                           <div className="flex justify-between items-center pt-2 border-t border-[#4a5563]">
                             <span className="text-sm font-semibold text-white">
                               Year 1 Total:
