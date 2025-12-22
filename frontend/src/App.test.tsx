@@ -3,13 +3,15 @@ import { render, screen } from "@testing-library/react";
 import App from "./App";
 
 describe("App", () => {
-  it("renders the application title", () => {
+  it("renders the navigation sidebar", () => {
     render(<App />);
-    expect(screen.getByText("Teller Quoting System")).toBeInTheDocument();
+    expect(screen.getByText("Dashboard")).toBeInTheDocument();
+    expect(screen.getByText("Quotes")).toBeInTheDocument();
+    expect(screen.getByText("Admin")).toBeInTheDocument();
   });
 
-  it("renders the system status section", () => {
+  it("renders the system online status", () => {
     render(<App />);
-    expect(screen.getByText("System Status")).toBeInTheDocument();
+    expect(screen.getByText("System Online")).toBeInTheDocument();
   });
 });
