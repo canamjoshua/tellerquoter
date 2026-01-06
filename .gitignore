@@ -58,6 +58,7 @@ Thumbs.db
 .env
 .env.local
 .env.*.local
+.env.production
 
 # Database
 *.db
@@ -73,6 +74,9 @@ docker-compose.override.yml
 *.tfstate.*
 *.tfvars
 !terraform.tfvars.example
+.terraform.lock.hcl
+tfplan
+infrastructure-outputs.txt
 
 # AWS
 .aws/

@@ -4,7 +4,7 @@ A production-ready web application for generating professional quotes and implem
 
 ## 📋 Documentation
 
-This repository contains comprehensive planning documentation for the Teller Quoting System implementation:
+This repository contains comprehensive planning and deployment documentation for the Teller Quoting System implementation:
 
 ### Core Documents
 
@@ -39,6 +39,38 @@ This repository contains comprehensive planning documentation for the Teller Quo
    - Pre-commit checklist
    - Integration test templates
    - Common tasks and troubleshooting
+
+5. **[PROJECT_STATUS.md](PROJECT_STATUS.md)** 📊 **Current Implementation Status**
+   - Phase completion tracking (~90% complete)
+   - Working features and test coverage
+   - Technology stack and file structure
+   - Instructions for running locally
+
+### AWS Deployment Documentation
+
+6. **[DEPLOYMENT.md](DEPLOYMENT.md)** 🚀 **AWS Deployment Guide**
+   - Complete step-by-step AWS deployment instructions
+   - Infrastructure setup and configuration
+   - Initial deployment checklist
+   - Ongoing operations and troubleshooting
+
+7. **[AWS_QUICK_REFERENCE.md](AWS_QUICK_REFERENCE.md)** ⚡ **Quick Command Reference**
+   - Essential commands for daily operations
+   - Monitoring and troubleshooting
+   - Cost management tips
+   - Emergency procedures
+
+8. **[FIRST_DEPLOYMENT_CHECKLIST.md](FIRST_DEPLOYMENT_CHECKLIST.md)** ✅ **First-Time Deployment**
+   - Interactive checklist for initial deployment
+   - Pre-deployment verification steps
+   - Post-deployment validation
+   - Success criteria
+
+9. **[terraform/README.md](terraform/README.md)** 📦 **Terraform Infrastructure**
+   - Detailed module documentation
+   - Architecture overview
+   - Security considerations
+   - Common operations
 
 ## 🎯 Project Overview
 
@@ -155,7 +187,72 @@ All documents in Word (.docx) and PDF formats.
 
 See [REQUIREMENTS_TRACEABILITY_MATRIX.md](REQUIREMENTS_TRACEABILITY_MATRIX.md) for detailed coverage.
 
-## 🚀 Next Steps
+## 🚀 Getting Started
+
+### For Development
+
+1. **Local Development Setup**
+   ```bash
+   # Backend
+   cd backend
+   python -m venv venv
+   source venv/bin/activate
+   pip install -r requirements.txt
+   uvicorn app.main:app --reload
+
+   # Frontend
+   cd frontend
+   npm install
+   npm run dev
+
+   # Database (Docker)
+   docker-compose up -d postgres
+   ```
+
+2. **Run Tests**
+   ```bash
+   # Backend tests
+   cd backend && pytest
+
+   # Frontend tests
+   cd frontend && npm test
+
+   # E2E tests
+   npm run test:e2e
+   ```
+
+   See [DEVELOPMENT_QUICKSTART.md](DEVELOPMENT_QUICKSTART.md) for detailed instructions.
+
+### For AWS Deployment
+
+1. **Review Infrastructure Plan**
+   - Read [DEPLOYMENT.md](DEPLOYMENT.md) for complete guide
+   - Review [terraform/README.md](terraform/README.md) for architecture details
+   - Check [AWS_DEPLOYMENT_SUMMARY.md](AWS_DEPLOYMENT_SUMMARY.md) for overview
+
+2. **Prerequisites**
+   - AWS account with appropriate permissions
+   - Terraform >= 1.6.0 installed
+   - AWS CLI configured
+   - Route53 hosted zone for your domain
+
+3. **Deploy Infrastructure**
+   ```bash
+   cd terraform
+   cp terraform.tfvars.example terraform.tfvars
+   # Edit terraform.tfvars with your values
+   terraform init
+   terraform apply
+   ```
+
+4. **Deploy Application**
+   - Configure GitHub Actions secrets
+   - Push to main branch for automated deployment
+   - Or use `./scripts/deploy.sh` for manual deployment
+
+   See [FIRST_DEPLOYMENT_CHECKLIST.md](FIRST_DEPLOYMENT_CHECKLIST.md) for step-by-step instructions.
+
+### For Planning/Review
 
 1. **Review Documentation**
    - Stakeholder review of requirements
@@ -166,17 +263,6 @@ See [REQUIREMENTS_TRACEABILITY_MATRIX.md](REQUIREMENTS_TRACEABILITY_MATRIX.md) f
    - Hire/assign development team
    - Set up communication channels
    - Schedule kickoff meeting
-
-3. **Environment Setup**
-   - Create AWS accounts
-   - Configure Microsoft Entra ID
-   - Set up GitHub repository
-   - Initialize development environment
-
-4. **Phase 1 Kickoff**
-   - Week 1 team onboarding
-   - Infrastructure provisioning
-   - First sprint planning
 
 ## 📞 Stakeholders
 
@@ -221,8 +307,22 @@ See [IMPLEMENTATION_PLAN.md Section 9](IMPLEMENTATION_PLAN.md#9-development-stan
 
 Internal Can/Am project - Proprietary
 
+## 🗂️ Repository Structure
+
+```
+tellerquoter/
+├── backend/               # FastAPI backend application
+├── frontend/              # React + TypeScript frontend
+├── terraform/             # AWS infrastructure as code
+├── scripts/               # Deployment and utility scripts
+├── .github/workflows/     # CI/CD automation
+├── e2e/                   # End-to-end tests
+├── docs/                  # Additional documentation
+└── archive/               # Historical documents
+```
+
 ---
 
-**Document Version:** 1.2
-**Last Updated:** December 3, 2025
-**Status:** Ready for Stakeholder Review
+**Document Version:** 1.3
+**Last Updated:** January 6, 2026
+**Status:** Development in Progress (~90% complete)

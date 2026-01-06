@@ -1,0 +1,80 @@
+version: '3.8'
+
+services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.production
+    image: ${ECR_REGISTRY:-tellerquoter}/tellerquoter-backend:${IMAGE_TAG:-latest}
+    container_name: tellerquoter-backend
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    env_file:
+      - .env.production
+    environment:
+      - ENVIRONMENT=production
+      - DATABASE_URL=${DATABASE_URL}
+      - SECRET_KEY=${SECRET_KEY}
+    depends_on:
+      - db-migration
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+    networks:
+      - app-network
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.production
+      args:
+        VITE_API_URL: ${VITE_API_URL}
+    image: ${ECR_REGISTRY:-tellerquoter}/tellerquoter-frontend:${IMAGE_TAG:-latest}
+    container_name: tellerquoter-frontend
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    depends_on:
+      - backend
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:3000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+    networks:
+      - app-network
+
+  db-migration:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.production
+    image: ${ECR_REGISTRY:-tellerquoter}/tellerquoter-backend:${IMAGE_TAG:-latest}
+    container_name: tellerquoter-migration
+    env_file:
+      - .env.production
+    environment:
+      - DATABASE_URL=${DATABASE_URL}
+    command: alembic upgrade head
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
+
+# Note: Database is managed by RDS, not in Docker Compose

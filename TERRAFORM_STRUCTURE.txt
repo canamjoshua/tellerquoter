@@ -1,0 +1,144 @@
+TellerQuoter AWS Deployment Structure
+======================================
+
+Project Root
+│
+├── terraform/                          # Terraform infrastructure code
+│   ├── main.tf                         # Root module - orchestrates all resources
+│   ├── variables.tf                    # Input variables definition
+│   ├── outputs.tf                      # Output values after deployment
+│   ├── terraform.tfvars.example        # Example configuration (copy to .tfvars)
+│   ├── README.md                       # Detailed Terraform documentation
+│   │
+│   └── modules/                        # Reusable Terraform modules
+│       │
+│       ├── vpc/                        # Virtual Private Cloud
+│       │   ├── main.tf                 # VPC, subnets, route tables, IGW
+│       │   ├── variables.tf            # VPC module inputs
+│       │   └── outputs.tf              # VPC IDs, subnet IDs
+│       │
+│       ├── rds/                        # PostgreSQL Database
+│       │   ├── main.tf                 # RDS instance, security group, subnet group
+│       │   ├── variables.tf            # Database configuration inputs
+│       │   └── outputs.tf              # Database endpoint, connection info
+│       │
+│       ├── ec2/                        # Application Server
+│       │   ├── main.tf                 # EC2 instance, security group, IAM role
+│       │   ├── variables.tf            # EC2 configuration inputs
+│       │   ├── outputs.tf              # Instance ID, IP addresses
+│       │   └── user_data.sh            # Bootstrap script (Docker, CloudWatch)
+│       │
+│       ├── alb/                        # Application Load Balancer
+│       │   ├── main.tf                 # ALB, listeners, target groups
+│       │   ├── variables.tf            # ALB configuration inputs
+│       │   └── outputs.tf              # ALB DNS, ARNs
+│       │
+│       ├── route53/                    # DNS Configuration
+│       │   ├── main.tf                 # DNS A record pointing to ALB
+│       │   ├── variables.tf            # Domain configuration inputs
+│       │   └── outputs.tf              # DNS record details
+│       │
+│       ├── acm/                        # SSL Certificate
+│       │   ├── main.tf                 # ACM certificate, DNS validation
+│       │   ├── variables.tf            # Certificate configuration inputs
+│       │   └── outputs.tf              # Certificate ARN
+│       │
+│       └── cloudwatch/                 # Monitoring & Alerts
+│           ├── main.tf                 # Dashboard, alarms, SNS topic
+│           ├── variables.tf            # Monitoring configuration inputs
+│           └── outputs.tf              # Dashboard URL, SNS topic ARN
+│
+├── scripts/                            # Deployment automation scripts
+│   ├── deploy.sh                       # Deploy application to EC2
+│   ├── terraform-apply.sh              # Deploy infrastructure with safety checks
+│   └── terraform-destroy.sh            # Destroy infrastructure with confirmations
+│
+├── .github/workflows/                  # CI/CD automation
+│   └── deploy-staging.yml              # GitHub Actions workflow
+│                                       # - Run tests
+│                                       # - Build Docker images
+│                                       # - Deploy to EC2
+│
+├── backend/                            # Backend application
+│   ├── Dockerfile.production           # Production backend container
+│   ├── app/                            # Application code
+│   └── requirements.txt                # Python dependencies
+│
+├── frontend/                           # Frontend application
+│   ├── Dockerfile.production           # Production frontend container
+│   ├── src/                            # Application code
+│   └── package.json                    # Node dependencies
+│
+├── docker-compose.production.yml       # Production container orchestration
+│                                       # - Backend (FastAPI)
+│                                       # - Frontend (React/Nginx)
+│                                       # - Database migrations
+│
+├── DEPLOYMENT.md                       # Step-by-step deployment guide
+├── AWS_QUICK_REFERENCE.md              # Quick command reference
+├── AWS_DEPLOYMENT_SUMMARY.md           # This overview document
+├── PROJECT_STATUS.md                   # Project status and progress
+└── .gitignore                          # Git ignore (includes AWS secrets)
+
+Key Files Explained
+===================
+
+terraform.tfvars (YOU MUST CREATE THIS)
+├── AWS credentials and region
+├── EC2 instance configuration
+├── Database passwords
+├── Domain names
+└── Email for alerts
+
+.env.production (CREATED AUTOMATICALLY ON EC2)
+├── Database connection string
+├── Application secrets
+├── Backend configuration
+└── Frontend API URLs
+
+Terraform Modules Dependencies
+===============================
+
+main.tf calls modules in this order:
+1. VPC          → Creates network foundation
+2. RDS          → Creates database (needs VPC, EC2 security group)
+3. ACM          → Requests SSL certificate (needs Route53)
+4. ALB          → Creates load balancer (needs VPC, ACM)
+5. EC2          → Creates app server (needs VPC, RDS, ALB)
+6. Route53      → Creates DNS record (needs ALB)
+7. CloudWatch   → Sets up monitoring (needs EC2, RDS, ALB)
+
+AWS Resources Created
+=====================
+
+Networking:
+  - 1 VPC (10.0.0.0/16)
+  - 2 Public Subnets (for EC2, ALB)
+  - 2 Private Subnets (for RDS)
+  - 1 Internet Gateway
+  - 2 Route Tables
+  - 5 Security Groups
+
+Compute:
+  - 1 EC2 Instance (t3.small)
+  - 1 Application Load Balancer
+  - 2 Target Groups (frontend, backend)
+
+Database:
+  - 1 RDS PostgreSQL Instance (db.t3.micro)
+  - 1 DB Subnet Group
+  - Automated backups (7 days)
+
+Security:
+  - 1 ACM SSL Certificate
+  - 1 Route53 A Record
+  - 3 IAM Roles (EC2, RDS monitoring)
+  - 5 Security Groups
+
+Monitoring:
+  - 1 CloudWatch Dashboard
+  - 5 CloudWatch Alarms
+  - 1 SNS Topic
+  - 1 Log Group
+
+Cost: ~$60/month for staging
