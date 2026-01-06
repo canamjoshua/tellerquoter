@@ -1,0 +1,56 @@
+{
+  "name": "TellerQuoter Dev",
+  "dockerComposeFile": "docker-compose.yml",
+  "service": "devcontainer",
+  "workspaceFolder": "/workspace",
+
+  // Features to install in the container
+  "features": {
+    "ghcr.io/devcontainers/features/node:1": {
+      "version": "20"
+    },
+    "ghcr.io/devcontainers/features/python:1": {
+      "version": "3.11"
+    },
+    "ghcr.io/devcontainers/features/git:1": {},
+    "ghcr.io/devcontainers/features/github-cli:1": {}
+  },
+
+  // VS Code settings for the container
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "anthropic.claude-code",
+        "ms-python.python",
+        "ms-python.vscode-pylance",
+        "dbaeumer.vscode-eslint",
+        "esbenp.prettier-vscode",
+        "bradlc.vscode-tailwindcss",
+        "ms-playwright.playwright"
+      ],
+      "settings": {
+        "python.defaultInterpreterPath": "/usr/local/bin/python",
+        "python.linting.enabled": true,
+        "editor.formatOnSave": true,
+        "editor.defaultFormatter": "esbenp.prettier-vscode",
+        "[python]": {
+          "editor.defaultFormatter": "ms-python.black-formatter"
+        }
+      }
+    }
+  },
+
+  // Commands to run after container is created
+  "postCreateCommand": "bash .devcontainer/post-create.sh",
+
+  // Forward ports for development
+  "forwardPorts": [3000, 5173, 8000],
+
+  // Environment variables
+  "remoteEnv": {
+    "DATABASE_URL": "postgresql://tellerquoter:tellerquoter_dev_password@postgres:5432/tellerquoter"
+  },
+
+  // Run as non-root user for security
+  "remoteUser": "vscode"
+}

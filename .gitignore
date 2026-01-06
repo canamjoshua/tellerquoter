@@ -100,6 +100,10 @@ secrets/
 *.key
 credentials.json
 
+# Dev Container secrets
+.devcontainer/.env
+.devcontainer/secrets.env
+
 # Branding assets (large files)
 branding/
 !branding/README.md

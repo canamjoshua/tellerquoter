@@ -1,0 +1,63 @@
+services:
+  devcontainer:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      # Mount your project into the container
+      - ..:/workspace:cached
+      # Persist VS Code server (extensions, data, bin)
+      - devcontainer-vscode-server:/home/vscode/.vscode-server
+      # Persist package manager caches
+      - devcontainer-npm-cache:/home/vscode/.npm
+      - devcontainer-pip-cache:/home/vscode/.cache/pip
+      # Share Claude Code auth from host (for team OAuth login)
+      - ~/.claude:/home/vscode/.claude:cached
+    # Load secrets from local file (not committed to git)
+    env_file:
+      - path: secrets.env
+        required: false
+    # Keep container running
+    command: sleep infinity
+    # Connect to the same network as postgres
+    networks:
+      - tellerquoter-network
+    # Security: drop unnecessary capabilities
+    cap_drop:
+      - ALL
+    cap_add:
+      - CHOWN
+      - SETUID
+      - SETGID
+      - DAC_OVERRIDE
+      - FOWNER
+    # Optional: restrict network access further
+    # Uncomment to completely isolate from host network
+    # network_mode: "none"
+
+  postgres:
+    image: postgres:15-alpine
+    container_name: tellerquoter-db-dev
+    environment:
+      POSTGRES_USER: tellerquoter
+      POSTGRES_PASSWORD: tellerquoter_dev_password
+      POSTGRES_DB: tellerquoter
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U tellerquoter"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - tellerquoter-network
+
+networks:
+  tellerquoter-network:
+    driver: bridge
+
+volumes:
+  postgres_data:
+  devcontainer-vscode-server:
+  devcontainer-npm-cache:
+  devcontainer-pip-cache:
